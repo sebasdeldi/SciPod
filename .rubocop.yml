@@ -1,0 +1,113 @@
+# Omakase Ruby styling for Rails
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
+# Additional RuboCop extensions (using modern plugin syntax)
+plugins:
+  - rubocop-performance
+  - rubocop-rspec
+  - rubocop-factory_bot
+
+# Project-specific configuration
+AllCops:
+  TargetRubyVersion: 3.4
+  NewCops: enable
+  Exclude:
+    - 'vendor/**/*'
+    - 'bin/**/*'
+    - 'db/schema.rb'
+    - 'db/migrate/*'
+    - 'config/boot.rb'
+    - 'config/environment.rb'
+    - 'config/application.rb'
+    - 'config/environments/*'
+    - 'config/initializers/*'
+    - 'node_modules/**/*'
+    - 'tmp/**/*'
+    - 'log/**/*'
+    - 'storage/**/*'
+    - 'app/assets/builds/**/*'
+
+# Rails-specific configurations
+Rails:
+  Enabled: true
+
+# Performance optimizations
+Performance:
+  Enabled: true
+
+# RSpec-specific configurations
+RSpec:
+  Enabled: true
+
+# Factory Bot configurations
+FactoryBot:
+  Enabled: true
+
+# Overwrite or add rules to create your own house style
+
+# Allow longer lines for ERB templates and comments
+Layout/LineLength:
+  Max: 120
+  AllowedPatterns: ['(\A|\s)#']
+  Exclude:
+    - 'app/views/**/*.html.erb'
+
+# Allow longer methods for controllers (they often have many actions)
+Metrics/MethodLength:
+  Exclude:
+    - 'app/controllers/**/*'
+    - 'spec/**/*'
+
+# Allow longer classes for models with many relationships and methods
+Metrics/ClassLength:
+  Exclude:
+    - 'app/models/**/*'
+    - 'spec/**/*'
+
+# Allow longer blocks in specs
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'config/routes.rb'
+
+# Disable Style/Documentation for now (we have RDoc comments)
+Style/Documentation:
+  Enabled: false
+
+# Allow both single and double quotes
+Style/StringLiterals:
+  Enabled: false
+
+# Allow both hash syntaxes
+Style/HashSyntax:
+  Enabled: false
+
+# Rails-specific customizations for this project
+
+# Allow has_and_belongs_to_many for simple join tables (like authors/publishers)
+Rails/HasAndBelongsToMany:
+  Enabled: false
+
+# Allow hardcoded strings in controllers (can be moved to locales later if needed)
+Rails/I18nLocaleTexts:
+  Exclude:
+    - 'app/controllers/**/*'
+    - 'app/models/**/*'
+
+# Allow uniqueness validations without database indexes for now
+# (indexes can be added later if performance becomes an issue)
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
+
+# RSpec-specific configurations
+RSpec/ExampleLength:
+  Max: 20
+
+RSpec/MultipleExpectations:
+  Max: 5
+
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/requests/**/*'
+    - 'spec/views/**/*'
+    - 'spec/helpers/**/*'

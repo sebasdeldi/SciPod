@@ -1,0 +1,37 @@
+<% content_for :title, "My Favorites - Scipod" %>
+
+<div class="user-dashboard">
+  <div class="dashboard-header">
+    <h1>My Favorites</h1>
+    <p class="dashboard-description">
+      Podcasts you've saved for later listening.
+    </p>
+  </div>
+
+  <div class="dashboard-stats">
+    <div class="stat-item">
+      <span class="stat-number"><%= @podcasts.count %></span>
+      <span class="stat-label">Favorited Podcasts</span>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <% if @podcasts.any? %>
+      <div class="podcasts-grid">
+        <% @podcasts.each do |podcast| %>
+          <%= render 'shared/podcast_card', podcast: podcast %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-state">
+        <h3>No favorites yet</h3>
+        <p>Start exploring podcasts and save your favorites here.</p>
+        <%= link_to "Discover Podcasts", root_path, class: "btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="dashboard-navigation">
+    <%= link_to "← Back to Dashboard", user_path(current_user), class: "back-link" %>
+  </div>
+</div>

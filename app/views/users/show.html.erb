@@ -1,0 +1,253 @@
+<% content_for :title, "Dashboard - Scipod" %>
+
+<div class="user-dashboard">
+  <div class="dashboard-header">
+    <h1>Welcome back!</h1>
+    <p class="dashboard-description">
+      Your personal podcast creation and listening dashboard.
+    </p>
+  </div>
+
+  <div class="dashboard-stats">
+    <div class="stat-item">
+      <span class="stat-number"><%= @podcasts_count %></span>
+      <span class="stat-label">Created Podcasts</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number"><%= @favorites_count %></span>
+      <span class="stat-label">Favorites</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number"><%= time_ago_in_words(@user.created_at) %></span>
+      <span class="stat-label">Member since</span>
+    </div>
+  </div>
+
+  <div class="dashboard-sections">
+    <!-- Quick Actions -->
+    <section class="dashboard-section">
+      <h2>Quick Actions</h2>
+      <div class="action-grid">
+        <%= link_to new_podcast_path, class: "action-card primary" do %>
+          <div class="action-icon">📄</div>
+          <h3>Create Podcast</h3>
+          <p>Upload a PDF and generate your podcast</p>
+        <% end %>
+
+        <%= link_to my_podcasts_user_path(current_user), class: "action-card" do %>
+          <div class="action-icon">🎧</div>
+          <h3>My Podcasts</h3>
+          <p>View and manage your created content</p>
+        <% end %>
+
+        <%= link_to favorites_user_path(current_user), class: "action-card" do %>
+          <div class="action-icon">❤️</div>
+          <h3>My Favorites</h3>
+          <p>Access your saved podcasts</p>
+        <% end %>
+
+        <%= link_to root_path, class: "action-card" do %>
+          <div class="action-icon">🔍</div>
+          <h3>Discover</h3>
+          <p>Explore new podcasts</p>
+        <% end %>
+      </div>
+    </section>
+
+    <!-- Recent Podcasts -->
+    <% if @podcasts.any? %>
+      <section class="dashboard-section">
+        <div class="section-header">
+          <h2>Your Recent Podcasts</h2>
+          <%= link_to "View All", my_podcasts_user_path(current_user), class: "btn-secondary" %>
+        </div>
+
+        <div class="podcasts-preview">
+          <% @podcasts.each do |podcast| %>
+            <div class="podcast-preview-item">
+              <div class="podcast-preview-content">
+                <h4><%= link_to podcast.title, podcast_path(podcast) %></h4>
+                <p class="podcast-preview-meta">
+                  Created <%= time_ago_in_words(podcast.created_at) %> ago
+                  • ❤️ <%= podcast.favorites_count %>
+                </p>
+                <% if podcast.summary.present? %>
+                  <p class="podcast-preview-summary">
+                    <%= truncate(podcast.summary, length: 100) %>
+                  </p>
+                <% end %>
+              </div>
+
+              <div class="podcast-preview-status">
+                <% if podcast.audio.attached? %>
+                  <span class="status-badge complete">🤖 AI Generated</span>
+                <% else %>
+                  <span class="status-badge processing">⏳ AI Processing</span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+    <!-- Account Settings -->
+    <section class="dashboard-section">
+      <h2>Account Settings</h2>
+      <div class="settings-list">
+        <%= link_to "Edit Profile", edit_user_registration_path, class: "setting-item" %>
+        <%= link_to "Change Password", edit_user_registration_path, class: "setting-item" %>
+        <%= link_to "Sign Out", destroy_user_session_path,
+                    method: :delete,
+                    class: "setting-item danger" %>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .dashboard-sections {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .dashboard-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .action-card {
+    display: block;
+    padding: 1.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .action-card:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .action-card.primary {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+
+  .action-card.primary:hover {
+    background: #0056b3;
+    color: white;
+  }
+
+  .action-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .action-card h3 {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+  }
+
+  .action-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .podcasts-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .podcast-preview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+  }
+
+  .podcast-preview-content {
+    flex: 1;
+  }
+
+  .podcast-preview-content h4 {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .podcast-preview-content h4 a {
+    color: #333;
+    text-decoration: none;
+  }
+
+  .podcast-preview-content h4 a:hover {
+    color: #007bff;
+  }
+
+  .podcast-preview-meta {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+
+  .podcast-preview-summary {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .setting-item {
+    padding: 0.75rem 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s;
+  }
+
+  .setting-item:hover {
+    background: #f8f9fa;
+    text-decoration: none;
+    color: #333;
+  }
+
+  .setting-item.danger {
+    color: #dc3545;
+  }
+
+  .setting-item.danger:hover {
+    background: #f8d7da;
+    color: #dc3545;
+  }
+</style>

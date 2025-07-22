@@ -1,0 +1,68 @@
+<div class="podcast-card" data-podcast-id="<%= podcast.id %>">
+  <div class="podcast-card-header">
+    <h3 class="podcast-title">
+      <%= link_to podcast.title, podcast_path(podcast) %>
+    </h3>
+
+    <!-- Favorite Button (Turbo Frame for instant updates) -->
+    <% if user_signed_in? %>
+      <div id="favorite_button_<%= podcast.id %>">
+        <%= render 'shared/favorite_button', podcast: podcast, current_user: current_user %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="podcast-meta">
+    <div class="podcast-author">
+      <strong>By:</strong> <%= podcast.user.email %>
+    </div>
+
+    <% if podcast.authors.any? %>
+      <div class="podcast-authors">
+        <strong>Authors:</strong>
+        <%= podcast.authors.map(&:name).join(', ') %>
+      </div>
+    <% end %>
+
+    <% if podcast.publishers.any? %>
+      <div class="podcast-publishers">
+        <strong>Publishers:</strong>
+        <%= podcast.publishers.map(&:name).join(', ') %>
+      </div>
+    <% end %>
+
+    <div class="podcast-date">
+      Created <%= time_ago_in_words(podcast.created_at) %> ago
+    </div>
+  </div>
+
+  <% if podcast.summary.present? %>
+    <div class="podcast-summary">
+      <%= truncate(podcast.summary, length: 150) %>
+    </div>
+  <% end %>
+
+  <div class="podcast-status">
+    <% if podcast.audio.attached? %>
+      <span class="status-badge complete">
+        <span class="status-icon">🤖</span>
+        AI Generated
+      </span>
+    <% else %>
+      <span class="status-badge processing">
+        <span class="status-icon">⏳</span>
+        AI Processing...
+      </span>
+    <% end %>
+
+    <div class="podcast-stats">
+      <span class="favorites-count">
+        ❤️ <%= podcast.favorites_count %>
+      </span>
+    </div>
+  </div>
+
+  <div class="podcast-actions">
+    <%= link_to "Listen", podcast_path(podcast), class: "btn-primary btn-small" %>
+  </div>
+</div>

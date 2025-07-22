@@ -1,0 +1,111 @@
+---
+# ERB Lint configuration for SciPod
+# Simplified configuration with core linters for reliability
+
+linters:
+  # Core ERB syntax and structure linters
+  ArgumentsCheck:
+    enabled: true
+  
+  ClosingErbTagIndent:
+    enabled: true
+  
+  ErbSafety:
+    enabled: true
+  
+  ParserErrors:
+    enabled: true
+  
+  RightTrim:
+    enabled: true
+  
+  SelfClosingTag:
+    enabled: true
+  
+  TrailingWhitespace:
+    enabled: true
+  
+  UnescapedOutput:
+    enabled: true
+
+  # Rails-specific linters
+  PartialInstanceVariable:
+    enabled: true
+    
+  CommentSyntax:
+    enabled: true
+
+  # HTML structure linters
+  ButtonHasType:
+    enabled: true
+  
+  ExtraWhitespace:
+    enabled: true
+  
+  FinalNewline:
+    enabled: true
+    present: true
+  
+  NoUnusedDisable:
+    enabled: true
+  
+  SpaceAroundErbTag:
+    enabled: true
+  
+  SpaceIndentation:
+    enabled: true
+
+  # Disabled linters (can be enabled later as needed)
+  AllowedScriptType:
+    enabled: false
+    
+  CharacterCase:
+    enabled: false
+    
+  ContentTag:
+    enabled: false
+    
+  DeprecatedClasses:
+    enabled: false
+    
+  HardCodedString:
+    enabled: false
+    
+  HtmlToRails:
+    enabled: false
+    
+  NoJavascriptTagHelper:
+    enabled: false
+    
+  NoStatements:
+    enabled: false
+    
+  RequireInputAutocomplete:
+    enabled: false
+    
+  Semicolon:
+    enabled: false
+    
+  SpaceAfterBlock:
+    enabled: false
+    
+  SpaceInHtmlTag:
+    enabled: false
+    
+  StaticTagHelpers:
+    enabled: false
+    
+  StrictLocals:
+    enabled: false
+    
+  TagName:
+    enabled: false
+
+# File patterns to exclude from linting
+exclude:
+  - 'vendor/**/*.erb'
+  - 'tmp/**/*.erb'
+  - 'log/**/*.erb'
+  - 'storage/**/*.erb'
+  - 'node_modules/**/*.erb'
+  - 'app/assets/builds/**/*.erb' 

@@ -1,0 +1,166 @@
+<% content_for :title, "Create New Podcast - SciPod" %>
+
+<div class="podcast-form-page">
+  <div class="form-header">
+    <h1>Create New Podcast</h1>
+    <p class="form-description">
+      Upload your PDF document and let our AI generate an engaging podcast with automatic metadata extraction and audio generation.
+    </p>
+  </div>
+
+  <%= form_with model: @podcast,
+                data: { controller: "podcast-form" },
+                multipart: true,
+                class: "podcast-form" do |form| %>
+
+    <% if @podcast.errors.any? %>
+      <div class="error-messages">
+        <h3><%= pluralize(@podcast.errors.count, "error") %> prohibited this podcast from being saved:</h3>
+        <ul>
+          <% @podcast.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- PDF Upload -->
+    <section class="form-section">
+      <h2>Source Document</h2>
+
+      <div class="form-group">
+        <%= form.label :source_file, "PDF Document", class: "form-label required" %>
+        <%= form.file_field :source_file,
+                           class: "form-file-input",
+                           accept: "application/pdf",
+                           required: true,
+                           data: {
+                             action: "change->podcast-form#validateFile",
+                             podcast_form_target: "sourceFile"
+                           } %>
+        <span class="field-hint">Upload the PDF document you want to convert to a podcast (max 50MB)</span>
+        <div class="file-preview" data-podcast-form-target="sourcePreview"></div>
+      </div>
+    </section>
+
+    <!-- AI Processing Info -->
+    <section class="form-section ai-processing-info">
+      <h2>🤖 AI Processing</h2>
+      <div class="processing-steps">
+        <div class="processing-step">
+          <div class="step-icon">📄</div>
+          <div class="step-content">
+            <h3>Content Analysis</h3>
+            <p>AI extracts and analyzes the document content, identifying key topics and structure.</p>
+          </div>
+        </div>
+
+        <div class="processing-step">
+          <div class="step-icon">📝</div>
+          <div class="step-content">
+            <h3>Metadata Extraction</h3>
+            <p>Automatically identifies title, authors, publishers, and publication details.</p>
+          </div>
+        </div>
+
+        <div class="processing-step">
+          <div class="step-icon">🎯</div>
+          <div class="step-content">
+            <h3>Script Generation</h3>
+            <p>Creates an engaging podcast script optimized for audio format.</p>
+          </div>
+        </div>
+
+        <div class="processing-step">
+          <div class="step-icon">🎙️</div>
+          <div class="step-content">
+            <h3>Audio Generation</h3>
+            <p>Converts the script into high-quality audio using advanced text-to-speech.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="processing-note">
+        <strong>Note:</strong> Processing typically takes 2-5 minutes depending on document length.
+        You'll be notified when your podcast is ready!
+      </div>
+    </section>
+
+    <!-- Submit Actions -->
+    <div class="form-actions">
+      <%= form.submit "Create Podcast with AI",
+                      class: "btn-primary btn-large",
+                      data: {
+                        disable_with: "Processing with AI...",
+                        podcast_form_target: "submitButton"
+                      } %>
+
+      <%= link_to "Cancel", root_path, class: "btn-secondary btn-large" %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.ai-processing-info {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+  border: 2px solid #e1e8ff;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.ai-processing-info h2 {
+  color: #4c6ef5;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.processing-steps {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.processing-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(76, 110, 245, 0.1);
+}
+
+.step-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.step-content h3 {
+  margin: 0 0 0.5rem 0;
+  color: #343a46;
+  font-size: 1.1rem;
+}
+
+.step-content p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.processing-note {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  padding: 1rem;
+  color: #856404;
+}
+
+@media (min-width: 768px) {
+  .processing-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>

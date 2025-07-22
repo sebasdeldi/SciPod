@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+# Comprehensive linting script for staged files (Git hooks)
+# Usage: bin/lint-staged
+# Only lints Ruby and ERB files that are staged for commit
+
+require "bundler/setup"
+
+# Get staged files
+staged_files = `git diff --cached --name-only --diff-filter=AM`.split("\n")
+
+# Separate Ruby and ERB files
+ruby_files = staged_files.select do |file|
+  file.end_with?('.rb') || file.end_with?('.rake') || file == 'Gemfile' || file == 'Rakefile'
+end
+
+erb_files = staged_files.select do |file|
+  file.end_with?('.erb') || file.end_with?('.html.erb')
+end
+
+if ruby_files.empty? && erb_files.empty?
+  puts "✅ No Ruby or ERB files staged for commit"
+  exit 0
+end
+
+exit_code = 0
+
+# Lint Ruby files
+unless ruby_files.empty?
+  puts "🔍 Linting staged Ruby files..."
+  puts "Files: #{ruby_files.join(', ')}"
+  puts "=" * 60
+
+  cmd_parts = ["bundle", "exec", "rubocop"] + ruby_files + ["--format=progress"]
+  ruby_success = system(*cmd_parts)
+  exit_code = 1 unless ruby_success
+  puts
+end
+
+# Lint ERB files
+unless erb_files.empty?
+  puts "🎨 Linting staged ERB files..."
+  puts "Files: #{erb_files.join(', ')}"
+  puts "=" * 60
+
+  cmd_parts = ["bundle", "exec", "erb_lint"] + erb_files
+  erb_success = system(*cmd_parts)
+  exit_code = 1 unless erb_success
+  puts
+end
+
+if exit_code == 0
+  puts "✅ All staged files passed linting!"
+else
+  puts "❌ Linting issues found in staged files"
+end
+
+exit(exit_code) 

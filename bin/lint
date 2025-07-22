@@ -1,0 +1,111 @@
+#!/usr/bin/env ruby
+
+# Comprehensive linting script for SciPod (Ruby + ERB)
+# Usage: bin/lint [files/dirs] [--fix] [--fix-unsafe] [--erb-only] [--ruby-only]
+# Examples:
+#   bin/lint                    # Check all Ruby and ERB files
+#   bin/lint app/models         # Check specific directory
+#   bin/lint --fix              # Auto-fix correctable issues
+#   bin/lint --fix-unsafe       # Auto-fix including unsafe corrections
+#   bin/lint --erb-only         # Only run ERB linting
+#   bin/lint --ruby-only        # Only run Ruby linting
+
+require "bundler/setup"
+
+# Parse command line arguments
+files_or_dirs = []
+auto_correct = false
+auto_correct_all = false
+erb_only = false
+ruby_only = false
+
+ARGV.each do |arg|
+  case arg
+  when "--fix"
+    auto_correct = true
+  when "--fix-unsafe"
+    auto_correct_all = true
+  when "--erb-only"
+    erb_only = true
+  when "--ruby-only"
+    ruby_only = true
+  else
+    files_or_dirs << arg
+  end
+end
+
+# Default to current directory if no files specified
+files_or_dirs = ["."] if files_or_dirs.empty?
+
+def run_rubocop(files_or_dirs, auto_correct, auto_correct_all)
+  puts "🔍 Running RuboCop (Ruby linting)..."
+  cmd_parts = ["bundle", "exec", "rubocop"]
+  cmd_parts.concat(files_or_dirs)
+
+  if auto_correct_all
+    cmd_parts << "--autocorrect-all"
+  elsif auto_correct
+    cmd_parts << "--autocorrect"
+  end
+
+  puts "Running: #{cmd_parts.join(' ')}"
+  puts "=" * 50
+  
+  success = system(*cmd_parts)
+  puts
+  success
+end
+
+def run_erb_lint(files_or_dirs, auto_correct)
+  puts "🎨 Running ERB Lint (Template linting)..."
+  cmd_parts = ["bundle", "exec", "erb_lint"]
+  
+  # ERB Lint expects specific file patterns or --lint-all
+  if files_or_dirs == ["."]
+    cmd_parts << "--lint-all"
+  else
+    # Filter for ERB files or directories
+    erb_targets = files_or_dirs.select do |path|
+      File.directory?(path) || path.end_with?('.erb', '.html.erb')
+    end
+    
+    if erb_targets.empty?
+      puts "No ERB files or directories specified, skipping ERB lint"
+      return true
+    end
+    
+    cmd_parts.concat(erb_targets)
+  end
+
+  if auto_correct
+    cmd_parts << "--autocorrect"
+  end
+
+  puts "Running: #{cmd_parts.join(' ')}"
+  puts "=" * 50
+  
+  success = system(*cmd_parts)
+  puts
+  success
+end
+
+# Run linters based on options
+exit_code = 0
+
+unless erb_only
+  success = run_rubocop(files_or_dirs, auto_correct, auto_correct_all)
+  exit_code = 1 unless success
+end
+
+unless ruby_only
+  success = run_erb_lint(files_or_dirs, auto_correct)
+  exit_code = 1 unless success
+end
+
+if exit_code == 0
+  puts "✅ All linting checks passed!"
+else
+  puts "❌ Linting issues found"
+end
+
+exit(exit_code) 

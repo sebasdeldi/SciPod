@@ -1,0 +1,107 @@
+<% content_for :title, "My Podcasts - Scipod" %>
+
+<div class="user-dashboard">
+  <div class="dashboard-header">
+    <h1>My Podcasts</h1>
+    <p class="dashboard-description">
+      Podcasts you've created from your documents.
+    </p>
+    <%= link_to "Create New Podcast", new_podcast_path, class: "btn-primary" %>
+  </div>
+
+  <div class="dashboard-stats">
+    <div class="stat-item">
+      <span class="stat-number"><%= @podcasts.count %></span>
+      <span class="stat-label">Created Podcasts</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number"><%= @podcasts.sum(&:favorites_count) %></span>
+      <span class="stat-label">Total Favorites</span>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <% if @podcasts.any? %>
+      <div class="podcasts-grid">
+        <% @podcasts.each do |podcast| %>
+          <div class="podcast-card owner-card">
+            <div class="podcast-card-header">
+              <h3 class="podcast-title">
+                <%= link_to podcast.title, podcast_path(podcast) %>
+              </h3>
+            </div>
+
+            <div class="podcast-meta">
+              <div class="podcast-date">
+                Created <%= time_ago_in_words(podcast.created_at) %> ago
+              </div>
+
+              <% if podcast.authors.any? %>
+                <div class="podcast-authors">
+                  <strong>Authors:</strong>
+                  <%= podcast.authors.map(&:name).join(', ') %>
+                </div>
+              <% end %>
+
+              <% if podcast.publishers.any? %>
+                <div class="podcast-publishers">
+                  <strong>Publishers:</strong>
+                  <%= podcast.publishers.map(&:name).join(', ') %>
+                </div>
+              <% end %>
+            </div>
+
+            <% if podcast.summary.present? %>
+              <div class="podcast-summary">
+                <%= truncate(podcast.summary, length: 150) %>
+              </div>
+            <% end %>
+
+            <div class="podcast-status">
+              <% if podcast.audio.attached? %>
+                <span class="status-badge complete">
+                  <span class="status-icon">🤖</span>
+                  AI Generated
+                </span>
+              <% else %>
+                <span class="status-badge processing">
+                  <span class="status-icon">⏳</span>
+                  AI Processing
+                </span>
+              <% else %>
+                <span class="status-badge incomplete">
+                  <span class="status-icon">📄</span>
+                  Source only
+                </span>
+              <% end %>
+
+              <div class="podcast-stats">
+                <span class="favorites-count">
+                  ❤️ <%= podcast.favorites_count %>
+                </span>
+              </div>
+            </div>
+
+            <div class="podcast-actions">
+              <%= link_to "View", podcast_path(podcast), class: "btn-primary btn-small" %>
+              <%= link_to "Delete", podcast_path(podcast),
+                          method: :delete,
+                          class: "btn-danger btn-small",
+                          confirm: "Are you sure? This cannot be undone." %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-state">
+        <h3>No podcasts yet</h3>
+        <p>Create your first podcast by uploading a PDF document.</p>
+        <%= link_to "Create Your First Podcast", new_podcast_path, class: "btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="dashboard-navigation">
+    <%= link_to "← Back to Dashboard", user_path(current_user), class: "back-link" %>
+  </div>
+</div>

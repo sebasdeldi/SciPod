@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+# ERB Lint script for SciPod templates
+# Usage: bin/lint-erb [files/dirs] [--fix]
+# Examples:
+#   bin/lint-erb                    # Check all ERB files
+#   bin/lint-erb app/views          # Check specific directory
+#   bin/lint-erb --fix              # Auto-fix correctable issues
+
+require "bundler/setup"
+
+# Parse command line arguments
+files_or_dirs = []
+auto_correct = false
+
+ARGV.each do |arg|
+  case arg
+  when "--fix"
+    auto_correct = true
+  else
+    files_or_dirs << arg
+  end
+end
+
+# Build ERB Lint command
+cmd_parts = ["bundle", "exec", "erb_lint"]
+
+# ERB Lint expects specific file patterns or --lint-all
+if files_or_dirs.empty?
+  cmd_parts << "--lint-all"
+else
+  # Filter for ERB files or directories
+  erb_targets = files_or_dirs.select do |path|
+    File.directory?(path) || path.end_with?('.erb', '.html.erb')
+  end
+  
+  if erb_targets.empty?
+    puts "❌ No ERB files or directories specified"
+    puts "Usage: bin/lint-erb [files/dirs] [--fix]"
+    puts "Examples:"
+    puts "  bin/lint-erb                    # Check all ERB files"
+    puts "  bin/lint-erb app/views          # Check views directory"
+    puts "  bin/lint-erb file.html.erb      # Check specific file"
+    exit 1
+  end
+  
+  cmd_parts.concat(erb_targets)
+end
+
+if auto_correct
+  cmd_parts << "--autocorrect"
+end
+
+puts "🎨 Running ERB Lint..."
+puts "Running: #{cmd_parts.join(' ')}"
+puts "=" * 50
+
+exec(*cmd_parts) 

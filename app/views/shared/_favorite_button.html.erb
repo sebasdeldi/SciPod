@@ -1,0 +1,27 @@
+<% if current_user&.favorited?(podcast) %>
+  <%= button_to unfavorite_podcast_path(podcast),
+                method: :delete,
+                remote: true,
+                class: "favorite-button favorited",
+                data: {
+                  turbo_method: :delete,
+                  turbo_stream: true
+                },
+                title: "Remove from favorites" do %>
+    <span class="heart-icon">❤️</span>
+    <span class="button-text">Favorited</span>
+  <% end %>
+<% else %>
+  <%= button_to favorite_podcast_path(podcast),
+                method: :post,
+                remote: true,
+                class: "favorite-button not-favorited",
+                data: {
+                  turbo_method: :post,
+                  turbo_stream: true
+                },
+                title: "Add to favorites" do %>
+    <span class="heart-icon">🤍</span>
+    <span class="button-text">Favorite</span>
+  <% end %>
+<% end %>

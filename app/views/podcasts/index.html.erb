@@ -1,0 +1,59 @@
+<% content_for :title, "Discover Podcasts - Scipod" %>
+
+<div class="podcasts-index">
+  <div class="page-header">
+    <h1>Discover Podcasts</h1>
+    <p class="page-description">
+      Explore AI-generated podcasts created from research papers, articles, and documents.
+    </p>
+  </div>
+
+  <!-- Search Results Container (Turbo Frame for instant updates) -->
+  <%= turbo_frame_tag "search_results" do %>
+    <div class="search-results">
+      <% if params[:query].present? %>
+        <div class="search-info">
+          <h2>Search Results for "<%= params[:query] %>"</h2>
+          <p><%= pluralize(@podcasts.count, 'podcast') %> found</p>
+        </div>
+      <% else %>
+        <div class="featured-header">
+          <h2>Latest Podcasts</h2>
+        </div>
+      <% end %>
+
+      <!-- Podcasts Grid -->
+      <div class="podcasts-grid">
+        <% if @podcasts.any? %>
+          <% @podcasts.each do |podcast| %>
+            <%= render 'shared/podcast_card', podcast: podcast %>
+          <% end %>
+        <% else %>
+          <div class="empty-state">
+            <% if params[:query].present? %>
+              <h3>No podcasts found</h3>
+              <p>Try searching with different keywords or <%= link_to "browse all podcasts", root_path %>.</p>
+            <% else %>
+              <h3>No podcasts yet</h3>
+              <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Call to Action for Logged Out Users -->
+  <% unless user_signed_in? %>
+    <div class="cta-section">
+      <div class="cta-content">
+        <h2>Ready to Create Your Own Podcast?</h2>
+        <p>Upload your PDF documents and let AI transform them into engaging audio content.</p>
+        <div class="cta-buttons">
+          <%= link_to "Get Started", new_user_registration_path, class: "btn-primary btn-large" %>
+          <%= link_to "Learn More", "#", class: "btn-secondary btn-large" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

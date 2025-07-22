@@ -1,0 +1,89 @@
+#!/usr/bin/env ruby
+
+# Comprehensive linting check script for SciPod (no auto-correction)
+# Usage: bin/lint-check [files/dirs] [--erb-only] [--ruby-only]
+# This script only reports issues without making any changes
+
+require "bundler/setup"
+
+# Parse command line arguments
+files_or_dirs = []
+erb_only = false
+ruby_only = false
+
+ARGV.each do |arg|
+  case arg
+  when "--erb-only"
+    erb_only = true
+  when "--ruby-only"
+    ruby_only = true
+  else
+    files_or_dirs << arg
+  end
+end
+
+files_or_dirs = ["."] if files_or_dirs.empty?
+
+def run_rubocop_check(files_or_dirs)
+  puts "🔍 Checking Ruby code quality (no changes will be made)..."
+  cmd_parts = ["bundle", "exec", "rubocop"]
+  cmd_parts.concat(files_or_dirs)
+  cmd_parts << "--format=progress"
+
+  puts "Running: #{cmd_parts.join(' ')}"
+  puts "=" * 60
+  
+  success = system(*cmd_parts)
+  puts
+  success
+end
+
+def run_erb_lint_check(files_or_dirs)
+  puts "🎨 Checking ERB template quality (no changes will be made)..."
+  cmd_parts = ["bundle", "exec", "erb_lint"]
+  
+  # ERB Lint expects specific file patterns or --lint-all
+  if files_or_dirs == ["."]
+    cmd_parts << "--lint-all"
+  else
+    # Filter for ERB files or directories
+    erb_targets = files_or_dirs.select do |path|
+      File.directory?(path) || path.end_with?('.erb', '.html.erb')
+    end
+    
+    if erb_targets.empty?
+      puts "No ERB files or directories specified, skipping ERB lint check"
+      return true
+    end
+    
+    cmd_parts.concat(erb_targets)
+  end
+
+  puts "Running: #{cmd_parts.join(' ')}"
+  puts "=" * 60
+  
+  success = system(*cmd_parts)
+  puts
+  success
+end
+
+# Run linters based on options
+exit_code = 0
+
+unless erb_only
+  success = run_rubocop_check(files_or_dirs)
+  exit_code = 1 unless success
+end
+
+unless ruby_only
+  success = run_erb_lint_check(files_or_dirs)
+  exit_code = 1 unless success
+end
+
+if exit_code == 0
+  puts "✅ All quality checks passed!"
+else
+  puts "❌ Issues found in code quality checks"
+end
+
+exit(exit_code) 

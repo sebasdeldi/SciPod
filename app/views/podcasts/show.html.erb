@@ -1,0 +1,157 @@
+<% content_for :title, "#{@podcast.title} - Scipod" %>
+
+<div class="podcast-show">
+  <div class="podcast-header">
+    <div class="podcast-title-section">
+      <h1><%= @podcast.title %></h1>
+
+      <!-- Favorite Button -->
+      <% if user_signed_in? %>
+        <div id="favorite_button_<%= @podcast.id %>" class="favorite-section">
+          <%= render 'shared/favorite_button', podcast: @podcast, current_user: current_user %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="podcast-meta-details">
+      <div class="creator-info">
+        <strong>Created by:</strong> <%= @podcast.user.email %>
+        <span class="creation-date">
+          on <%= @podcast.created_at.strftime("%B %d, %Y") %>
+        </span>
+      </div>
+
+      <% if @podcast.authors.any? %>
+        <div class="authors-info">
+          <strong>Authors:</strong>
+          <% @podcast.authors.each do |author| %>
+            <%= link_to author.name, author_path(author), class: "author-link" %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @podcast.publishers.any? %>
+        <div class="publishers-info">
+          <strong>Publishers:</strong>
+          <% @podcast.publishers.each do |publisher| %>
+            <%= link_to publisher.name, publisher_path(publisher), class: "publisher-link" %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @podcast.issn.present? %>
+        <div class="issn-info">
+          <strong>ISSN:</strong> <%= @podcast.issn %>
+        </div>
+      <% end %>
+
+      <% if @podcast.doi.present? %>
+        <div class="doi-info">
+          <strong>DOI:</strong>
+          <%= link_to @podcast.doi, "https://doi.org/#{@podcast.doi}",
+                      target: "_blank", rel: "noopener" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Audio Player Section -->
+  <div class="audio-player-section">
+    <% if @podcast.audio.attached? %>
+      <div class="audio-player">
+        <h2>Listen to Podcast</h2>
+        <audio controls preload="metadata" class="podcast-audio">
+          <%= audio_tag rails_blob_path(@podcast.audio, disposition: "inline"),
+                        controls: true,
+                        preload: "metadata" %>
+        </audio>
+        <div class="audio-info">
+          <span class="duration"><%= @podcast.audio_duration %></span>
+          <span class="file-size">
+            (<%= number_to_human_size(@podcast.audio.byte_size) %>)
+          </span>
+        </div>
+      </div>
+    <% elsif @podcast.source_file.attached? %>
+      <div class="processing-status">
+        <div class="processing-icon">⏳</div>
+        <h2>Audio Generation in Progress</h2>
+        <p>Your podcast audio is being generated from the source document. This usually takes a few minutes.</p>
+        <button onclick="location.reload()" class="btn-secondary">Refresh Page</button>
+      </div>
+    <% else %>
+      <div class="no-audio">
+        <div class="no-audio-icon">🎧</div>
+        <h2>Audio Not Available</h2>
+        <p>This podcast doesn't have an audio file yet.</p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Content Sections -->
+  <div class="podcast-content">
+    <% if @podcast.summary.present? %>
+      <section class="summary-section">
+        <h2>Summary</h2>
+        <div class="summary-content">
+          <%= simple_format(@podcast.summary) %>
+        </div>
+      </section>
+    <% end %>
+
+    <% if @podcast.script.present? %>
+      <section class="script-section">
+        <h2>Full Script</h2>
+        <div class="script-content">
+          <%= simple_format(@podcast.script) %>
+        </div>
+      </section>
+    <% end %>
+
+    <!-- Source Information -->
+    <% if @podcast.source_file.attached? %>
+      <section class="source-section">
+        <h2>Source Document</h2>
+        <div class="source-file">
+          <div class="file-info">
+            <span class="file-icon">📄</span>
+            <span class="file-name"><%= @podcast.source_file.filename %></span>
+            <span class="file-size">
+              (<%= number_to_human_size(@podcast.source_file.byte_size) %>)
+            </span>
+          </div>
+          <p class="source-note">This podcast was generated from the above PDF document using AI.</p>
+        </div>
+      </section>
+    <% end %>
+  </div>
+
+  <!-- Action Buttons for Owner -->
+  <% if user_signed_in? && @podcast.user == current_user %>
+    <div class="owner-actions">
+      <%= link_to "Delete Podcast", podcast_path(@podcast),
+                  method: :delete,
+                  class: "btn-danger",
+                  confirm: "Are you sure you want to delete this podcast? This action cannot be undone." %>
+    </div>
+  <% end %>
+
+  <!-- Statistics -->
+  <div class="podcast-stats-section">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-number"><%= @podcast.favorites_count %></span>
+        <span class="stat-label">Favorites</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number"><%= time_ago_in_words(@podcast.created_at) %></span>
+        <span class="stat-label">ago</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="podcast-navigation">
+    <%= link_to "← Back to Podcasts", root_path, class: "back-link" %>
+  </div>
+</div>
