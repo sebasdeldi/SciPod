@@ -29,7 +29,7 @@ class User < ApplicationRecord
   # @return [Boolean] true if favorited, false otherwise
   #
   def favorited?(podcast)
-    favorited_podcasts.include?(podcast)
+    favorites.exists?(podcast: podcast)
   end
 
   ##
@@ -39,6 +39,7 @@ class User < ApplicationRecord
   # @return [Favorite] the created favorite record
   #
   def favorite!(podcast)
+    return nil if favorited?(podcast)
     favorites.create!(podcast: podcast)
   end
 
@@ -49,6 +50,7 @@ class User < ApplicationRecord
   # @return [Boolean] true if successfully removed
   #
   def unfavorite!(podcast)
+    return nil unless favorited?(podcast)
     favorites.find_by(podcast: podcast)&.destroy
   end
 end

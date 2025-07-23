@@ -3,6 +3,7 @@
                 method: :delete,
                 remote: true,
                 class: "favorite-button favorited",
+                params: { query: params[:query] }.compact,
                 data: {
                   turbo_method: :delete,
                   turbo_stream: true
@@ -16,6 +17,7 @@
                 method: :post,
                 remote: true,
                 class: "favorite-button not-favorited",
+                params: { query: params[:query] }.compact,
                 data: {
                   turbo_method: :post,
                   turbo_stream: true

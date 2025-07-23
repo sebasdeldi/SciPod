@@ -17,10 +17,6 @@
       <span class="stat-number"><%= @favorites_count %></span>
       <span class="stat-label">Favorites</span>
     </div>
-    <div class="stat-item">
-      <span class="stat-number"><%= time_ago_in_words(@user.created_at) %></span>
-      <span class="stat-label">Member since</span>
-    </div>
   </div>
 
   <div class="dashboard-sections">
@@ -68,8 +64,7 @@
               <div class="podcast-preview-content">
                 <h4><%= link_to podcast.title, podcast_path(podcast) %></h4>
                 <p class="podcast-preview-meta">
-                  Created <%= time_ago_in_words(podcast.created_at) %> ago
-                  • ❤️ <%= podcast.favorites_count %>
+                  • <span id="dashboard_favorites_count_<%= podcast.id %>">❤️ <%= podcast.favorites_count %></span>
                 </p>
                 <% if podcast.summary.present? %>
                   <p class="podcast-preview-summary">

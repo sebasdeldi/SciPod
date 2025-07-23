@@ -5,22 +5,17 @@
     <div class="podcast-title-section">
       <h1><%= @podcast.title %></h1>
 
-      <!-- Favorite Button -->
+      <!-- Favorite Button Section -->
       <% if user_signed_in? %>
-        <div id="favorite_button_<%= @podcast.id %>" class="favorite-section">
-          <%= render 'shared/favorite_button', podcast: @podcast, current_user: current_user %>
+        <div id="favorite-section">
+          <div id="favorite_button_<%= @podcast.id %>" class="favorite-section">
+            <%= render 'shared/favorite_button', podcast: @podcast, current_user: current_user %>
+          </div>
         </div>
       <% end %>
     </div>
 
     <div class="podcast-meta-details">
-      <div class="creator-info">
-        <strong>Created by:</strong> <%= @podcast.user.email %>
-        <span class="creation-date">
-          on <%= @podcast.created_at.strftime("%B %d, %Y") %>
-        </span>
-      </div>
-
       <% if @podcast.authors.any? %>
         <div class="authors-info">
           <strong>Authors:</strong>
@@ -76,7 +71,7 @@
       <div class="processing-status">
         <div class="processing-icon">⏳</div>
         <h2>Audio Generation in Progress</h2>
-        <p>Your podcast audio is being generated from the source document. This usually takes a few minutes.</p>
+        <p>Your podcast audio is being generated. This usually takes a few minutes.</p>
         <button onclick="location.reload()" class="btn-secondary">Refresh Page</button>
       </div>
     <% else %>
@@ -107,32 +102,12 @@
         </div>
       </section>
     <% end %>
-
-    <!-- Source Information -->
-    <% if @podcast.source_file.attached? %>
-      <section class="source-section">
-        <h2>Source Document</h2>
-        <div class="source-file">
-          <div class="file-info">
-            <span class="file-icon">📄</span>
-            <span class="file-name"><%= @podcast.source_file.filename %></span>
-            <span class="file-size">
-              (<%= number_to_human_size(@podcast.source_file.byte_size) %>)
-            </span>
-          </div>
-          <p class="source-note">This podcast was generated from the above PDF document using AI.</p>
-        </div>
-      </section>
-    <% end %>
   </div>
 
   <!-- Action Buttons for Owner -->
   <% if user_signed_in? && @podcast.user == current_user %>
     <div class="owner-actions">
-      <%= link_to "Delete Podcast", podcast_path(@podcast),
-                  method: :delete,
-                  class: "btn-danger",
-                  confirm: "Are you sure you want to delete this podcast? This action cannot be undone." %>
+      <p class="owner-note">You are the creator of this podcast.</p>
     </div>
   <% end %>
 
@@ -140,12 +115,8 @@
   <div class="podcast-stats-section">
     <div class="stats-grid">
       <div class="stat-item">
-        <span class="stat-number"><%= @podcast.favorites_count %></span>
+        <span id="podcast_favorites_count_<%= @podcast.id %>" class="stat-number"><%= @podcast.favorites_count %></span>
         <span class="stat-label">Favorites</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-number"><%= time_ago_in_words(@podcast.created_at) %></span>
-        <span class="stat-label">ago</span>
       </div>
     </div>
   </div>

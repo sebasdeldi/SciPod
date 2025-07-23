@@ -9,14 +9,13 @@ Rails.application.routes.draw do
   # Root route - will be the main podcast discovery page
   root "podcasts#index"
 
-  # Podcasts routes with nested favorites
-  resources :podcasts do
+  # Podcast routes
+  resources :podcasts, except: [ :destroy ] do
     member do
       post :favorite
       delete :unfavorite
     end
 
-    # Search route for podcasts
     collection do
       get :search
     end

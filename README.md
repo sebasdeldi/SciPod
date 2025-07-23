@@ -27,6 +27,8 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 ### 🔍 **Discovery & Search**
 - Full-text search across podcasts, authors, and publishers
 - Instant search results with debounced input
+- Smart search behavior: blank searches show all content (like homepage)
+- Search context preservation during interactions
 - Filter by popularity and recency
 - Browse by authors and publishers
 
@@ -37,16 +39,37 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 - View podcast metadata and content
 
 ### ❤️ **Social Features**
-- Favorite/unfavorite podcasts
+- Favorite/unfavorite podcasts with instant Turbo Stream updates
+- Search context preservation when favoriting (no disruption to current view)
 - View your favorites collection
+- Real-time favorite count updates across all views
 - See most popular podcasts
 - User-generated content discovery
 
 ### 📱 **Modern UX**
-- Single-Page Application feel with Hotwire
+- Single-Page Application feel with Hotwire (Turbo + Stimulus)
 - Instant updates without page reloads
+- Smart Turbo Frame navigation (seamless page transitions)
+- Context-aware interactions (search state preservation)
 - Responsive design for all devices
-- Progressive enhancement
+- Progressive enhancement with graceful fallbacks
+
+## ✨ **Recent Improvements**
+
+### 🔧 **Enhanced Search Experience**
+- **Smart Blank Search**: Empty searches now display all podcasts instead of no results
+- **Context Preservation**: Search state maintained during favoriting and other interactions
+- **Seamless Navigation**: Proper page transitions from search results to podcast details
+
+### ⚡ **Optimized User Interactions**
+- **Non-Disruptive Favoriting**: Favorite/unfavorite actions preserve current search view
+- **Real-Time Updates**: Instant favorite count updates across all interface elements
+- **Turbo Frame Navigation**: Intelligent frame targeting for optimal user experience
+
+### 🎯 **Technical Enhancements**
+- **Search Context Passing**: Query parameters preserved through form submissions
+- **Conditional Turbo Streams**: Dynamic template rendering based on user context
+- **Frame-Aware Links**: Smart navigation that respects Turbo Frame boundaries
 
 ## 🛠️ Technology Stack
 
@@ -560,7 +583,7 @@ GET    /podcasts              # List all podcasts
 POST   /podcasts              # Create new podcast
 GET    /podcasts/:id          # Show podcast details
 PATCH  /podcasts/:id          # Update podcast
-DELETE /podcasts/:id          # Delete podcast
+GET    /podcasts/search       # Search podcasts
 POST   /podcasts/:id/favorite # Favorite a podcast
 DELETE /podcasts/:id/unfavorite # Unfavorite a podcast
 

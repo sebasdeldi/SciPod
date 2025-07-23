@@ -9,15 +9,15 @@
 #
 class PodcastsController < ApplicationController
   before_action :authenticate_user!, except: [ :index, :show, :search ]
-  before_action :set_podcast, only: [ :show, :edit, :update, :destroy, :favorite, :unfavorite ]
-  before_action :ensure_owner, only: [ :edit, :update, :destroy ]
+  before_action :set_podcast, only: [ :show, :edit, :update, :favorite, :unfavorite ]
+  before_action :ensure_owner, only: [ :edit, :update ]
 
   ##
   # GET /podcasts
   # Display all podcasts with search functionality
   #
   def index
-    @podcasts = Podcast.includes(:user, :authors, :publishers)
+    @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
                       .recent
                       .limit(20)
 
@@ -39,7 +39,10 @@ class PodcastsController < ApplicationController
                          .includes(:user, :authors, :publishers)
                          .limit(20)
     else
-      @podcasts = Podcast.none
+      # Show all podcasts when search is blank (same as index page)
+      @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
+                         .recent
+                         .limit(20)
     end
 
     respond_to do |format|
@@ -116,21 +119,22 @@ class PodcastsController < ApplicationController
   end
 
   ##
-  # DELETE /podcasts/1
-  # Delete a podcast
-  #
-  def destroy
-    @podcast.destroy
-    redirect_to podcasts_url, notice: 'Podcast was successfully deleted.'
-  end
-
-  ##
   # POST /podcasts/1/favorite
   # Add podcast to user's favorites via Turbo Stream
   #
   def favorite
-    unless current_user.favorited?(@podcast)
-      @favorite = current_user.favorite!(@podcast)
+    current_user.favorite!(@podcast)
+
+    # Preserve search context for turbo stream updates
+    @query = params[:query]
+    if @query.present?
+      @podcasts = Podcast.search_by_content(@query)
+                         .includes(:user, :authors, :publishers)
+                         .limit(20)
+    else
+      @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
+                         .recent
+                         .limit(20)
     end
 
     respond_to do |format|
@@ -144,8 +148,18 @@ class PodcastsController < ApplicationController
   # Remove podcast from user's favorites via Turbo Stream
   #
   def unfavorite
-    if current_user.favorited?(@podcast)
-      current_user.unfavorite!(@podcast)
+    current_user.unfavorite!(@podcast)
+
+    # Preserve search context for turbo stream updates
+    @query = params[:query]
+    if @query.present?
+      @podcasts = Podcast.search_by_content(@query)
+                         .includes(:user, :authors, :publishers)
+                         .limit(20)
+    else
+      @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
+                         .recent
+                         .limit(20)
     end
 
     respond_to do |format|
@@ -164,7 +178,7 @@ class PodcastsController < ApplicationController
   end
 
   ##
-  # Ensure current user owns the podcast (for edit/update/destroy)
+  # Ensure current user owns the podcast (for edit/update)
   #
   def ensure_owner
     unless @podcast.user == current_user

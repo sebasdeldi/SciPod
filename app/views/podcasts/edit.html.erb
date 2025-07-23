@@ -48,21 +48,8 @@
     </section>
 
     <!-- Current Files -->
-    <section class="form-section">
+        <section class="form-section">
       <h2>Current Files</h2>
-
-      <% if @podcast.source_file.attached? %>
-        <div class="current-file">
-          <h4>Source PDF Document</h4>
-          <div class="file-info">
-            <span class="file-icon">📄</span>
-            <span class="file-name"><%= @podcast.source_file.filename %></span>
-            <span class="file-size">(<%= number_to_human_size(@podcast.source_file.byte_size) %>)</span>
-          </div>
-          <%= link_to "Download", rails_blob_path(@podcast.source_file, disposition: "attachment"),
-                     class: "btn-secondary btn-small" %>
-        </div>
-      <% end %>
 
       <% if @podcast.audio.attached? %>
         <div class="current-file">
@@ -82,19 +69,6 @@
     <!-- File Uploads -->
     <section class="form-section">
       <h2>Update Files</h2>
-
-      <div class="form-group">
-        <%= form.label :source_file, "Replace Source PDF Document", class: "form-label" %>
-        <%= form.file_field :source_file,
-                           class: "form-file-input",
-                           accept: "application/pdf",
-                           data: {
-                             action: "change->podcast-form#validateFile",
-                             podcast_form_target: "sourceFile"
-                           } %>
-        <span class="field-hint">Upload a new PDF to replace the current one (max 50MB)</span>
-        <div class="file-preview" data-podcast-form-target="sourcePreview"></div>
-      </div>
 
       <div class="form-group">
         <%= form.label :audio, "Replace Audio File", class: "form-label" %>
@@ -190,10 +164,6 @@
                       } %>
 
       <%= link_to "Cancel", @podcast, class: "btn-secondary btn-large" %>
-      <%= link_to "Delete Podcast", @podcast,
-                  method: :delete,
-                  class: "btn-danger btn-large",
-                  confirm: "Are you sure you want to delete this podcast? This action cannot be undone." %>
     </div>
   <% end %>
 </div>

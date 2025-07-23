@@ -32,10 +32,6 @@
             </div>
 
             <div class="podcast-meta">
-              <div class="podcast-date">
-                Created <%= time_ago_in_words(podcast.created_at) %> ago
-              </div>
-
               <% if podcast.authors.any? %>
                 <div class="podcast-authors">
                   <strong>Authors:</strong>
@@ -68,15 +64,10 @@
                   <span class="status-icon">⏳</span>
                   AI Processing
                 </span>
-              <% else %>
-                <span class="status-badge incomplete">
-                  <span class="status-icon">📄</span>
-                  Source only
-                </span>
               <% end %>
 
               <div class="podcast-stats">
-                <span class="favorites-count">
+                <span id="my_podcasts_favorites_count_<%= podcast.id %>" class="favorites-count">
                   ❤️ <%= podcast.favorites_count %>
                 </span>
               </div>
@@ -84,10 +75,6 @@
 
             <div class="podcast-actions">
               <%= link_to "View", podcast_path(podcast), class: "btn-primary btn-small" %>
-              <%= link_to "Delete", podcast_path(podcast),
-                          method: :delete,
-                          class: "btn-danger btn-small",
-                          confirm: "Are you sure? This cannot be undone." %>
             </div>
           </div>
         <% end %>

@@ -1,7 +1,7 @@
 <div class="podcast-card" data-podcast-id="<%= podcast.id %>">
   <div class="podcast-card-header">
     <h3 class="podcast-title">
-      <%= link_to podcast.title, podcast_path(podcast) %>
+      <%= link_to podcast.title, podcast_path(podcast), data: { turbo_frame: "_top" } %>
     </h3>
 
     <!-- Favorite Button (Turbo Frame for instant updates) -->
@@ -13,10 +13,6 @@
   </div>
 
   <div class="podcast-meta">
-    <div class="podcast-author">
-      <strong>By:</strong> <%= podcast.user.email %>
-    </div>
-
     <% if podcast.authors.any? %>
       <div class="podcast-authors">
         <strong>Authors:</strong>
@@ -30,10 +26,6 @@
         <%= podcast.publishers.map(&:name).join(', ') %>
       </div>
     <% end %>
-
-    <div class="podcast-date">
-      Created <%= time_ago_in_words(podcast.created_at) %> ago
-    </div>
   </div>
 
   <% if podcast.summary.present? %>
@@ -56,13 +48,13 @@
     <% end %>
 
     <div class="podcast-stats">
-      <span class="favorites-count">
+      <span id="podcast_card_favorites_count_<%= podcast.id %>" class="favorites-count">
         ❤️ <%= podcast.favorites_count %>
       </span>
     </div>
   </div>
 
   <div class="podcast-actions">
-    <%= link_to "Listen", podcast_path(podcast), class: "btn-primary btn-small" %>
+    <%= link_to "Listen", podcast_path(podcast), class: "btn-primary btn-small", data: { turbo_frame: "_top" } %>
   </div>
 </div>
