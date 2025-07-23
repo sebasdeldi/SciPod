@@ -17,9 +17,7 @@ class PodcastsController < ApplicationController
   # Display all podcasts with search functionality
   #
   def index
-    @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
-                      .recent
-                      .limit(20)
+    @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites).recent.limit(20)
 
     respond_to do |format|
       format.html
@@ -88,7 +86,11 @@ class PodcastsController < ApplicationController
     @podcast = current_user.podcasts.build(podcast_params)
 
     # Set a temporary title that will be replaced by AI
-    @podcast.title = "Processing: #{@podcast.source_file.filename}" if @podcast.source_file.attached?
+    @podcast.title = @podcast.source_file.filename if @podcast.source_file.attached?
+
+    # Explicitly set initial processing status
+    @podcast.status = :processing
+    @podcast.status_details = "processing_source_file"
 
     if @podcast.save
       # Auto-favorite the user's own podcast

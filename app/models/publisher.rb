@@ -16,6 +16,13 @@ class Publisher < ApplicationRecord
   validates :name, presence: true, uniqueness: true
 
   ##
+  # Get the count of podcasts associated with this publisher
+  #
+  # @return [Integer] number of associated podcasts
+  #
+  delegate :count, to: :podcasts, prefix: true
+
+  ##
   # Scope for finding publishers by name (case-insensitive)
   #
   # @param [String] name_query - The name to search for
@@ -24,11 +31,4 @@ class Publisher < ApplicationRecord
   scope :by_name, ->(name_query) {
     where('name ILIKE ?', "%#{name_query}%")
   }
-
-  ##
-  # Get the count of podcasts associated with this publisher
-  #
-  # @return [Integer] number of associated podcasts
-  #
-  delegate :count, to: :podcasts, prefix: true
 end

@@ -24,6 +24,13 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 - Automatic author and publisher detection
 - Intelligent script generation from document content
 
+### 📊 **Processing Pipeline & Status Tracking**
+- Real-time processing status tracking with detailed pipeline stages
+- Status management: `processing`, `ready`, `error`
+- Granular status details: `processing_source_file`, `generating_script`, `generating_audio_file`
+- Background job integration ready for AI processing workflows
+- Processing progress visibility for users
+
 ### 🔍 **Discovery & Search**
 - Full-text search across podcasts, authors, and publishers
 - Instant search results with debounced input
@@ -70,6 +77,12 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 - **Search Context Passing**: Query parameters preserved through form submissions
 - **Conditional Turbo Streams**: Dynamic template rendering based on user context
 - **Frame-Aware Links**: Smart navigation that respects Turbo Frame boundaries
+
+### 📊 **Processing Pipeline Management**
+- **Status Tracking**: Comprehensive podcast processing status management
+- **Pipeline Stages**: Granular tracking through `processing_source_file`, `generating_script`, `generating_audio_file`
+- **Error Handling**: Robust error state management with detailed status information
+- **Background Job Ready**: Status system designed for asynchronous AI processing workflows
 
 ## 🛠️ Technology Stack
 
@@ -196,6 +209,38 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 5. **Audio Generation** - AI converts content to engaging audio format
 6. **Publish** - Your podcast is automatically available for discovery
 
+### **Processing Pipeline**
+
+Every uploaded podcast goes through a structured processing pipeline with real-time status tracking:
+
+#### **Processing States**
+- **`processing`** - Podcast is being converted (default for new uploads)
+- **`ready`** - Podcast is complete and available for listening
+- **`error`** - Processing failed with error details
+
+#### **Processing Stages** 
+1. **`processing_source_file`** - Initial upload and PDF parsing
+2. **`generating_script`** - AI-powered script generation from document content
+3. **`generating_audio_file`** - Text-to-speech conversion and audio production
+4. **Complete** - Status changes to `ready` with empty status_details
+
+#### **Developer Integration**
+```ruby
+# Check processing status
+podcast.processing?  # true during conversion
+podcast.ready?       # true when available
+podcast.error?       # true if failed
+
+# Update status during background processing
+podcast.update!(status_details: "generating_script")
+podcast.update!(status_details: "generating_audio_file")
+podcast.ready!       # Mark as complete
+
+# Query by status
+Podcast.by_status(:processing)
+Podcast.by_status_details("generating_script")
+```
+
 ### **Discovering Content**
 
 - **Search Bar** - Type keywords to find podcasts instantly
@@ -252,6 +297,8 @@ podcasts
 ├── doi (optional, unique)
 ├── summary (text)
 ├── script (text)
+├── status (integer: processing=0, ready=1, error=2, default=0)
+├── status_details (string: "", "processing_source_file", "generating_script", "generating_audio_file")
 ├── user_id (foreign key)
 ├── source_file (Active Storage)
 ├── audio (Active Storage)

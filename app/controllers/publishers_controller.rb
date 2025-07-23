@@ -15,9 +15,9 @@ class PublishersController < ApplicationController
   #
   def index
     @publishers = if params[:search].present?
-                    Publisher.by_name(params[:search]).limit(10)
+      Publisher.by_name(params[:search]).limit(10)
     else
-                    Publisher.limit(20)
+      Publisher.limit(20)
     end
 
     respond_to do |format|

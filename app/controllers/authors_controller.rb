@@ -15,9 +15,9 @@ class AuthorsController < ApplicationController
   #
   def index
     @authors = if params[:search].present?
-                 Author.by_name(params[:search]).limit(10)
+      Author.by_name(params[:search]).limit(10)
     else
-                 Author.limit(20)
+      Author.limit(20)
     end
 
     respond_to do |format|
