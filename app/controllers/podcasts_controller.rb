@@ -8,15 +8,23 @@
 # - File upload handling for PDFs and audio files
 #
 class PodcastsController < ApplicationController
-  before_action :authenticate_user!, except: [ :index, :show, :search ]
+  before_action :authenticate_user!, except: [ :home, :discover, :show, :search ]
   before_action :set_podcast, only: [ :show, :edit, :update, :favorite, :unfavorite ]
   before_action :ensure_owner, only: [ :edit, :update ]
 
   ##
-  # GET /podcasts
+  # GET /
+  # Google-style homepage with centered search
+  #
+  def home
+    # Simple homepage - no data needed, just the search form
+  end
+
+  ##
+  # GET /podcasts/discover
   # Display all podcasts with search functionality
   #
-  def index
+  def discover
     @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites).recent.limit(20)
 
     respond_to do |format|
@@ -44,8 +52,13 @@ class PodcastsController < ApplicationController
     end
 
     respond_to do |format|
-      format.turbo_stream { render :index }
-      format.html { render :index }
+      # Check if request is coming from homepage modal
+      if request.headers['Turbo-Frame'] == 'modal' || params[:modal] == 'true'
+        format.turbo_stream { render :search_modal }
+      else
+        format.turbo_stream { render :discover }
+      end
+      format.html { render :discover }
     end
   end
 

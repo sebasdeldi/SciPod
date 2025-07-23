@@ -28,28 +28,12 @@
       <nav class="nav-container">
         <%= link_to "SciPod", root_path, class: "logo" %>
 
-        <!-- Search Bar (prominent on main pages) -->
-                  <% unless current_page?(new_podcast_path) %>
-          <div class="search-container">
-            <%= form_with url: search_podcasts_path, method: :get,
-                          data: {
-                            turbo_frame: "search_results",
-                            turbo_action: "advance"
-                          },
-                          class: "search-form" do |form| %>
-              <%= form.text_field :query,
-                                  placeholder: "Search podcasts, authors, publishers...",
-                                  value: params[:query],
-                                  class: "search-input",
-                                  autocomplete: "off",
-                                  data: {
-                                    action: "input->search#perform",
-                                    search_target: "input"
-                                  } %>
-              <%= form.submit "Search", class: "search-button" %>
-            <% end %>
-          </div>
-        <% end %>
+        <!-- Navigation Links -->
+        <div class="nav-links">
+          <%= link_to "Discover", discover_podcasts_path, class: "nav-link" %>
+          <%= link_to "Authors", authors_path, class: "nav-link" %>
+          <%= link_to "Publishers", publishers_path, class: "nav-link" %>
+        </div>
 
         <!-- User Navigation -->
         <div class="user-nav">

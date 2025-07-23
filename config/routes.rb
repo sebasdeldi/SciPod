@@ -6,8 +6,8 @@ Rails.application.routes.draw do
   # Devise routes for user authentication
   devise_for :users
 
-  # Root route - will be the main podcast discovery page
-  root "podcasts#index"
+  # Root route - new Google-style homepage
+  root "podcasts#home"
 
   # Podcast routes
   resources :podcasts, except: [ :destroy ] do
@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
     collection do
       get :search
+      get :discover
     end
   end
 

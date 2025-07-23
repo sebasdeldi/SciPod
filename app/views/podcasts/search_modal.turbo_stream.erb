@@ -1,0 +1,76 @@
+<%= turbo_stream.replace "search-modal-body" do %>
+  <div id="search-modal-body" class="search-modal-body">
+    <div class="modal-search-results" data-search-query="<%= @query %>" data-timestamp="<%= Time.current.to_i %>">
+    <% if @query.present? %>
+      <div class="modal-search-info">
+        <p class="search-query">Search results for "<strong><%= @query %></strong>"</p>
+        <p class="search-count"><%= pluralize(@podcasts.count, 'podcast') %> found</p>
+      </div>
+    <% end %>
+
+    <% if @podcasts.any? %>
+      <div class="modal-podcasts-grid">
+        <% @podcasts.each do |podcast| %>
+          <div class="modal-podcast-card" data-podcast-id="<%= podcast.id %>">
+                         <div class="modal-podcast-header">
+               <h3 class="modal-podcast-title">
+                 <%= link_to podcast.title, podcast_path(podcast), 
+                            data: { turbo_frame: "_top" } %>
+               </h3>
+               
+               <!-- Favorite Count -->
+               <div class="modal-favorites-count">
+                 <span class="favorites-icon">❤️</span>
+                 <span class="favorites-number"><%= podcast.favorites_count %></span>
+               </div>
+             </div>
+
+            <div class="modal-podcast-meta">
+              <% if podcast.authors.any? %>
+                <div class="modal-podcast-authors">
+                  <strong>Authors:</strong>
+                  <%= podcast.authors.map(&:name).join(', ') %>
+                </div>
+              <% end %>
+
+              <% if podcast.publishers.any? %>
+                <div class="modal-podcast-publishers">
+                  <strong>Publishers:</strong>
+                  <%= podcast.publishers.map(&:name).join(', ') %>
+                </div>
+              <% end %>
+            </div>
+
+            <% if podcast.summary.present? %>
+              <div class="modal-podcast-summary">
+                <%= truncate(podcast.summary, length: 120) %>
+              </div>
+            <% end %>
+
+                         <div class="modal-podcast-actions">
+               <%= link_to "Listen", podcast_path(podcast), 
+                          class: "btn-primary btn-small",
+                          data: { turbo_frame: "_top" } %>
+             </div>
+          </div>
+        <% end %>
+      </div>
+
+      <% if @podcasts.count >= 20 %>
+                 <div class="modal-view-all">
+           <%= link_to "View all results in full page", 
+                      search_podcasts_path(query: @query), 
+                      class: "btn-secondary" %>
+         </div>
+      <% end %>
+    <% else %>
+      <div class="modal-empty-state">
+        <h3>No podcasts found</h3>
+        <p>Try searching with different keywords.</p>
+                 <%= link_to "Browse all podcasts", discover_podcasts_path, 
+                    class: "btn-primary" %>
+             </div>
+     <% end %>
+    </div>
+  </div>
+<% end %> 
