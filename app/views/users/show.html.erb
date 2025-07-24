@@ -14,7 +14,7 @@
       <span class="stat-label">Created Podcasts</span>
     </div>
     <div class="stat-item">
-      <span class="stat-number"><%= @favorites_count %></span>
+      <span class="stat-number"><%= formatted_favorites_count(@favorites_count) %></span>
       <span class="stat-label">Favorites</span>
     </div>
   </div>
@@ -42,10 +42,10 @@
           <p>Access your saved podcasts</p>
         <% end %>
 
-        <%= link_to discover_podcasts_path, class: "action-card" do %>
+        <%= link_to root_path, class: "action-card" do %>
           <div class="action-icon">🔍</div>
-          <h3>Discover</h3>
-          <p>Explore new podcasts</p>
+          <h3>Search</h3>
+          <p>Explore and search podcasts</p>
         <% end %>
       </div>
     </section>
@@ -62,9 +62,9 @@
           <% @podcasts.each do |podcast| %>
             <div class="podcast-preview-item">
               <div class="podcast-preview-content">
-                <h4><%= link_to podcast.title, podcast_path(podcast) %></h4>
+                <h4><%= link_to podcast.title, podcast_path(podcast), data: { turbo_frame: "_top" } %></h4>
                 <p class="podcast-preview-meta">
-                  • <span id="dashboard_favorites_count_<%= podcast.id %>">❤️ <%= podcast.favorites_count %></span>
+                  • <span id="dashboard_favorites_count_<%= podcast.id %>">❤️ <%= formatted_favorites_count(podcast.favorites_count) %></span>
                 </p>
                 <% if podcast.summary.present? %>
                   <p class="podcast-preview-summary">
@@ -74,7 +74,11 @@
               </div>
 
               <div class="podcast-preview-status">
-                <% if podcast.audio.attached? %>
+                <% if podcast.cancelled? %>
+                  <span class="status-badge cancelled">❌ Cancelled</span>
+                <% elsif podcast.error? %>
+                  <span class="status-badge error">⚠️ Error</span>
+                <% elsif podcast.audio.attached? %>
                   <span class="status-badge complete">🤖 AI Generated</span>
                 <% else %>
                   <span class="status-badge processing">⏳ AI Processing</span>

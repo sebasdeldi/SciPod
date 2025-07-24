@@ -1,0 +1,10 @@
+<%= button_to podcast_path(podcast), 
+              method: :get,
+              local: false,
+              class: "play-button",
+              title: "Play podcast",
+              data: { 
+                turbo_frame: "_top" 
+              } do %>
+  ▶️
+<% end %> 

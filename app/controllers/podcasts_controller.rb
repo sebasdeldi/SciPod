@@ -8,36 +8,15 @@
 # - File upload handling for PDFs and audio files
 #
 class PodcastsController < ApplicationController
-  before_action :authenticate_user!, except: [ :home, :discover, :show, :search ]
+  before_action :authenticate_user!, except: [ :home, :discover, :show ]
   before_action :set_podcast, only: [ :show, :edit, :update, :favorite, :unfavorite ]
   before_action :ensure_owner, only: [ :edit, :update ]
 
   ##
   # GET /
-  # Google-style homepage with centered search
+  # Unified search and discovery homepage
   #
   def home
-    # Simple homepage - no data needed, just the search form
-  end
-
-  ##
-  # GET /podcasts/discover
-  # Display all podcasts with search functionality
-  #
-  def discover
-    @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites).recent.limit(20)
-
-    respond_to do |format|
-      format.html
-      format.turbo_stream
-    end
-  end
-
-  ##
-  # GET /podcasts/search
-  # Search podcasts using pg_search with instant results
-  #
-  def search
     @query = params[:query]
 
     if @query.present?
@@ -45,21 +24,24 @@ class PodcastsController < ApplicationController
                          .includes(:user, :authors, :publishers)
                          .limit(20)
     else
-      # Show all podcasts when search is blank (same as index page)
+      # Show all podcasts when search is blank (discovery mode)
       @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
                          .recent
                          .limit(20)
     end
 
     respond_to do |format|
-      # Check if request is coming from homepage modal
-      if request.headers['Turbo-Frame'] == 'modal' || params[:modal] == 'true'
-        format.turbo_stream { render :search_modal }
-      else
-        format.turbo_stream { render :discover }
-      end
-      format.html { render :discover }
+      format.turbo_stream
+      format.html
     end
+  end
+
+  ##
+  # GET /podcasts/discover - DEPRECATED: Redirects to home
+  # Maintained for backward compatibility
+  #
+  def discover
+    redirect_to root_path(params.permit(:query)), status: :moved_permanently
   end
 
   ##
@@ -138,18 +120,9 @@ class PodcastsController < ApplicationController
   # Add podcast to user's favorites via Turbo Stream
   #
   def favorite
-    current_user.favorite!(@podcast)
-
-    # Preserve search context for turbo stream updates
-    @query = params[:query]
-    if @query.present?
-      @podcasts = Podcast.search_by_content(@query)
-                         .includes(:user, :authors, :publishers)
-                         .limit(20)
-    else
-      @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
-                         .recent
-                         .limit(20)
+    # Only process if not already favorited
+    unless current_user.favorited?(@podcast)
+      current_user.favorite!(@podcast)
     end
 
     respond_to do |format|
@@ -163,18 +136,9 @@ class PodcastsController < ApplicationController
   # Remove podcast from user's favorites via Turbo Stream
   #
   def unfavorite
-    current_user.unfavorite!(@podcast)
-
-    # Preserve search context for turbo stream updates
-    @query = params[:query]
-    if @query.present?
-      @podcasts = Podcast.search_by_content(@query)
-                         .includes(:user, :authors, :publishers)
-                         .limit(20)
-    else
-      @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
-                         .recent
-                         .limit(20)
+    # Only process if currently favorited
+    if current_user.favorited?(@podcast)
+      current_user.unfavorite!(@podcast)
     end
 
     respond_to do |format|

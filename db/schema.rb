@@ -10,9 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_23_003719) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_23_234011) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "podcast_status", ["processing", "ready", "error", "cancelled"]
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -72,8 +76,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_23_003719) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "status", default: 0, null: false
     t.string "status_details"
+    t.enum "status", default: "processing", null: false, enum_type: "podcast_status"
     t.index ["doi"], name: "index_podcasts_on_doi", unique: true
     t.index ["status"], name: "index_podcasts_on_status"
     t.index ["title"], name: "index_podcasts_on_title", unique: true

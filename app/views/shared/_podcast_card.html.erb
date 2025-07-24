@@ -35,7 +35,17 @@
   <% end %>
 
   <div class="podcast-status">
-    <% if podcast.audio.attached? %>
+    <% if podcast.cancelled? %>
+      <span class="status-badge cancelled">
+        <span class="status-icon">❌</span>
+        Cancelled
+      </span>
+    <% elsif podcast.error? %>
+      <span class="status-badge error">
+        <span class="status-icon">⚠️</span>
+        Error
+      </span>
+    <% elsif podcast.audio.attached? %>
       <span class="status-badge complete">
         <span class="status-icon">🤖</span>
         AI Generated
@@ -49,7 +59,7 @@
 
     <div class="podcast-stats">
       <span id="podcast_card_favorites_count_<%= podcast.id %>" class="favorites-count">
-        ❤️ <%= podcast.favorites_count %>
+        ❤️ <%= formatted_favorites_count(podcast.favorites_count) %>
       </span>
     </div>
   </div>

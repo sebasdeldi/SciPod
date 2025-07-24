@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   # Devise routes for user authentication
   devise_for :users
 
-  # Root route - new Google-style homepage
+  # Root route - unified search/discovery page
   root "podcasts#home"
 
   # Podcast routes
@@ -17,7 +17,6 @@ Rails.application.routes.draw do
     end
 
     collection do
-      get :search
       get :discover
     end
   end
@@ -32,10 +31,6 @@ Rails.application.routes.draw do
 
   # Favorites routes (for AJAX operations)
   resources :favorites, only: [ :create, :destroy ]
-
-  # Authors and Publishers (for autocomplete and management)
-  resources :authors, only: [ :index, :show, :create ]
-  resources :publishers, only: [ :index, :show, :create ]
 
   # Sidekiq Web UI (mount in development/staging, secure in production)
   mount Sidekiq::Web => '/sidekiq' if Rails.env.development?

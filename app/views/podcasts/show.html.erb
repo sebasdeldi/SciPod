@@ -19,18 +19,14 @@
       <% if @podcast.authors.any? %>
         <div class="authors-info">
           <strong>Authors:</strong>
-          <% @podcast.authors.each do |author| %>
-            <%= link_to author.name, author_path(author), class: "author-link" %>
-          <% end %>
+          <%= @podcast.authors.map(&:name).join(', ') %>
         </div>
       <% end %>
 
       <% if @podcast.publishers.any? %>
         <div class="publishers-info">
           <strong>Publishers:</strong>
-          <% @podcast.publishers.each do |publisher| %>
-            <%= link_to publisher.name, publisher_path(publisher), class: "publisher-link" %>
-          <% end %>
+          <%= @podcast.publishers.map(&:name).join(', ') %>
         </div>
       <% end %>
 
@@ -52,7 +48,19 @@
 
   <!-- Audio Player Section -->
   <div class="audio-player-section">
-    <% if @podcast.audio.attached? %>
+    <% if @podcast.cancelled? %>
+      <div class="cancelled-status">
+        <div class="cancelled-icon">❌</div>
+        <h2>Podcast Creation Cancelled</h2>
+        <p>This podcast creation was cancelled and will not be processed further.</p>
+      </div>
+    <% elsif @podcast.error? %>
+      <div class="error-status">
+        <div class="error-icon">⚠️</div>
+        <h2>Processing Error</h2>
+        <p>There was an error processing this podcast. Please try uploading again.</p>
+      </div>
+    <% elsif @podcast.audio.attached? %>
       <div class="audio-player">
         <h2>Listen to Podcast</h2>
         <audio controls preload="metadata" class="podcast-audio">
@@ -115,7 +123,7 @@
   <div class="podcast-stats-section">
     <div class="stats-grid">
       <div class="stat-item">
-        <span id="podcast_favorites_count_<%= @podcast.id %>" class="stat-number"><%= @podcast.favorites_count %></span>
+        <span id="podcast_favorites_count_<%= @podcast.id %>" class="stat-number"><%= formatted_favorites_count(@podcast.favorites_count) %></span>
         <span class="stat-label">Favorites</span>
       </div>
     </div>
@@ -123,6 +131,6 @@
 
   <!-- Navigation -->
   <div class="podcast-navigation">
-    <%= link_to "← Back to Podcasts", discover_podcasts_path, class: "back-link" %>
+    <%= link_to "← Back to Podcasts", root_path, class: "back-link" %>
   </div>
 </div>
