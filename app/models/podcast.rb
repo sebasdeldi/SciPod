@@ -25,6 +25,7 @@ class Podcast < ApplicationRecord
   # Many-to-many relationships
   has_and_belongs_to_many :authors
   has_and_belongs_to_many :publishers
+  has_and_belongs_to_many :categories
 
   # Favorites relationship
   has_many :favorites, dependent: :destroy
@@ -59,7 +60,8 @@ class Podcast < ApplicationRecord
     against: [ :title, :issn, :doi, :summary ],
     associated_against: {
       authors: [ :name ],
-      publishers: [ :name ]
+      publishers: [ :name ],
+      categories: [ :name ]
     },
     using: {
       tsearch: {

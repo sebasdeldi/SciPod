@@ -6,7 +6,7 @@
       <% end %>
     <% else %>
       <div class="empty-results">
-        <% if @query.present? %>
+        <% if @query.present? || @category_ids.any? %>
           <h3>No podcasts found</h3>
           <p>Try searching with different keywords or browse all podcasts.</p>
         <% else %>

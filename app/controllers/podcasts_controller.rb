@@ -17,14 +17,36 @@ class PodcastsController < ApplicationController
   #
   def home
     @query = params[:query]
+    @category_ids = Array(params[:category_ids]).reject(&:blank?)
 
-    if @query.present?
+    # Handle different combinations of search and category filtering
+    if @category_ids.any? && @query.present?
+      # Both categories and search: use subquery to avoid table alias conflicts
+      # OR operation: podcasts in ANY of the selected categories
+      category_podcast_ids = Podcast.joins(:categories)
+                                    .where(categories: { id: @category_ids })
+                                    .distinct
+                                    .pluck(:id)
+      @podcasts = Podcast.where(id: category_podcast_ids)
+                         .search_by_content(@query)
+                         .includes(:user, :authors, :publishers, :categories, :favorites)
+                         .limit(20)
+    elsif @category_ids.any?
+      # Only category filters: show all podcasts in ANY of the selected categories (OR operation)
+      @podcasts = Podcast.joins(:categories)
+                         .where(categories: { id: @category_ids })
+                         .includes(:user, :authors, :publishers, :categories, :favorites)
+                         .distinct
+                         .recent
+                         .limit(20)
+    elsif @query.present?
+      # Only search: use full search scope
       @podcasts = Podcast.search_by_content(@query)
-                         .includes(:user, :authors, :publishers)
+                         .includes(:user, :authors, :publishers, :categories, :favorites)
                          .limit(20)
     else
-      # Show all podcasts when search is blank (discovery mode)
-      @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
+      # Neither: show recent podcasts (discovery mode)
+      @podcasts = Podcast.includes(:user, :authors, :publishers, :categories, :favorites)
                          .recent
                          .limit(20)
     end

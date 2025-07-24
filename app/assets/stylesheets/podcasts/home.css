@@ -21,8 +21,8 @@
 }
 
 .result-item {
-  margin-bottom: 1.25rem;
-  padding-bottom: 1.25rem;
+  margin-bottom: 3.5rem;
+  padding-bottom: 3.5rem;
   border-bottom: 1px solid #eee;
 }
 
@@ -41,32 +41,32 @@
   margin-bottom: 0.3125rem;
 }
 
-.result-type-badge {
-  font-size: 0.75em;
-  font-weight: 700;
-  color: #555;
-  text-transform: uppercase;
+.result-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-bottom: 0.3125rem;
-  display: block;
-  border: none;
-  background: none;
-  padding: 0;
+  align-items: center;
 }
 
-.result-type-badge.podcast {
-  color: #555;
+.result-category-badge {
+  display: inline-block;
+  background: #e6f3ff;
+  color: #0066cc;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  border: 1px solid #b3d9ff;
+  white-space: nowrap;
 }
 
-.result-type-badge.processing {
-  color: #555;
-}
-
-.result-type-badge.error {
-  color: #555;
-}
-
-.result-type-badge.cancelled {
-  color: #555;
+.result-category-badge.more {
+  background: #f0f0f0;
+  color: #666;
+  border-color: #ddd;
+  font-weight: 600;
 }
 
 .result-date,
@@ -139,7 +139,8 @@
 }
 
 .result-authors,
-.result-publishers {
+.result-publishers,
+.result-categories {
   display: block;
   margin-bottom: 0.25rem;
 }

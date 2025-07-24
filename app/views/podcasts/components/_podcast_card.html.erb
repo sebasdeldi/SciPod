@@ -1,12 +1,13 @@
 <div class="result-item">
-  <% if podcast.ready? %>
-    <span class="result-type-badge podcast">PODCAST</span>
-  <% elsif podcast.processing? %>
-    <span class="result-type-badge processing">PROCESSING</span>
-  <% elsif podcast.error? %>
-    <span class="result-type-badge error">ERROR</span>
-  <% elsif podcast.cancelled? %>
-    <span class="result-type-badge cancelled">CANCELLED</span>
+  <% if podcast.categories.any? %>
+    <div class="result-badges">
+      <% podcast.categories.limit(3).each do |category| %>
+        <span class="result-category-badge"><%= category.name %></span>
+      <% end %>
+      <% if podcast.categories.count > 3 %>
+        <span class="result-category-badge more">+<%= podcast.categories.count - 3 %></span>
+      <% end %>
+    </div>
   <% end %>
   <div class="result-header">
     <h3 class="result-title">

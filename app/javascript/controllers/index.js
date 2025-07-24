@@ -15,3 +15,6 @@ application.register("page-transition", PageTransitionController)
 
 import PodcastFormController from "./podcast_form_controller"
 application.register("podcast-form", PodcastFormController)
+
+import SearchableDropdownController from "./searchable_dropdown_controller"
+application.register("searchable-dropdown", SearchableDropdownController)

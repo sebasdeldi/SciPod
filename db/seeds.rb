@@ -5,6 +5,7 @@ if Rails.env.development?
   Podcast.destroy_all
   Author.destroy_all
   Publisher.destroy_all
+  Category.destroy_all
   User.destroy_all
   puts "✅ Data cleared!"
 end
@@ -226,6 +227,48 @@ publishers = []
 end
 puts "✅ Created #{publishers.count} publishers"
 
+# Create categories
+puts "🏷️ Creating categories..."
+category_names = [
+  "Technology",
+  "Science",
+  "Medicine",
+  "Engineering", 
+  "Biology",
+  "Physics",
+  "Chemistry",
+  "Mathematics",
+  "Computer Science",
+  "Data Science",
+  "Artificial Intelligence",
+  "Machine Learning",
+  "Biotechnology",
+  "Environmental Science",
+  "Psychology",
+  "Neuroscience",
+  "Materials Science",
+  "Energy",
+  "Healthcare",
+  "Education",
+  "Research Methods",
+  "Innovation",
+  "Sustainability",
+  "Climate Science",
+  "Public Health",
+  "Biomedical Engineering",
+  "Social Sciences",
+  "Economics",
+  "Business",
+  "Management"
+]
+
+categories = []
+category_names.each do |name|
+  category = Category.create!(name: name)
+  categories << category
+end
+puts "✅ Created #{categories.count} categories"
+
 # Create podcasts
 puts "🎙️ Creating podcasts..."
 podcasts = []
@@ -300,6 +343,15 @@ podcasts.each do |podcast|
 end
 puts "✅ Created podcast-publisher associations"
 
+# Associate podcasts with categories (1-3 categories per podcast)
+puts "🔗 Creating podcast-category associations..."
+podcasts.each do |podcast|
+  category_count = [1, 1, 1, 2, 2, 3].sample # Weighted toward 1-2 categories
+  selected_categories = categories.sample(category_count)
+  podcast.categories = selected_categories
+end
+puts "✅ Created podcast-category associations"
+
 # Create favorites (realistic distribution)
 puts "❤️ Creating favorites..."
 favorites_count = 0
@@ -332,6 +384,7 @@ puts "\n📊 Seed Data Summary:"
 puts "👥 Users: #{User.count}"
 puts "✍️ Authors: #{Author.count}"
 puts "🏢 Publishers: #{Publisher.count}"
+puts "🏷️ Categories: #{Category.count}"
 puts "🎙️ Podcasts: #{Podcast.count}"
 puts "   📊 By Status:"
 puts "   ⏳ Processing: #{Podcast.where(status: :processing).count}"
@@ -341,15 +394,17 @@ puts "   🚫 Cancelled: #{Podcast.where(status: :cancelled).count}"
 puts "❤️ Favorites: #{Favorite.count}"
 puts "🔗 Podcast-Author associations: #{Podcast.joins(:authors).count}"
 puts "🔗 Podcast-Publisher associations: #{Podcast.joins(:publishers).count}"
+puts "🔗 Podcast-Category associations: #{Podcast.joins(:categories).count}"
 
 # Show some example data
 puts "\n🎯 Sample Data:"
-sample_podcast = Podcast.includes(:authors, :publishers, :favorites).ready.first
+sample_podcast = Podcast.includes(:authors, :publishers, :categories, :favorites).ready.first
 if sample_podcast
   puts "📚 Sample Podcast: '#{sample_podcast.title}'"
   puts "   👤 Creator: #{sample_podcast.user.email}"
   puts "   ✍️ Authors: #{sample_podcast.authors.pluck(:name).join(', ')}"
   puts "   🏢 Publishers: #{sample_podcast.publishers.pluck(:name).join(', ')}" if sample_podcast.publishers.any?
+  puts "   🏷️ Categories: #{sample_podcast.categories.pluck(:name).join(', ')}"
   puts "   ❤️ Favorites: #{sample_podcast.favorites.count}"
   puts "   📝 Summary: #{sample_podcast.summary[0..100]}..."
 end
