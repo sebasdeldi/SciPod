@@ -4,15 +4,6 @@
   <div class="podcast-header">
     <div class="podcast-title-section">
       <h1><%= @podcast.title %></h1>
-
-      <!-- Favorite Button Section -->
-      <% if user_signed_in? %>
-        <div id="favorite-section">
-          <div id="favorite_button_<%= @podcast.id %>" class="favorite-section">
-            <%= render 'shared/favorite_button', podcast: @podcast, current_user: current_user %>
-          </div>
-        </div>
-      <% end %>
     </div>
 
     <div class="podcast-meta-details">
@@ -80,7 +71,6 @@
         <div class="processing-icon">⏳</div>
         <h2>Audio Generation in Progress</h2>
         <p>Your podcast audio is being generated. This usually takes a few minutes.</p>
-        <button onclick="location.reload()" class="btn-secondary">Refresh Page</button>
       </div>
     <% else %>
       <div class="no-audio">
@@ -112,18 +102,11 @@
     <% end %>
   </div>
 
-  <!-- Action Buttons for Owner -->
-  <% if user_signed_in? && @podcast.user == current_user %>
-    <div class="owner-actions">
-      <p class="owner-note">You are the creator of this podcast.</p>
-    </div>
-  <% end %>
-
-  <!-- Statistics -->
+  <!-- Basic Statistics -->
   <div class="podcast-stats-section">
     <div class="stats-grid">
       <div class="stat-item">
-        <span id="podcast_favorites_count_<%= @podcast.id %>" class="stat-number"><%= formatted_favorites_count(@podcast.favorites_count) %></span>
+        <span class="stat-number"><%= @podcast.favorites_count %></span>
         <span class="stat-label">Favorites</span>
       </div>
     </div>

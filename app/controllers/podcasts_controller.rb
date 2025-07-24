@@ -2,15 +2,14 @@
 # PodcastsController handles all podcast-related operations
 #
 # This controller manages the core functionality of the Podcast AI application:
-# - CRUD operations for podcasts
+# - Podcast creation and viewing (no editing - podcasts are immutable)
 # - Search functionality with instant results via Turbo
 # - Favoriting/unfavoriting with real-time updates
 # - File upload handling for PDFs and audio files
 #
 class PodcastsController < ApplicationController
   before_action :authenticate_user!, except: [ :home, :discover, :show ]
-  before_action :set_podcast, only: [ :show, :edit, :update, :favorite, :unfavorite ]
-  before_action :ensure_owner, only: [ :edit, :update ]
+  before_action :set_podcast, only: [ :show, :favorite, :unfavorite ]
 
   ##
   # GET /
@@ -53,7 +52,6 @@ class PodcastsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.turbo_stream
     end
   end
 
@@ -65,14 +63,6 @@ class PodcastsController < ApplicationController
     @podcast = current_user.podcasts.build
   end
 
-  ##
-  # GET /podcasts/1/edit
-  # Form for editing an existing podcast
-  #
-  def edit
-    # AI-generated podcasts are not directly editable
-    redirect_to @podcast, alert: 'AI-generated podcasts cannot be manually edited. Please create a new podcast if needed.'
-  end
   ##
   # POST /podcasts
   # Create a new podcast with file uploads
@@ -100,20 +90,6 @@ class PodcastsController < ApplicationController
     end
   end
 
-
-  ##
-  # PATCH/PUT /podcasts/1
-  # Update an existing podcast
-  #
-  def update
-    if @podcast.update(podcast_params)
-      redirect_to @podcast, notice: 'Podcast was successfully updated.'
-    else
-      @authors = Author.all
-      @publishers = Publisher.all
-      render :edit, status: :unprocessable_entity
-    end
-  end
 
   ##
   # POST /podcasts/1/favorite
@@ -157,16 +133,7 @@ class PodcastsController < ApplicationController
   end
 
   ##
-  # Ensure current user owns the podcast (for edit/update)
-  #
-  def ensure_owner
-    unless @podcast.user == current_user
-      redirect_to podcasts_path, alert: 'You can only modify your own podcasts.'
-    end
-  end
-
-  ##
-  # Strong parameters for podcast creation/update
+  # Strong parameters for podcast creation
   #
   def podcast_params
     params.expect(

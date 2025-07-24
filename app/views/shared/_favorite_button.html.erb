@@ -1,12 +1,6 @@
 <% 
-  # Determine context based on where this is being rendered
-  context = if controller_name == 'podcasts' && action_name == 'show'
-              'show'
-            elsif params[:action] == 'home' || defined?(turbo_frame_request_id)
-              'search'
-            else
-              'card'
-            end
+  # Determine context - all contexts now use the same structure
+  context = params[:action] == 'home' ? 'search' : 'card'
 %>
 
 <% if current_user&.favorited?(podcast) %>

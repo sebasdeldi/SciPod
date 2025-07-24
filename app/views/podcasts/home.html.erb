@@ -10,48 +10,7 @@
         <div class="results-list">
           <% if @podcasts.any? %>
             <% @podcasts.each do |podcast| %>
-              <div class="result-item">
-                <% if podcast.ready? %>
-                  <span class="result-type-badge podcast">PODCAST</span>
-                <% elsif podcast.processing? %>
-                  <span class="result-type-badge processing">PROCESSING</span>
-                <% elsif podcast.error? %>
-                  <span class="result-type-badge error">ERROR</span>
-                <% elsif podcast.cancelled? %>
-                  <span class="result-type-badge cancelled">CANCELLED</span>
-                <% end %>
-                <div class="result-header">
-                  <h3 class="result-title">
-                    <%= link_to podcast.title, podcast_path(podcast), class: "result-link", data: { turbo_frame: "_top" } %>
-                  </h3>
-                  <%= render 'shared/play_button', podcast: podcast %>
-                  <div id="favorite_button_<%= podcast.id %>" class="result-favorite">
-                    <% if user_signed_in? %>
-                      <%= render 'shared/favorite_button', podcast: podcast, current_user: current_user %>
-                    <% end %>
-                    <span id="search_favorites_count_<%= podcast.id %>" class="result-favorites-count">
-                      <%= formatted_favorites_count(podcast.favorites_count) %>
-                    </span>
-                  </div>
-                </div>
-                <div class="result-meta">
-                  <span class="result-date"><%= podcast.created_at.strftime("%B %d, %Y") %></span>
-                  <span class="result-time"><%= podcast.created_at.strftime("%l:%M%p").upcase %></span>
-                </div>
-                <% if podcast.summary.present? %>
-                  <p class="result-summary"><%= truncate(podcast.summary, length: 200) %></p>
-                <% end %>
-                <% if podcast.authors.any? || podcast.publishers.any? %>
-                  <div class="result-details">
-                    <% if podcast.authors.any? %>
-                      <span class="result-authors">Authors: <%= podcast.authors.map(&:name).join(', ') %></span>
-                    <% end %>
-                    <% if podcast.publishers.any? %>
-                      <span class="result-publishers">Publishers: <%= podcast.publishers.map(&:name).join(', ') %></span>
-                    <% end %>
-                  </div>
-                <% end %>
-              </div>
+              <%= render 'podcasts/components/podcast_card', podcast: podcast %>
             <% end %>
           <% else %>
             <div class="empty-results">

@@ -17,9 +17,9 @@
 
   <div class="dashboard-content">
     <% if @podcasts.any? %>
-      <div class="podcasts-grid">
+      <div class="results-list">
         <% @podcasts.each do |podcast| %>
-          <%= render 'shared/podcast_card', podcast: podcast %>
+          <%= render 'podcasts/components/podcast_card', podcast: podcast %>
         <% end %>
       </div>
     <% else %>

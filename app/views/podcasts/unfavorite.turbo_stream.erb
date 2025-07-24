@@ -2,27 +2,12 @@
 <%= turbo_stream.replace "favorite_button_#{@podcast.id}" do %>
   <div id="favorite_button_<%= @podcast.id %>" class="result-favorite">
     <%= render 'shared/favorite_button', podcast: @podcast, current_user: current_user %>
-    <% if params[:from_search] %>
+    <% if params[:from_search] || params[:from_card] %>
       <span id="search_favorites_count_<%= @podcast.id %>" class="result-favorites-count">
         <%= formatted_favorites_count(@podcast.favorites_count) %>
       </span>
     <% end %>
   </div>
-<% end %>
-
-<%# Update favorites count - only for elements that exist %>
-<% if params[:from_show] %>
-  <%= turbo_stream.replace "podcast_favorites_count_#{@podcast.id}" do %>
-    <span id="podcast_favorites_count_<%= @podcast.id %>" class="stat-number"><%= formatted_favorites_count(@podcast.favorites_count) %></span>
-  <% end %>
-<% end %>
-
-<% if params[:from_card] %>
-  <%= turbo_stream.replace "podcast_card_favorites_count_#{@podcast.id}" do %>
-    <span id="podcast_card_favorites_count_<%= @podcast.id %>" class="favorites-count">
-      <i class="fa-solid fa-star"></i> <%= formatted_favorites_count(@podcast.favorites_count) %>
-    </span>
-  <% end %>
 <% end %>
 
  

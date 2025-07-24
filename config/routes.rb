@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   root "podcasts#home"
 
   # Podcast routes
-  resources :podcasts, except: [ :destroy ] do
+  resources :podcasts, except: [ :destroy, :edit, :update ] do
     member do
       post :favorite
       delete :unfavorite
