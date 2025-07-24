@@ -1,0 +1,84 @@
+/* Shared search header component */
+
+.top-search-section {
+  background: #f0f5f9;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 2.6rem 0;
+}
+
+.search-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.search-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: left;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.2;
+}
+
+.main-search-form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.main-search-input-container {
+  position: relative;
+  width: 80%;
+}
+
+.main-search-input {
+  width: 100%;
+  padding: 0.75rem 3rem 0.75rem 0;
+  border: none;
+  border-bottom: 2px solid #333;
+  background: transparent;
+  font-size: 1.5rem;
+  outline: none;
+  transition: border-bottom-color 0.2s;
+}
+
+.main-search-input:focus {
+  outline: none;
+}
+
+.main-search-input::placeholder {
+  color: #666;
+}
+
+.search-icon-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+}
+
+/* Responsive Design for Search Header */
+@media (max-width: 768px) {
+  .search-content-layout {
+    padding: 1rem;
+  }
+
+  .main-search-input-container {
+    max-width: none;
+  }
+} 

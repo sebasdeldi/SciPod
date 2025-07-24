@@ -1,0 +1,22 @@
+<!-- Government-Style Search Header -->
+<header class="top-search-section">
+  <div class="search-container">
+    <label for="main-search" class="search-label">Search by:</label>
+    <%= form_with url: root_path, method: :get,
+                  data: { turbo_frame: "search_results" },
+                  class: "main-search-form",
+                  local: true do |form| %>
+      <div class="main-search-input-container">
+        <%= form.text_field :query,
+                            id: "main-search",
+                            placeholder: "DOI, ISSN, title, or authors...",
+                            value: params[:query],
+                            class: "main-search-input",
+                            autocomplete: "off" %>
+        <button type="submit" class="search-icon-btn">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</header> 

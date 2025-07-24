@@ -1,0 +1,224 @@
+/* User dashboard and profile styles */
+
+.user-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-description {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+/* Dashboard Stats */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.stat-item {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Dashboard Sections */
+.dashboard-sections {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.dashboard-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Quick Actions */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.action-card {
+  display: block;
+  padding: 1.5rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.action-card:hover {
+  border-color: #007bff;
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: inherit;
+}
+
+.action-card.primary {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.action-card.primary:hover {
+  background: #0056b3;
+  color: white;
+}
+
+.action-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.action-card h3 {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.action-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Podcast Previews */
+.podcasts-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.podcast-preview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+}
+
+.podcast-preview-content {
+  flex: 1;
+}
+
+.podcast-preview-content h4 {
+  margin: 0 0 0.5rem 0;
+}
+
+.podcast-preview-content h4 a {
+  color: #333;
+  text-decoration: none;
+}
+
+.podcast-preview-content h4 a:hover {
+  color: #007bff;
+}
+
+.podcast-preview-meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.podcast-preview-summary {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.podcast-preview-status {
+  flex-shrink: 0;
+}
+
+/* Settings */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.setting-item {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.2s;
+}
+
+.setting-item:hover {
+  background: #f8f9fa;
+  text-decoration: none;
+  color: #333;
+}
+
+.setting-item.danger {
+  color: #dc3545;
+}
+
+.setting-item.danger:hover {
+  background: #f8d7da;
+  color: #dc3545;
+}
+
+/* Dashboard Content and Navigation */
+.dashboard-content {
+  margin-top: 2rem;
+}
+
+.dashboard-navigation {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
+} 

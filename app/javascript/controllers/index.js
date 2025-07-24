@@ -7,18 +7,8 @@ import { application } from "./application"
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
 
-import HelloController from "./hello_controller"
-application.register("hello", HelloController)
-
-import PodcastFormController from "./podcast_form_controller"
-application.register("podcast-form", PodcastFormController)
-
-import SearchController from "./search_controller"
-application.register("search", SearchController)
-
 import PageTransitionController from "./page_transition_controller"
 application.register("page-transition", PageTransitionController)
 
-
-
-
+import PodcastFormController from "./podcast_form_controller"
+application.register("podcast-form", PodcastFormController)
