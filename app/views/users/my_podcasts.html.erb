@@ -77,8 +77,8 @@
               <% end %>
 
               <div class="podcast-stats">
-                        <span id="my_podcasts_favorites_count_<%= podcast.id %>" class="favorites-count">
-          ❤️ <%= formatted_favorites_count(podcast.favorites_count) %>
+                <span id="my_podcasts_favorites_count_<%= podcast.id %>" class="favorites-count">
+                  <i class="fa-solid fa-star"></i> <%= formatted_favorites_count(podcast.favorites_count) %>
                 </span>
               </div>
             </div>

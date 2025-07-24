@@ -20,7 +20,7 @@
 <% if params[:from_card] %>
   <%= turbo_stream.replace "podcast_card_favorites_count_#{@podcast.id}" do %>
     <span id="podcast_card_favorites_count_<%= @podcast.id %>" class="favorites-count">
-      ❤️ <%= formatted_favorites_count(@podcast.favorites_count) %>
+      <i class="fa-solid fa-star"></i> <%= formatted_favorites_count(@podcast.favorites_count) %>
     </span>
   <% end %>
 <% end %>

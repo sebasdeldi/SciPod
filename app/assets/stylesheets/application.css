@@ -232,6 +232,7 @@ body {
   color: #333;
   cursor: pointer;
   padding: 0.5rem;
+  font-size: 1.5rem;
 }
 
 .search-icon {
@@ -340,40 +341,17 @@ body {
 }
 
 .result-favorite .favorite-button {
-  padding: 0.4rem 0.8rem;
   font-size: 0.85rem;
-  border-radius: 16px;
-  min-width: auto;
-  background: #f8f9fa;
-  color: #6c757d;
-  border: none;
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
 }
 
-.result-favorite .favorite-button:hover {
-  background: #e9ecef;
-  transform: scale(1.05);
-}
-
-.result-favorite .favorite-button .heart-icon {
-  font-size: 0.9rem;
-}
-
-.result-favorite .favorite-button .button-text {
-  font-size: 0.8rem;
-}
-
-/* Play Button Styling */
-.play-button {
-  padding: 0.4rem 0.8rem;
+/* Common Button Styling for Play and Favorite Buttons */
+.play-button,
+.favorite-button {
+  width: 40px;
+  height: 40px;
+  padding: 0;
   font-size: 1rem;
-  border-radius: 16px;
-  min-width: auto;
+  border-radius: 20px;
   background: #f8f9fa;
   color: #6c757d;
   border: none;
@@ -383,9 +361,12 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.play-button:hover {
+.play-button:hover,
+.favorite-button:hover {
   background: #e9ecef;
   transform: scale(1.05);
 }
@@ -452,8 +433,8 @@ body {
 /* Position favorites count absolutely within result-favorite */
 .result-favorite .result-favorites-count {
   position: absolute;
-  bottom: 24px;
-  left: 32px;
+  bottom: 22px;
+  left: 25px;
   padding: 0.25rem 0.5rem;
   font-size: 0.79rem;
   font-weight: bold;
@@ -746,20 +727,7 @@ body {
   gap: 0.5rem;
 }
 
-/* Favorite Button */
-.favorite-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-  background: transparent;
-}
-
+/* Favorite Button States */
 .favorite-button.favorited {
   background: #f8f9fa;
   color: #6c757d;
@@ -770,18 +738,8 @@ body {
   color: #6c757d;
 }
 
-.favorite-button:hover {
-  background: #e9ecef;
-  transform: scale(1.05);
-}
-
-/* Enhanced Favorite Button Animations */
-.favorite-button {
-  transition: all 0.25s ease-in-out;
-  position: relative;
-  overflow: hidden;
-}
-
+/* Enhanced Button Animations */
+.play-button::before,
 .favorite-button::before {
   content: '';
   position: absolute;
@@ -795,23 +753,15 @@ body {
   transition: width 0.3s ease, height 0.3s ease;
 }
 
+.play-button:hover::before,
 .favorite-button:hover::before {
   width: 100%;
   height: 100%;
 }
 
+.play-button:active,
 .favorite-button:active {
   transform: scale(0.95);
-}
-
-.favorite-button.favorited:hover {
-  background: #e9ecef;
-  transform: scale(1.05);
-}
-
-.favorite-button.not-favorited:hover {
-  background: #e9ecef;
-  transform: scale(1.05);
 }
 
 .favorite-button .heart-icon {
@@ -1214,34 +1164,7 @@ body {
 }
 
 .favorite-form .favorite-button {
-  border: none;
-  background: none;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.25s ease-in-out;
-  position: relative;
-  overflow: hidden;
   font-family: inherit;
-}
-
-.favorite-form .favorite-button.favorited {
-  background: #f8f9fa;
-  color: #6c757d;
-}
-
-.favorite-form .favorite-button.not-favorited {
-  background: #f8f9fa;
-  color: #6c757d;
-}
-
-.favorite-form .favorite-button:hover {
-  background: #e9ecef;
-  transform: scale(1.05);
 }
 
 

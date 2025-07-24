@@ -19,9 +19,9 @@
                 } do |form| %>
     <%= form.hidden_field :query, value: params[:query] if params[:query].present? %>
     <%= form.hidden_field "from_#{context}", value: true %>
-    <%= form.submit "❤️", 
-                    class: "favorite-button favorited",
-                    title: "Remove from favorites" %>
+    <%= form.button type: "submit", class: "favorite-button favorited", title: "Remove from favorites" do %>
+      <i class="fa-solid fa-bookmark"></i>
+    <% end %>
   <% end %>
 <% else %>
   <%= form_with url: favorite_podcast_path(podcast),
@@ -33,8 +33,8 @@
                 } do |form| %>
     <%= form.hidden_field :query, value: params[:query] if params[:query].present? %>
     <%= form.hidden_field "from_#{context}", value: true %>
-    <%= form.submit "🤍",
-                    class: "favorite-button not-favorited", 
-                    title: "Add to favorites" %>
+    <%= form.button type: "submit", class: "favorite-button not-favorited", title: "Add to favorites" do %>
+      <i class="fa-regular fa-bookmark"></i>
+    <% end %>
   <% end %>
 <% end %>

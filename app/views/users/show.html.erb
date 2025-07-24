@@ -37,7 +37,7 @@
         <% end %>
 
         <%= link_to favorites_user_path(current_user), class: "action-card" do %>
-          <div class="action-icon">❤️</div>
+          <div class="action-icon"><i class="fa-solid fa-bookmark"></i></div>
           <h3>My Favorites</h3>
           <p>Access your saved podcasts</p>
         <% end %>
@@ -64,7 +64,7 @@
               <div class="podcast-preview-content">
                 <h4><%= link_to podcast.title, podcast_path(podcast), data: { turbo_frame: "_top" } %></h4>
                 <p class="podcast-preview-meta">
-                  • <span id="dashboard_favorites_count_<%= podcast.id %>">❤️ <%= formatted_favorites_count(podcast.favorites_count) %></span>
+                  • <span id="dashboard_favorites_count_<%= podcast.id %>"> <i class="fa-solid fa-bookmark"></i> <%= formatted_favorites_count(podcast.favorites_count) %></span>
                 </p>
                 <% if podcast.summary.present? %>
                   <p class="podcast-preview-summary">
