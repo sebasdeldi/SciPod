@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import BottomNavigationController from "./bottom_navigation_controller"
+application.register("bottom-navigation", BottomNavigationController)
+
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
 
