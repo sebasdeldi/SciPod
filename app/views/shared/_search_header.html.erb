@@ -1,11 +1,21 @@
 <!-- Government-Style Search Header -->
 <header class="top-search-section">
   <div class="search-container">
-    <label for="main-search" class="search-label">Search by:</label>
     <%= form_with url: root_path, method: :get,
                   data: { turbo_frame: "search_results" },
                   class: "main-search-form" do |form| %>
       <div class="search-filters-container" data-controller="searchable-dropdown">
+        <div class="main-search-input-container">
+          <%= form.text_field :query,
+                              id: "main-search",
+                              placeholder: "Search by DOI, ISSN, Title, or Authors...",
+                              value: params[:query],
+                              class: "main-search-input",
+                              autocomplete: "off" %>
+          <button type="submit" class="search-icon-btn">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
         <div class="category-filter-container">
           <div id="selected-categories-container">
             <% if params[:category_ids].present? %>
@@ -19,7 +29,7 @@
                     class="dropdown-trigger" 
                     data-searchable-dropdown-target="trigger"
                     data-action="click->searchable-dropdown#toggle">
-              <span data-searchable-dropdown-target="placeholderText">Select Categories</span>
+              <span data-searchable-dropdown-target="placeholderText">All Categories</span>
               <i class="fa-solid fa-chevron-down dropdown-arrow" data-searchable-dropdown-target="arrow"></i>
             </button>
             <div class="dropdown-content" data-searchable-dropdown-target="content">
@@ -55,34 +65,23 @@
             </div>
           </div>
         </div>
-        <div class="main-search-input-container">
-          <%= form.text_field :query,
-                              id: "main-search",
-                              placeholder: "DOI, ISSN, title, or authors...",
-                              value: params[:query],
-                              class: "main-search-input",
-                              autocomplete: "off" %>
-          <button type="submit" class="search-icon-btn">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
+        <!-- Selected Categories Display -->
+        <div class="selected-categories-inline" data-searchable-dropdown-target="selectedDisplay">
+          <% if params[:category_ids].present? %>
+            <% selected_categories = Category.where(id: Array(params[:category_ids])) %>
+            <% selected_categories.each do |category| %>
+              <span class="category-chip" data-category-id="<%= category.id %>">
+                <%= category.name %>
+                <button type="button" 
+                        class="chip-remove"
+                        data-action="click->searchable-dropdown#removeCategory"
+                        data-category-id="<%= category.id %>">
+                  <i class="fa-solid fa-times"></i>
+                </button>
+              </span>
+            <% end %>
+          <% end %>
         </div>
-          <!-- Selected Categories Display -->
-  <div class="selected-categories-inline" data-searchable-dropdown-target="selectedDisplay">
-    <% if params[:category_ids].present? %>
-      <% selected_categories = Category.where(id: Array(params[:category_ids])) %>
-      <% selected_categories.each do |category| %>
-        <span class="category-chip" data-category-id="<%= category.id %>">
-          <%= category.name %>
-          <button type="button" 
-                  class="chip-remove"
-                  data-action="click->searchable-dropdown#removeCategory"
-                  data-category-id="<%= category.id %>">
-            <i class="fa-solid fa-times"></i>
-          </button>
-        </span>
-      <% end %>
-    <% end %>
-  </div>
       </div>
     <% end %>
   </div>

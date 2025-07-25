@@ -5,7 +5,7 @@
   left: 50%; /* Starts positioning from the horizontal center */
   transform: translateX(-50%); /* Moves it back by half its width to perfectly center it */
   background-color: #2c2c2c; /* Dark background color */
-  border-radius: 25px; /* Slightly smaller rounded corners for thinner look */
+  border-radius: 50px; /* Slightly smaller rounded corners for thinner look */
   padding: 6px 40px; /* Increased horizontal padding for longer bar */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
   z-index: 1000; /* Ensures the navigation bar stays on top of other content */
@@ -47,7 +47,7 @@
   align-items: center; /* Center icon and text horizontally */
   justify-content: center; /* Center content vertically */
   padding: 6px 8px; /* Reduced padding around icon and text */
-  border-radius: 16px; /* Slightly smaller rounded corners for individual items */
+  border-radius:50px; /* Slightly smaller rounded corners for individual items */
   transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for hover/active states */
   width: 60px; /* Fixed width for consistent sizing */
   height: 50px; /* Fixed height for consistent sizing */

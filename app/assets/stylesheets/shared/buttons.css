@@ -58,8 +58,8 @@
   padding: 0;
   font-size: 1rem;
   border-radius: 20px;
-  background: #f8f9fa;
-  color: #6c757d;
+  background: #f0f5f9;
+  color: #2c2c2c;
   border: none;
   cursor: pointer;
   transition: all 0.25s ease-in-out;
@@ -69,22 +69,22 @@
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
+  border: solid 1px #2c2c2c;
 }
 
 .play-button:hover,
 .favorite-button:hover {
-  background: #e9ecef;
   transform: scale(1.05);
 }
 
 .favorite-button.favorited {
-  background: #f8f9fa;
-  color: #6c757d;
+  background: #f0f5f9;
+  color: #2c2c2c;
 }
 
 .favorite-button.not-favorited {
-  background: #f8f9fa;
-  color: #6c757d;
+  background: #f0f5f9;
+  color: #2c2c2c;;
 }
 
 /* Button Animations */
@@ -96,7 +96,6 @@
   left: 50%;
   width: 0;
   height: 0;
-  background: rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   transition: width 0.3s ease, height 0.3s ease;
@@ -133,14 +132,12 @@
 }
 
 /* Smooth hover effects for links and buttons */
-.result-link,
 .podcast-title a,
 .btn-primary,
 .btn-secondary {
   transition: all 0.2s ease-in-out;
 }
 
-.result-link:hover,
 .podcast-title a:hover {
   transform: translateX(2px);
 }
@@ -148,5 +145,5 @@
 .btn-primary:hover,
 .btn-secondary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 } 

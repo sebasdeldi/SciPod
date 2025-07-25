@@ -7,6 +7,9 @@ import { application } from "./application"
 import BottomNavigationController from "./bottom_navigation_controller"
 application.register("bottom-navigation", BottomNavigationController)
 
+import ClickableCardController from "./clickable_card_controller"
+application.register("clickable-card", ClickableCardController)
+
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
 
