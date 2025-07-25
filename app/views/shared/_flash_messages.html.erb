@@ -1,0 +1,13 @@
+<!-- Flash Messages -->
+<% if notice %>
+  <div class="flash notice" data-controller="flash" data-action="click->flash#dismiss">
+    <%= notice %>
+    <button data-action="click->flash#dismiss">&times;</button>
+  </div>
+<% end %>
+<% if alert %>
+  <div class="flash alert" data-controller="flash" data-action="click->flash#dismiss">
+    <%= alert %>
+    <button data-action="click->flash#dismiss">&times;</button>
+  </div>
+<% end %> 

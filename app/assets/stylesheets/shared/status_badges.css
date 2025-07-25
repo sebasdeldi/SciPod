@@ -1,0 +1,76 @@
+/* Shared status badges and state indicators */
+
+/* Status Badges */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-badge.complete {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.processing {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-badge.cancelled {
+  background: #e2e3e5;
+  color: #495057;
+}
+
+.status-icon {
+  display: inline-block;
+}
+
+/* Empty States */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #6c757d;
+}
+
+.empty-state h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* Favorites Count */
+.favorites-count {
+  font-size: 0.85rem;
+  color: #666;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Favorites count animation */
+.result-favorites-count,
+.favorites-count,
+.stat-number {
+  transition: all 0.3s ease-in-out;
+}
+
+@keyframes favoritePulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.result-favorites-count.updating,
+.favorites-count.updating,
+.stat-number.updating {
+  animation: favoritePulse 0.4s ease-in-out;
+} 

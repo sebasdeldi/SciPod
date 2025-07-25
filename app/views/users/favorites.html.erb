@@ -17,16 +17,16 @@
 
   <div class="dashboard-content">
     <% if @podcasts.any? %>
-      <div class="podcasts-grid">
+      <div class="results-list">
         <% @podcasts.each do |podcast| %>
-          <%= render 'shared/podcast_card', podcast: podcast %>
+          <%= render 'podcasts/components/podcast_card', podcast: podcast %>
         <% end %>
       </div>
     <% else %>
       <div class="empty-state">
         <h3>No favorites yet</h3>
         <p>Start exploring podcasts and save your favorites here.</p>
-        <%= link_to "Discover Podcasts", discover_podcasts_path, class: "btn-primary" %>
+        <%= link_to "Search Podcasts", root_path, class: "btn-primary" %>
       </div>
     <% end %>
   </div>

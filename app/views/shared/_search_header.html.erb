@@ -1,0 +1,88 @@
+<!-- Government-Style Search Header -->
+<header class="top-search-section">
+  <div class="search-container">
+    <%= form_with url: root_path, method: :get,
+                  data: { turbo_frame: "search_results" },
+                  class: "main-search-form" do |form| %>
+      <div class="search-filters-container" data-controller="searchable-dropdown">
+        <div class="main-search-input-container">
+          <%= form.text_field :query,
+                              id: "main-search",
+                              placeholder: "Search by DOI, ISSN, Title, or Authors...",
+                              value: params[:query],
+                              class: "main-search-input",
+                              autocomplete: "off" %>
+          <button type="submit" class="search-icon-btn">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <div class="category-filter-container">
+          <div id="selected-categories-container">
+            <% if params[:category_ids].present? %>
+              <% Array(params[:category_ids]).each do |category_id| %>
+                <%= form.hidden_field :category_ids, value: category_id, class: "selected-category-input", multiple: true %>
+              <% end %>
+            <% end %>
+          </div>
+          <div class="searchable-dropdown">
+            <button type="button" 
+                    class="dropdown-trigger" 
+                    data-searchable-dropdown-target="trigger"
+                    data-action="click->searchable-dropdown#toggle">
+              <span data-searchable-dropdown-target="placeholderText">All Categories</span>
+              <i class="fa-solid fa-chevron-down dropdown-arrow" data-searchable-dropdown-target="arrow"></i>
+            </button>
+            <div class="dropdown-content" data-searchable-dropdown-target="content">
+              <div class="dropdown-search">
+                <input type="text" 
+                       placeholder="Search categories..." 
+                       class="dropdown-search-input"
+                       data-searchable-dropdown-target="searchInput"
+                       data-action="keyup->searchable-dropdown#filter">
+              </div>
+                             <div class="dropdown-options" data-searchable-dropdown-target="options">
+                 <div class="dropdown-actions">
+                   <a href="#" 
+                      class="dropdown-action clear-all"
+                      data-action="click->searchable-dropdown#clearAll">
+                     <i class="fa-solid fa-times-circle"></i> Clear All
+                   </a>
+                 </div>
+                 <% Category.alphabetical.each do |category| %>
+                   <% is_selected = params[:category_ids].present? && Array(params[:category_ids]).include?(category.id.to_s) %>
+                   <a href="#" 
+                      class="dropdown-option <%= 'selected' if is_selected %>"
+                      data-action="click->searchable-dropdown#toggleCategory"
+                      data-category-id="<%= category.id %>"
+                      data-category-name="<%= category.name %>">
+                     <span class="option-checkbox">
+                       <i class="fa-<%= is_selected ? 'solid' : 'regular' %> fa-square-check"></i>
+                     </span>
+                     <%= category.name %>
+                   </a>
+                 <% end %>
+               </div>
+            </div>
+          </div>
+        </div>
+        <!-- Selected Categories Display -->
+        <div class="selected-categories-inline" data-searchable-dropdown-target="selectedDisplay">
+          <% if params[:category_ids].present? %>
+            <% selected_categories = Category.where(id: Array(params[:category_ids])) %>
+            <% selected_categories.each do |category| %>
+              <span class="category-chip" data-category-id="<%= category.id %>">
+                <%= category.name %>
+                <button type="button" 
+                        class="chip-remove"
+                        data-action="click->searchable-dropdown#removeCategory"
+                        data-category-id="<%= category.id %>">
+                  <i class="fa-solid fa-times"></i>
+                </button>
+              </span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</header> 

@@ -1,29 +1,34 @@
+<% 
+  # Determine context - all contexts now use the same structure
+  context = params[:action] == 'home' ? 'search' : 'card'
+%>
+
 <% if current_user&.favorited?(podcast) %>
-  <%= button_to unfavorite_podcast_path(podcast),
+  <%= form_with url: unfavorite_podcast_path(podcast),
                 method: :delete,
-                remote: true,
-                class: "favorite-button favorited",
-                params: { query: params[:query] }.compact,
-                data: {
-                  turbo_method: :delete,
-                  turbo_stream: true
-                },
-                title: "Remove from favorites" do %>
-    <span class="heart-icon">❤️</span>
-    <span class="button-text">Favorited</span>
+                local: false,
+                class: "favorite-form",
+                data: { 
+                  turbo_stream: true 
+                } do |form| %>
+    <%= form.hidden_field :query, value: params[:query] if params[:query].present? %>
+    <%= form.hidden_field "from_#{context}", value: true %>
+    <%= form.button type: "submit", class: "favorite-button favorited", title: "Remove from favorites" do %>
+      <i class="fa-solid fa-bookmark"></i>
+    <% end %>
   <% end %>
 <% else %>
-  <%= button_to favorite_podcast_path(podcast),
+  <%= form_with url: favorite_podcast_path(podcast),
                 method: :post,
-                remote: true,
-                class: "favorite-button not-favorited",
-                params: { query: params[:query] }.compact,
-                data: {
-                  turbo_method: :post,
-                  turbo_stream: true
-                },
-                title: "Add to favorites" do %>
-    <span class="heart-icon">🤍</span>
-    <span class="button-text">Favorite</span>
+                local: false,
+                class: "favorite-form",
+                data: { 
+                  turbo_stream: true 
+                } do |form| %>
+    <%= form.hidden_field :query, value: params[:query] if params[:query].present? %>
+    <%= form.hidden_field "from_#{context}", value: true %>
+    <%= form.button type: "submit", class: "favorite-button not-favorited", title: "Add to favorites" do %>
+      <i class="fa-regular fa-bookmark"></i>
+    <% end %>
   <% end %>
 <% end %>

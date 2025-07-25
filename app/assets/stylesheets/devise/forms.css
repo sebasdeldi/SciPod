@@ -1,0 +1,110 @@
+/* Devise authentication form styles */
+
+/* Basic Form Fields */
+.field {
+  margin-bottom: 1rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.field input[type="email"],
+.field input[type="password"],
+.field input[type="text"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.field input[type="email"]:focus,
+.field input[type="password"]:focus,
+.field input[type="text"]:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.field input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* Form Actions */
+.actions {
+  margin-top: 1rem;
+}
+
+.actions input[type="submit"] {
+  background: #007bff;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.actions input[type="submit"]:hover {
+  background: #0056b3;
+}
+
+/* Error Messages */
+#error_explanation {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #f5c6cb;
+}
+
+#error_explanation h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+#error_explanation ul {
+  margin-bottom: 0;
+  padding-left: 1.5rem;
+}
+
+/* Form Layout Improvements */
+.devise-form-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.devise-form-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+/* Form Links */
+.devise-form-container a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.devise-form-container a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .devise-form-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+} 

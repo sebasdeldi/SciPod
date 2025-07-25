@@ -4,17 +4,20 @@
 
 import { application } from "./application"
 
+import BottomNavigationController from "./bottom_navigation_controller"
+application.register("bottom-navigation", BottomNavigationController)
+
+import ClickableCardController from "./clickable_card_controller"
+application.register("clickable-card", ClickableCardController)
+
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
 
-import HelloController from "./hello_controller"
-application.register("hello", HelloController)
-
-import ModalController from "./modal_controller"
-application.register("modal", ModalController)
+import PageTransitionController from "./page_transition_controller"
+application.register("page-transition", PageTransitionController)
 
 import PodcastFormController from "./podcast_form_controller"
 application.register("podcast-form", PodcastFormController)
 
-import SearchController from "./search_controller"
-application.register("search", SearchController)
+import SearchableDropdownController from "./searchable_dropdown_controller"
+application.register("searchable-dropdown", SearchableDropdownController)

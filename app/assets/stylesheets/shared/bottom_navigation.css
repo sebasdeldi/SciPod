@@ -1,0 +1,126 @@
+/* Styling for the floating navigation bar */
+.floating-nav-bar {
+  position: fixed; /* Makes the navigation bar float relative to the viewport */
+  bottom: 40px; /* Positions it 40px from the bottom */
+  left: 50%; /* Starts positioning from the horizontal center */
+  transform: translateX(-50%); /* Moves it back by half its width to perfectly center it */
+  background-color: #2c2c2c; /* Dark background color */
+  border-radius: 50px; /* Slightly smaller rounded corners for thinner look */
+  padding: 6px 40px; /* Increased horizontal padding for longer bar */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  z-index: 1000; /* Ensures the navigation bar stays on top of other content */
+  display: flex; /* Use flexbox for centering content within the nav bar */
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically */
+  min-width: 320px; /* Set minimum width for longer appearance */
+  max-width: 90%; /* Ensure it doesn't overflow on smaller screens */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* Styling for the unordered list inside the navigation bar */
+.floating-nav-bar ul {
+  list-style: none; /* Remove bullet points */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  display: flex; /* Arrange list items horizontally */
+  gap: 18px; /* Reduced space between navigation items */
+  justify-content: center; /* Center items within the longer bar */
+  align-items: center; /* Center items vertically */
+  width: auto; /* Allow natural width for centered content */
+}
+
+/* Styling for each list item */
+.floating-nav-bar li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1; /* Make all items take equal space */
+  min-width: 0; /* Allow items to shrink if needed */
+}
+
+/* Styling for the anchor (link) within each list item */
+.floating-nav-bar a {
+  text-decoration: none; /* Remove underline from links */
+  color: #b0b0b0; /* Light grey color for inactive icons/text */
+  display: flex;
+  flex-direction: column; /* Stack icon and text vertically */
+  align-items: center; /* Center icon and text horizontally */
+  justify-content: center; /* Center content vertically */
+  padding: 6px 8px; /* Reduced padding around icon and text */
+  border-radius:50px; /* Slightly smaller rounded corners for individual items */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for hover/active states */
+  width: 60px; /* Fixed width for consistent sizing */
+  height: 50px; /* Fixed height for consistent sizing */
+  box-sizing: border-box; /* Include padding in width/height calculations */
+}
+
+/* Styling for the FontAwesome icons */
+.floating-nav-bar a i {
+  font-size: 18px; /* Smaller icon size */
+  margin-bottom: 2px; /* Reduced space between icon and text */
+}
+
+/* Styling for the text label below the icon */
+.floating-nav-bar a span {
+  font-size: 10px; /* Smaller font size for the text */
+  white-space: nowrap; /* Prevent text from wrapping to the next line */
+  overflow: hidden; /* Hide any text overflow */
+  text-overflow: ellipsis; /* Add ellipsis for very long text */
+  max-width: 100%; /* Ensure text doesn't exceed container */
+  text-align: center; /* Center align text */
+}
+
+/* Active state for the currently selected navigation item */
+.floating-nav-bar li.active a {
+  background-color: #4a4a4a; /* Darker background for the active item */
+  color: #ffffff; /* White color for active icon/text */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow for active item */
+}
+
+/* Hover effect for all navigation items */
+.floating-nav-bar a:hover {
+  color: #ffffff; /* White color on hover */
+}
+
+/* Hover effect for inactive navigation items */
+.floating-nav-bar li:not(.active) a:hover {
+  background-color: #383838; /* Slightly lighter dark background on hover for inactive items */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+  .floating-nav-bar {
+    min-width: 280px; /* Smaller minimum width on mobile but still longer */
+    max-width: 95%; /* Make it take more width on smaller screens */
+    padding: 5px 20px; /* Maintain longer bar look on mobile */
+    bottom: 10px; /* Closer to the bottom on mobile */
+  }
+
+  .floating-nav-bar ul {
+    gap: 12px; /* Further reduced gap between items on smaller screens */
+  }
+
+  .floating-nav-bar a {
+    padding: 4px 6px; /* Smaller padding on mobile */
+    width: 50px; /* Smaller fixed width on mobile */
+    height: 45px; /* Smaller fixed height on mobile */
+  }
+
+  .floating-nav-bar a i {
+    font-size: 16px; /* Smaller icons on mobile */
+  }
+
+  .floating-nav-bar a span {
+    font-size: 9px; /* Smaller text on mobile */
+  }
+}
+
+/* Add bottom padding to the main content to prevent overlap with floating nav */
+.main-content {
+  padding-bottom: 100px; /* Ensure content doesn't get hidden behind the floating nav */
+}
+
+/* Force consistent scrollbar to prevent navigation shifting */
+html {
+  overflow-y: scroll; /* Always show vertical scrollbar to maintain consistent viewport width */
+} 

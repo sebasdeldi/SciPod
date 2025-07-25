@@ -1,78 +1,13 @@
 <%# Update the favorite button %>
 <%= turbo_stream.replace "favorite_button_#{@podcast.id}" do %>
-  <%= render 'shared/favorite_button', podcast: @podcast, current_user: current_user %>
-<% end %>
-
-
-
-<%# Update the favorite button wrapper for show page %>
-<%= turbo_stream.replace "favorite-section" do %>
-  <div id="favorite-section">
-    <% if user_signed_in? %>
-      <div id="favorite_button_<%= @podcast.id %>">
-        <%= render 'shared/favorite_button', podcast: @podcast, current_user: current_user %>
-      </div>
+  <div id="favorite_button_<%= @podcast.id %>" class="result-favorite">
+    <%= render 'shared/favorite_button', podcast: @podcast, current_user: current_user %>
+    <% if params[:from_search] || params[:from_card] %>
+      <span id="search_favorites_count_<%= @podcast.id %>" class="result-favorites-count">
+        <%= formatted_favorites_count(@podcast.favorites_count) %>
+      </span>
     <% end %>
   </div>
 <% end %>
 
-<%# Update favorites count in show page %>
-<%= turbo_stream.replace "podcast_favorites_count_#{@podcast.id}" do %>
-  <span id="podcast_favorites_count_<%= @podcast.id %>" class="stat-number"><%= @podcast.favorites_count %></span>
-<% end %>
-
-<%# Update favorites count in podcast cards %>
-<%= turbo_stream.replace "podcast_card_favorites_count_#{@podcast.id}" do %>
-  <span id="podcast_card_favorites_count_<%= @podcast.id %>" class="favorites-count">
-    ❤️ <%= @podcast.favorites_count %>
-  </span>
-<% end %>
-
-<%# Update favorites count in dashboard %>
-<%= turbo_stream.replace "dashboard_favorites_count_#{@podcast.id}" do %>
-  <span id="dashboard_favorites_count_<%= @podcast.id %>">❤️ <%= @podcast.favorites_count %></span>
-<% end %>
-
-<%# Update favorites count in my_podcasts page %>
-<%= turbo_stream.replace "my_podcasts_favorites_count_#{@podcast.id}" do %>
-  <span id="my_podcasts_favorites_count_<%= @podcast.id %>" class="favorites-count">
-    ❤️ <%= @podcast.favorites_count %>
-  </span>
-<% end %>
-
-<%# For turbo frame updates - refresh the search results while preserving search context %>
-<%= turbo_stream.replace "search_results" do %>
-  <%= turbo_frame_tag "search_results" do %>
-    <div class="search-results">
-      <% if @query.present? %>
-        <div class="search-info">
-          <h2>Search Results for "<%= @query %>"</h2>
-          <p><%= pluralize(@podcasts.count, 'podcast') %> found</p>
-        </div>
-      <% else %>
-        <div class="featured-header">
-          <h2>Latest Podcasts</h2>
-        </div>
-      <% end %>
-
-      <!-- Podcasts Grid -->
-      <div class="podcasts-grid">
-        <% if @podcasts.any? %>
-          <% @podcasts.each do |podcast| %>
-            <%= render 'shared/podcast_card', podcast: podcast %>
-          <% end %>
-        <% else %>
-          <div class="empty-state">
-            <% if @query.present? %>
-              <h3>No podcasts found</h3>
-              <p>Try searching with different keywords or <%= link_to "browse all podcasts", discover_podcasts_path %>.</p>
-            <% else %>
-              <h3>No podcasts yet</h3>
-              <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
-<% end %> 
+ 

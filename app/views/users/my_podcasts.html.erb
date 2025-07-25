@@ -15,7 +15,7 @@
       <span class="stat-label">Created Podcasts</span>
     </div>
     <div class="stat-item">
-      <span class="stat-number"><%= @podcasts.sum(&:favorites_count) %></span>
+      <span class="stat-number"><%= formatted_favorites_count(@podcasts.sum(&:favorites_count)) %></span>
       <span class="stat-label">Total Favorites</span>
     </div>
   </div>
@@ -27,7 +27,7 @@
           <div class="podcast-card owner-card">
             <div class="podcast-card-header">
               <h3 class="podcast-title">
-                <%= link_to podcast.title, podcast_path(podcast) %>
+                <%= link_to podcast.title, podcast_path(podcast), data: { turbo_frame: "_top" } %>
               </h3>
             </div>
 
@@ -54,7 +54,17 @@
             <% end %>
 
             <div class="podcast-status">
-              <% if podcast.audio.attached? %>
+              <% if podcast.cancelled? %>
+                <span class="status-badge cancelled">
+                  <span class="status-icon">❌</span>
+                  Cancelled
+                </span>
+              <% elsif podcast.error? %>
+                <span class="status-badge error">
+                  <span class="status-icon">⚠️</span>
+                  Error
+                </span>
+              <% elsif podcast.audio.attached? %>
                 <span class="status-badge complete">
                   <span class="status-icon">🤖</span>
                   AI Generated
@@ -68,13 +78,13 @@
 
               <div class="podcast-stats">
                 <span id="my_podcasts_favorites_count_<%= podcast.id %>" class="favorites-count">
-                  ❤️ <%= podcast.favorites_count %>
+                  <i class="fa-solid fa-star"></i> <%= formatted_favorites_count(podcast.favorites_count) %>
                 </span>
               </div>
             </div>
 
             <div class="podcast-actions">
-              <%= link_to "View", podcast_path(podcast), class: "btn-primary btn-small" %>
+              <%= link_to "View", podcast_path(podcast), class: "btn-primary btn-small", data: { turbo_frame: "_top" } %>
             </div>
           </div>
         <% end %>

@@ -1,0 +1,50 @@
+<div class="result-item" 
+     data-controller="clickable-card" 
+     data-clickable-card-url-value="<%= podcast_path(podcast) %>"
+     data-action="click->clickable-card#click">
+  <% if podcast.categories.any? %>
+    <div class="result-badges">
+      <% podcast.categories.limit(3).each do |category| %>
+        <span class="result-category-badge"><%= category.name %></span>
+      <% end %>
+      <% if podcast.categories.count > 3 %>
+        <span class="result-category-badge more">+<%= podcast.categories.count - 3 %></span>
+      <% end %>
+    </div>
+  <% end %>
+  <div class="result-header">
+    <div class="result-header-left">
+      <h3 class="result-title">
+        <%= podcast.title %>
+      </h3>
+    </div>
+    <div class="result-header-right">
+      <%= render 'shared/play_button', podcast: podcast %>
+      <div id="favorite_button_<%= podcast.id %>" class="result-favorite">
+        <% if user_signed_in? %>
+          <%= render 'shared/favorite_button', podcast: podcast, current_user: current_user %>
+        <% end %>
+        <span id="search_favorites_count_<%= podcast.id %>" class="result-favorites-count">
+          <%= formatted_favorites_count(podcast.favorites_count) %>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="result-meta">
+    <span class="result-date"><%= podcast.created_at.strftime("%B %d, %Y") %></span>
+    <span class="result-time"><%= podcast.created_at.strftime("%l:%M%p").upcase %></span>
+  </div>
+  <% if podcast.summary.present? %>
+    <p class="result-summary"><%= truncate(podcast.summary, length: 200) %></p>
+  <% end %>
+  <% if podcast.authors.any? || podcast.publishers.any? %>
+    <div class="result-details">
+      <% if podcast.authors.any? %>
+        <span class="result-authors">Authors: <%= podcast.authors.map(&:name).join(', ') %></span>
+      <% end %>
+      <% if podcast.publishers.any? %>
+        <span class="result-publishers">Publishers: <%= podcast.publishers.map(&:name).join(', ') %></span>
+      <% end %>
+    </div>
+  <% end %>
+</div>

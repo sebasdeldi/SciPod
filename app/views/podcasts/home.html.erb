@@ -1,85 +1,46 @@
-<% content_for :title, "SciPod - AI-Generated Podcasts from Research" %>
+<% content_for :title, "Search Podcasts - Scipod" %>
 
-<div class="homepage" data-controller="modal">
-  <div class="homepage-container">
-    <!-- Logo/Branding Section -->
-    <div class="homepage-logo">
-      <h1 class="homepage-title">SciPod</h1>
-      <p class="homepage-subtitle">AI-Generated Podcasts from Research Papers</p>
-    </div>
+<%= render 'shared/search_header' %>
 
-    <!-- Search Section -->
-    <div class="homepage-search" data-controller="search">
-      <%= form_with url: search_podcasts_path, method: :get,
-                    data: {
-                      turbo_stream: true,
-                      action: "submit->modal#open"
-                    },
-                    class: "homepage-search-form" do |form| %>
-        <%= form.hidden_field :modal, value: "true" %>
-        <div class="search-input-container">
-          <%= form.text_field :query,
-                              placeholder: "Search podcasts, authors, publishers...",
-                              value: params[:query],
-                              class: "homepage-search-input",
-                              autocomplete: "off",
-                              data: {
-                                search_target: "input",
-                                action: "input->search#updateButtonState"
-                              } %>
-          <div class="search-buttons">
-            <%= form.submit "Search Podcasts", class: "search-button primary", 
-                           data: { search_target: "button" } %>
-            <%= link_to "Browse All", discover_podcasts_path, class: "search-button secondary" %>
-          </div>
+<div class="search-layout">
+  <!-- Main Content Layout -->
+  <div class="search-content-layout">
+    <!-- Main Results Area -->
+    <main class="search-results-main">
+      <!-- Search Results Container -->
+      <%= turbo_frame_tag "search_results" do %>
+        <div class="results-list">
+          <% if @podcasts.any? %>
+            <% @podcasts.each do |podcast| %>
+              <%= render 'podcasts/components/podcast_card', podcast: podcast %>
+            <% end %>
+          <% else %>
+            <div class="empty-results">
+              <% if @query.present? || @category_ids.any? %>
+                <h3>No podcasts found</h3>
+                <p>Try searching with different keywords or browse all podcasts.</p>
+              <% else %>
+                <h3>No podcasts yet</h3>
+                <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
+              <% end %>
+            </div>
+          <% end %>
         </div>
       <% end %>
-    </div>
+    </main>
+  </div>
 
-    <!-- Quick Stats or Features -->
-    <div class="homepage-features">
-      <div class="feature-item">
-        <span class="feature-icon">🎧</span>
-        <span class="feature-text">AI-Generated Audio</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-icon">📄</span>
-        <span class="feature-text">From Research Papers</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-icon">🔬</span>
-        <span class="feature-text">Scientific Content</span>
-      </div>
-    </div>
-
-    <!-- Call to Action for Logged Out Users -->
-    <% unless user_signed_in? %>
-      <div class="homepage-cta">
-        <p class="cta-text">Ready to create your own podcast from research papers?</p>
+  <!-- Call to Action for Logged Out Users -->
+  <% unless user_signed_in? %>
+    <div class="cta-section">
+      <div class="cta-content">
+        <h2>Ready to Create Your Own Podcast?</h2>
+        <p>Upload your PDF documents and let AI transform them into engaging audio content.</p>
         <div class="cta-buttons">
           <%= link_to "Get Started", new_user_registration_path, class: "btn-primary btn-large" %>
-          <%= link_to "Learn More", discover_podcasts_path, class: "btn-secondary btn-large" %>
+          <%= link_to "Learn More", "#", class: "btn-secondary btn-large" %>
         </div>
       </div>
-    <% end %>
-  </div>
-
-  <!-- Search Results Modal -->
-  <div id="search-modal" 
-       class="search-modal" 
-       data-modal-target="container"
-       data-action="click->modal#closeOnBackdrop">
-    <div class="search-modal-content" data-action="click->modal#preventClose">
-      <div class="search-modal-header">
-        <h2 class="search-modal-title">Search Results</h2>
-        <button type="button" 
-                class="search-modal-close" 
-                data-action="click->modal#close"
-                aria-label="Close">&times;</button>
-      </div>
-      <div id="search-modal-body" class="search-modal-body">
-        <!-- Search results will be loaded here via Turbo Stream -->
-      </div>
     </div>
-  </div>
-</div> 
+  <% end %>
+</div>

@@ -2,64 +2,67 @@
 # PodcastsController handles all podcast-related operations
 #
 # This controller manages the core functionality of the Podcast AI application:
-# - CRUD operations for podcasts
+# - Podcast creation and viewing (no editing - podcasts are immutable)
 # - Search functionality with instant results via Turbo
 # - Favoriting/unfavoriting with real-time updates
 # - File upload handling for PDFs and audio files
 #
 class PodcastsController < ApplicationController
-  before_action :authenticate_user!, except: [ :home, :discover, :show, :search ]
-  before_action :set_podcast, only: [ :show, :edit, :update, :favorite, :unfavorite ]
-  before_action :ensure_owner, only: [ :edit, :update ]
+  before_action :authenticate_user!, except: [ :home, :discover, :show ]
+  before_action :set_podcast, only: [ :show, :favorite, :unfavorite ]
 
   ##
   # GET /
-  # Google-style homepage with centered search
+  # Unified search and discovery homepage
   #
   def home
-    # Simple homepage - no data needed, just the search form
-  end
-
-  ##
-  # GET /podcasts/discover
-  # Display all podcasts with search functionality
-  #
-  def discover
-    @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites).recent.limit(20)
-
-    respond_to do |format|
-      format.html
-      format.turbo_stream
-    end
-  end
-
-  ##
-  # GET /podcasts/search
-  # Search podcasts using pg_search with instant results
-  #
-  def search
     @query = params[:query]
+    @category_ids = Array(params[:category_ids]).reject(&:blank?)
 
-    if @query.present?
+    # Handle different combinations of search and category filtering
+    if @category_ids.any? && @query.present?
+      # Both categories and search: use subquery to avoid table alias conflicts
+      # OR operation: podcasts in ANY of the selected categories
+      category_podcast_ids = Podcast.joins(:categories)
+                                    .where(categories: { id: @category_ids })
+                                    .distinct
+                                    .pluck(:id)
+      @podcasts = Podcast.where(id: category_podcast_ids)
+                         .search_by_content(@query)
+                         .includes(:user, :authors, :publishers, :categories, :favorites)
+                         .limit(20)
+    elsif @category_ids.any?
+      # Only category filters: show all podcasts in ANY of the selected categories (OR operation)
+      @podcasts = Podcast.joins(:categories)
+                         .where(categories: { id: @category_ids })
+                         .includes(:user, :authors, :publishers, :categories, :favorites)
+                         .distinct
+                         .recent
+                         .limit(20)
+    elsif @query.present?
+      # Only search: use full search scope
       @podcasts = Podcast.search_by_content(@query)
-                         .includes(:user, :authors, :publishers)
+                         .includes(:user, :authors, :publishers, :categories, :favorites)
                          .limit(20)
     else
-      # Show all podcasts when search is blank (same as index page)
-      @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
+      # Neither: show recent podcasts (discovery mode)
+      @podcasts = Podcast.includes(:user, :authors, :publishers, :categories, :favorites)
                          .recent
                          .limit(20)
     end
 
     respond_to do |format|
-      # Check if request is coming from homepage modal
-      if request.headers['Turbo-Frame'] == 'modal' || params[:modal] == 'true'
-        format.turbo_stream { render :search_modal }
-      else
-        format.turbo_stream { render :discover }
-      end
-      format.html { render :discover }
+      format.turbo_stream
+      format.html
     end
+  end
+
+  ##
+  # GET /podcasts/discover - DEPRECATED: Redirects to home
+  # Maintained for backward compatibility
+  #
+  def discover
+    redirect_to root_path(params.permit(:query)), status: :moved_permanently
   end
 
   ##
@@ -71,7 +74,6 @@ class PodcastsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.turbo_stream
     end
   end
 
@@ -83,14 +85,6 @@ class PodcastsController < ApplicationController
     @podcast = current_user.podcasts.build
   end
 
-  ##
-  # GET /podcasts/1/edit
-  # Form for editing an existing podcast
-  #
-  def edit
-    # AI-generated podcasts are not directly editable
-    redirect_to @podcast, alert: 'AI-generated podcasts cannot be manually edited. Please create a new podcast if needed.'
-  end
   ##
   # POST /podcasts
   # Create a new podcast with file uploads
@@ -120,36 +114,13 @@ class PodcastsController < ApplicationController
 
 
   ##
-  # PATCH/PUT /podcasts/1
-  # Update an existing podcast
-  #
-  def update
-    if @podcast.update(podcast_params)
-      redirect_to @podcast, notice: 'Podcast was successfully updated.'
-    else
-      @authors = Author.all
-      @publishers = Publisher.all
-      render :edit, status: :unprocessable_entity
-    end
-  end
-
-  ##
   # POST /podcasts/1/favorite
   # Add podcast to user's favorites via Turbo Stream
   #
   def favorite
-    current_user.favorite!(@podcast)
-
-    # Preserve search context for turbo stream updates
-    @query = params[:query]
-    if @query.present?
-      @podcasts = Podcast.search_by_content(@query)
-                         .includes(:user, :authors, :publishers)
-                         .limit(20)
-    else
-      @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
-                         .recent
-                         .limit(20)
+    # Only process if not already favorited
+    unless current_user.favorited?(@podcast)
+      current_user.favorite!(@podcast)
     end
 
     respond_to do |format|
@@ -163,18 +134,9 @@ class PodcastsController < ApplicationController
   # Remove podcast from user's favorites via Turbo Stream
   #
   def unfavorite
-    current_user.unfavorite!(@podcast)
-
-    # Preserve search context for turbo stream updates
-    @query = params[:query]
-    if @query.present?
-      @podcasts = Podcast.search_by_content(@query)
-                         .includes(:user, :authors, :publishers)
-                         .limit(20)
-    else
-      @podcasts = Podcast.includes(:user, :authors, :publishers, :favorites)
-                         .recent
-                         .limit(20)
+    # Only process if currently favorited
+    if current_user.favorited?(@podcast)
+      current_user.unfavorite!(@podcast)
     end
 
     respond_to do |format|
@@ -193,16 +155,7 @@ class PodcastsController < ApplicationController
   end
 
   ##
-  # Ensure current user owns the podcast (for edit/update)
-  #
-  def ensure_owner
-    unless @podcast.user == current_user
-      redirect_to podcasts_path, alert: 'You can only modify your own podcasts.'
-    end
-  end
-
-  ##
-  # Strong parameters for podcast creation/update
+  # Strong parameters for podcast creation
   #
   def podcast_params
     params.expect(
