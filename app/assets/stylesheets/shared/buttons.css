@@ -1,53 +1,42 @@
-/* Shared button components */
+/* Button styles */
 
-/* Basic Buttons */
-.btn-primary {
-  background: #007bff;
-  color: white;
+.btn-primary,
+.btn-secondary,
+.btn-large {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
-  text-decoration: none;
+  font-size: 1rem;
   font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  text-decoration: none;
   display: inline-block;
+  text-align: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
 }
 
 .btn-primary:hover {
   background: #0056b3;
-  color: white;
-  text-decoration: none;
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
   background: #6c757d;
   color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: inline-block;
 }
 
 .btn-secondary:hover {
   background: #545b62;
-  color: white;
-  text-decoration: none;
 }
 
-/* Button Size Variants */
 .btn-large {
   padding: 1rem 2rem;
   font-size: 1.1rem;
-}
-
-.btn-small {
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
 }
 
 /* Play and Favorite Buttons */
@@ -84,7 +73,7 @@
 
 .favorite-button.not-favorited {
   background: #f0f5f9;
-  color: #2c2c2c;;
+  color: #2c2c2c;
 }
 
 /* Button Animations */
@@ -146,4 +135,16 @@
 .btn-secondary:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Play button disabled state (for podcasts without audio) */
+.play-button.disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.play-button.disabled:hover {
+  background: #6c757d;
+  transform: none;
 } 

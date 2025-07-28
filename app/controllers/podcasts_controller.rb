@@ -70,10 +70,21 @@ class PodcastsController < ApplicationController
   # Show individual podcast with audio player and details
   #
   def show
+    # Security check for JSON requests
+    if request.format.json?
+      verify_internal_request!
+    end
+    
     @favorite = current_user&.favorites&.find_by(podcast: @podcast)
 
     respond_to do |format|
       format.html
+      format.json { render json: { 
+        id: @podcast.id, 
+        title: @podcast.title, 
+        audio_url: @podcast.audio_url,
+        audio_available: @podcast.audio_available?
+      } }
     end
   end
 
@@ -161,5 +172,35 @@ class PodcastsController < ApplicationController
     params.expect(
       podcast: [ :source_file ]
     )
+  end
+
+  ##
+  # Verify that JSON requests come from within the application
+  #
+  def verify_internal_request!
+    # Check CSRF token
+    unless verified_request?
+      head :forbidden
+      return
+    end
+    
+    # Check referer header
+    referer = request.referer
+    unless referer&.start_with?(request.base_url)
+      head :forbidden
+      return
+    end
+    
+    # Check for our custom application header
+    unless request.headers['X-Scipod-Internal'] == 'true'
+      head :forbidden
+      return
+    end
+    
+    # Additional security: check that it's an AJAX request
+    unless request.xhr?
+      head :forbidden
+      return
+    end
   end
 end

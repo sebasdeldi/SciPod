@@ -5,19 +5,18 @@
 import { application } from "./application"
 
 import BottomNavigationController from "./bottom_navigation_controller"
-application.register("bottom-navigation", BottomNavigationController)
-
 import ClickableCardController from "./clickable_card_controller"
-application.register("clickable-card", ClickableCardController)
-
 import FlashController from "./flash_controller"
-application.register("flash", FlashController)
-
+import GlobalAudioController from "./global_audio_controller"
+import "./global_audio_manager"
 import PageTransitionController from "./page_transition_controller"
-application.register("page-transition", PageTransitionController)
-
 import PodcastFormController from "./podcast_form_controller"
-application.register("podcast-form", PodcastFormController)
-
 import SearchableDropdownController from "./searchable_dropdown_controller"
+
+application.register("bottom-navigation", BottomNavigationController)
+application.register("clickable-card", ClickableCardController)
+application.register("flash", FlashController)
+application.register("global-audio", GlobalAudioController)
+application.register("page-transition", PageTransitionController)
+application.register("podcast-form", PodcastFormController)
 application.register("searchable-dropdown", SearchableDropdownController)

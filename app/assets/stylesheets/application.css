@@ -12,6 +12,7 @@
  *= require shared/search_header
  *= require shared/flash_messages
  *= require shared/buttons
+ *= require shared/floating_audio_player
  *= require shared/status_badges
  *= require podcasts/home
  *= require podcasts/show

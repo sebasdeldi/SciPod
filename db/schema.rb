@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_24_190656) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_25_201408) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -92,6 +92,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_24_190656) do
     t.datetime "updated_at", null: false
     t.string "status_details"
     t.enum "status", default: "processing", null: false, enum_type: "podcast_status"
+    t.string "audio_url"
     t.index ["doi"], name: "index_podcasts_on_doi", unique: true
     t.index ["status"], name: "index_podcasts_on_status"
     t.index ["title"], name: "index_podcasts_on_title", unique: true

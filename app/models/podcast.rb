@@ -2,7 +2,7 @@
 # Podcast model represents a single audio podcast episode generated from a source document
 #
 # Podcasts belong to a creator (User) and can have multiple authors and publishers.
-# They support file attachments for source PDFs and generated audio files.
+# They support file attachments for source PDFs and audio URLs from external services.
 # Full-text search is enabled across title, issn, doi, and related author/publisher names.
 #
 # @attr [String] title - The main title of the podcast (unique)
@@ -10,6 +10,7 @@
 # @attr [String] doi - The DOI of the source material (optional, unique)
 # @attr [Text] summary - A short summary of the podcast content (optional)
 # @attr [Text] script - The full text script used for audio generation (optional)
+# @attr [String] audio_url - URL to the generated audio file from external service (optional)
 # @attr [Integer] user_id - Foreign key to the creating user
 # @attr [String] status - Processing status: 'processing', 'ready', 'error', 'cancelled' (PostgreSQL enum)
 # @attr [String] status_details - Processing detail string: "", "processing_source_file", "generating_script", "generating_audio_file"
@@ -31,9 +32,9 @@ class Podcast < ApplicationRecord
   has_many :favorites, dependent: :destroy
   has_many :favorited_by_users, through: :favorites, source: :user
 
-  # File attachments using Active Storage
+  # File attachments using Active Storage (only for source PDF)
   has_one_attached :source_file  # Original PDF document
-  has_one_attached :audio        # Generated audio file (MP3, M4A, etc.)
+  # Audio is now stored as a URL in audio_url column
 
   # Enums for status management using PostgreSQL enum
   enum :status, {
@@ -50,10 +51,10 @@ class Podcast < ApplicationRecord
     in: ["", "processing_source_file", "generating_script", "generating_audio_file"], 
     allow_blank: true 
   }
+  validates :audio_url, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]), allow_blank: true }
 
   # File validations will be handled in the controller and with custom methods
   validate :validate_source_file, if: -> { source_file.attached? }
-  validate :validate_audio_file, if: -> { audio.attached? }
 
   # Search configuration using pg_search
   pg_search_scope :search_by_content,
@@ -97,18 +98,27 @@ class Podcast < ApplicationRecord
   # @return [String] formatted duration or "Unknown" if no audio
   #
   def audio_duration
-    # This would be implemented with audio metadata extraction
+    # This would be implemented with audio metadata extraction from the URL
     # For now, return a placeholder
-    audio.attached? ? "Unknown duration" : "No audio"
+    audio_url.present? ? "Unknown duration" : "No audio"
   end
 
   ##
   # Check if the podcast has a complete set of files (source + audio)
   #
-  # @return [Boolean] true if both source and audio files are attached
+  # @return [Boolean] true if both source file and audio URL are present
   #
   def complete?
-    source_file.attached? && audio.attached?
+    source_file.attached? && audio_url.present?
+  end
+
+  ##
+  # Check if the podcast has audio available
+  #
+  # @return [Boolean] true if audio_url is present
+  #
+  def audio_available?
+    audio_url.present?
   end
 
   private
@@ -127,24 +137,6 @@ class Podcast < ApplicationRecord
     # Check file size (50MB limit)
     if source_file.byte_size > 50.megabytes
       errors.add(:source_file, 'must be less than 50MB')
-    end
-  end
-
-  ##
-  # Validate audio file type and size
-  #
-  def validate_audio_file
-    return unless audio.attached?
-
-    # Check file type
-    allowed_audio_types = [ 'audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/x-m4a', 'audio/mp3' ]
-    unless allowed_audio_types.include?(audio.content_type)
-      errors.add(:audio, 'must be an audio file (MP3, MP4, WAV, M4A)')
-    end
-
-    # Check file size (100MB limit)
-    if audio.byte_size > 100.megabytes
-      errors.add(:audio, 'must be less than 100MB')
     end
   end
 

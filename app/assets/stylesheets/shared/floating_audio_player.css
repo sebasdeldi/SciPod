@@ -1,0 +1,196 @@
+/* Floating Audio Player - Persistent across navigation */
+.floating-audio-player {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  z-index: 9999; /* High z-index to stay above everything */
+  transition: all 0.3s ease;
+  border: 1px solid #e1e5e9;
+  
+  /* Ensure it stays visible during Turbo navigation */
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.floating-audio-player.hidden {
+  transform: translateY(100px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Ensure player doesn't get cached by Turbo */
+.floating-audio-player[data-turbo-permanent] {
+  position: fixed !important;
+  z-index: 9999 !important;
+}
+
+.player-content {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #2c2c2c;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.player-play-btn,
+.player-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.player-play-btn {
+  background: #007bff;
+  color: white;
+}
+
+.player-play-btn:hover {
+  background: #0056b3;
+  transform: scale(1.05);
+}
+
+.player-close-btn {
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+.player-close-btn:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.player-progress {
+  padding: 0 16px 16px 16px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #e9ecef;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #007bff;
+  transition: width 0.1s ease;
+  border-radius: 2px;
+}
+
+.player-time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .floating-audio-player {
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-width: calc(100vw - 20px);
+  }
+  
+  .player-title {
+    font-size: 13px;
+  }
+  
+  .player-content {
+    padding: 12px;
+  }
+  
+  .player-progress {
+    padding: 0 12px 12px 12px;
+  }
+}
+
+/* Tablet responsive */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .floating-audio-player {
+    width: 300px;
+  }
+}
+
+/* Animation for showing/hiding */
+@keyframes slideInUp {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+}
+
+.floating-audio-player:not(.hidden) {
+  animation: slideInUp 0.3s ease;
+}
+
+/* Ensure visibility during page transitions */
+.floating-audio-player {
+  visibility: visible !important;
+  display: block !important;
+}
+
+.floating-audio-player.hidden {
+  visibility: hidden;
+}
+
+/* Fix for potential z-index conflicts */
+body {
+  position: relative;
+}
+
+/* Ensure player appears above any page content */
+.floating-audio-player {
+  isolation: isolate;
+} 

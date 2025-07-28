@@ -300,22 +300,11 @@ status_weights = [0.1, 0.75, 0.1, 0.05] # Mostly ready, some processing/error, f
     doi: "#{random_doi}.#{i}", # Ensure uniqueness
     user: users.sample,
     status: status,
-    status_details: status == :processing ? ["processing_source_file", "generating_script", "generating_audio_file"].sample : ""
+    status_details: status == :processing ? ["processing_source_file", "generating_script", "generating_audio_file"].sample : "",
+    audio_url: status == :ready ? SAMPLE_AUDIO_URL : nil
   )
   
-  # Attach audio file from URL for ready podcasts
-  if status == :ready
-    begin
-      require 'open-uri'
-      podcast.audio.attach(
-        io: URI.open(SAMPLE_AUDIO_URL),
-        filename: "podcast_#{podcast.id}_audio.mp3",
-        content_type: "audio/mpeg"
-      )
-    rescue => e
-      puts "⚠️ Could not attach audio for podcast #{podcast.id}: #{e.message}"
-    end
-  end
+  # No need to attach audio files - we're using URLs directly now
   
   podcasts << podcast
   
