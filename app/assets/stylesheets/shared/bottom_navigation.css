@@ -5,15 +5,14 @@
   left: 50%; /* Starts positioning from the horizontal center */
   transform: translateX(-50%); /* Moves it back by half its width to perfectly center it */
   background-color: #2c2c2c; /* Dark background color */
-  border-radius: 50px; /* Slightly smaller rounded corners for thinner look */
-  padding: 6px 40px; /* Increased horizontal padding for longer bar */
+  border-radius: 50px; /* Rounded corners to match search bar */
+  padding: 8px 20px; /* Padding to match search bar height */
+  height: 58px; /* Exact same height as search bar (including borders) */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
   z-index: 1000; /* Ensures the navigation bar stays on top of other content */
   display: flex; /* Use flexbox for centering content within the nav bar */
   justify-content: center; /* Center items horizontally */
   align-items: center; /* Center items vertically */
-  min-width: 320px; /* Set minimum width for longer appearance */
-  max-width: 90%; /* Ensure it doesn't overflow on smaller screens */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
@@ -23,8 +22,8 @@
   margin: 0; /* Remove default margin */
   padding: 0; /* Remove default padding */
   display: flex; /* Arrange list items horizontally */
-  gap: 18px; /* Reduced space between navigation items */
-  justify-content: center; /* Center items within the longer bar */
+  gap: 15px; /* Space between navigation items to match other button spacing */
+  justify-content: center; /* Center items within the bar */
   align-items: center; /* Center items vertically */
   width: auto; /* Allow natural width for centered content */
 }
@@ -34,88 +33,88 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 1; /* Make all items take equal space */
-  min-width: 0; /* Allow items to shrink if needed */
 }
 
 /* Styling for the anchor (link) within each list item */
 .floating-nav-bar a {
   text-decoration: none; /* Remove underline from links */
-  color: #b0b0b0; /* Light grey color for inactive icons/text */
+  color: #b0b0b0; /* Light grey color for inactive icons */
   display: flex;
-  flex-direction: column; /* Stack icon and text vertically */
-  align-items: center; /* Center icon and text horizontally */
-  justify-content: center; /* Center content vertically */
-  padding: 6px 8px; /* Reduced padding around icon and text */
-  border-radius:50px; /* Slightly smaller rounded corners for individual items */
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for hover/active states */
-  width: 60px; /* Fixed width for consistent sizing */
-  height: 50px; /* Fixed height for consistent sizing */
+  align-items: center; /* Center icon horizontally */
+  justify-content: center; /* Center icon vertically */
+  padding: 0; /* No padding needed for icon-only buttons */
+  border-radius: 50%; /* Full circle like other buttons */
+  transition: all 0.3s ease; /* Smooth transition for hover/active states */
+  width: 40px; /* Same size as other buttons */
+  height: 40px; /* Same size as other buttons */
+  font-size: 1rem; /* Same icon size as other buttons */
   box-sizing: border-box; /* Include padding in width/height calculations */
+  position: relative;
+  overflow: hidden;
 }
 
 /* Styling for the FontAwesome icons */
 .floating-nav-bar a i {
-  font-size: 1rem; /* Match audio player icon size */
-  margin-bottom: 2px; /* Reduced space between icon and text */
+  font-size: 1rem; /* Consistent size across all devices */
 }
 
-/* Styling for the text label below the icon */
-.floating-nav-bar a span {
-  font-size: 10px; /* Smaller font size for the text */
-  white-space: nowrap; /* Prevent text from wrapping to the next line */
-  overflow: hidden; /* Hide any text overflow */
-  text-overflow: ellipsis; /* Add ellipsis for very long text */
-  max-width: 100%; /* Ensure text doesn't exceed container */
-  text-align: center; /* Center align text */
+/* Ripple effect for buttons */
+.floating-nav-bar a::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.floating-nav-bar a:hover::before {
+  width: 100%;
+  height: 100%;
 }
 
 /* Active state for the currently selected navigation item */
 .floating-nav-bar li.active a {
-  background-color: #4a4a4a; /* Darker background for the active item */
-  color: #ffffff; /* White color for active icon/text */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow for active item */
+  background-color: rgba(255, 255, 255, 0.2); /* Light background for active item */
+  color: #ffffff; /* White color for active icon */
+  transform: scale(1.05); /* Slight scale effect like other buttons */
 }
 
 /* Hover effect for all navigation items */
 .floating-nav-bar a:hover {
   color: #ffffff; /* White color on hover */
+  background-color: rgba(255, 255, 255, 0.1); /* Light background on hover */
+  transform: scale(1.05); /* Scale effect like other buttons */
 }
 
-/* Hover effect for inactive navigation items */
-.floating-nav-bar li:not(.active) a:hover {
-  background-color: #383838; /* Slightly lighter dark background on hover for inactive items */
+.floating-nav-bar a:active {
+  transform: scale(0.95); /* Active press effect like other buttons */
+}
+
+/* Active button should override hover */
+.floating-nav-bar li.active a:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Keep active background */
 }
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 600px) {
   .floating-nav-bar {
-    min-width: 280px; /* Smaller minimum width on mobile but still longer */
-    max-width: 95%; /* Make it take more width on smaller screens */
-    padding: 5px 20px; /* Maintain longer bar look on mobile */
+    padding: 8px 15px; /* Maintain search bar height on mobile */
     bottom: 10px; /* Closer to the bottom on mobile */
   }
 
   .floating-nav-bar ul {
-    gap: 12px; /* Further reduced gap between items on smaller screens */
+    gap: 10px; /* Smaller gap between items on mobile */
   }
 
-  .floating-nav-bar a {
-    padding: 4px 6px; /* Smaller padding on mobile */
-    width: 50px; /* Smaller fixed width on mobile */
-    height: 45px; /* Smaller fixed height on mobile */
-  }
-
-  .floating-nav-bar a i {
-    font-size: 1rem; /* Consistent size across all devices */
-  }
-
-  .floating-nav-bar a span {
-    font-size: 9px; /* Smaller text on mobile */
-  }
+  /* Buttons maintain same size across all devices */
 }
 
-/* Consistent sizing across all devices */
+/* Consistent sizing across all devices - removed tablet responsive section */
 
 /* Add bottom padding to the main content to prevent overlap with floating nav */
 .main-content {

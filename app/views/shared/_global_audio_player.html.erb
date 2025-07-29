@@ -1,10 +1,20 @@
 <div id="global-audio-player" 
      class="global-audio-player" 
-     data-controller="global-audio-player">
+     data-controller="global-audio-player"
+     data-turbo-permanent>
+  
+  <!-- Close Button -->
+  <button class="player-close-btn" 
+          data-action="click->global-audio-player#close"
+          title="Close player">
+    <i class="fa-solid fa-times"></i>
+  </button>
   
   <div class="player-content">
     <!-- Left section: Title with marquee -->
-    <div class="player-title-section">
+    <div class="player-title-section" 
+         data-action="click->global-audio-player#goToPodcast"
+         title="Go to podcast page">
       <div class="player-title-container">
         <h4 class="player-title" data-global-audio-player-target="title"></h4>
       </div>

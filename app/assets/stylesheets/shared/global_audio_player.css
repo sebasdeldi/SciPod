@@ -12,7 +12,7 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   padding: 0;
-  height: 80px;
+  height: 110px;
   display: none; /* Initially hidden */
   align-items: center;
   
@@ -75,6 +75,7 @@ body {
   flex: 1;
   min-width: 0; /* Allow shrinking */
   overflow: hidden;
+  cursor: pointer;
 }
 
 .player-title-container {
@@ -117,7 +118,6 @@ body {
   overflow: hidden;
   white-space: nowrap;
   position: relative;
-  margin-top: -7px;
 }
 
 /* Marquee Animation - Hardware Accelerated Seamless Loop */
@@ -225,7 +225,7 @@ body {
 .player-time-display {
   margin: 0;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.8em;
+  font-size: 0.7em;
   font-weight: 400;
   white-space: nowrap;
   display: inline-block;
@@ -336,6 +336,41 @@ body {
 
 .play-button:not(.disabled):hover {
   transform: scale(1.1);
+}
+
+/* Close Button */
+.player-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 22px;
+  height: 22px;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.63rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.player-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.player-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.player-close-btn:active {
+  transform: scale(0.95);
 }
 
 /* No responsive sizing - consistent across all screen sizes */ 

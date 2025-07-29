@@ -10,6 +10,9 @@ export default class extends Controller {
     // Listen for specific Turbo Stream events that update favorites
     document.addEventListener('turbo:before-stream-render', this.handleFavoriteUpdate.bind(this))
     
+    // Listen for page navigation to update play buttons
+    document.addEventListener('turbo:render', this.updatePagePlayButtons.bind(this))
+    
     // Store current podcast info
     this.currentPodcast = null
     this.currentPlayButton = null
@@ -17,11 +20,18 @@ export default class extends Controller {
     
     // Initialize speed
     this.currentSpeed = 1
+    
+    // Restore player state on page load/navigation
+    this.restorePlayerState()
+    
+    // Save state when audio time updates
+    this.audioTarget.addEventListener('timeupdate', this.savePlayerState.bind(this))
   }
   
   disconnect() {
     this.element.removeEventListener('play-podcast', this.handlePlayPodcast.bind(this))
     document.removeEventListener('turbo:before-stream-render', this.handleFavoriteUpdate.bind(this))
+    document.removeEventListener('turbo:render', this.updatePagePlayButtons.bind(this))
   }
   
   onTimeUpdate() {
@@ -56,6 +66,9 @@ export default class extends Controller {
       // Temporarily disable transition for immediate seeking
       this.progressBarTarget.style.transition = 'none'
       this.audioTarget.currentTime = Math.max(0, Math.min(newTime, this.audioTarget.duration))
+      
+      // Save state after seeking
+      this.savePlayerState()
       
       // Re-enable smooth transition after a brief delay
       setTimeout(() => {
@@ -96,6 +109,9 @@ export default class extends Controller {
       return
     }
     
+    // Clear previous state when loading a different podcast
+    sessionStorage.removeItem('audioPlayerState')
+    
     // Load new podcast
     this.loadPodcast(url, title, id, playButton)
     this.showPlayer()
@@ -107,17 +123,24 @@ export default class extends Controller {
     this.currentPodcast = { url, title, id }
     this.currentPlayButton = playButton
     
+    // Reset speed to 1x for new podcast
+    this.currentSpeed = 1
+    
     // Update UI
     this.titleTarget.textContent = title
     this.audioTarget.src = url
     this.audioTarget.playbackRate = this.currentSpeed
+    this.speedTextTarget.textContent = `${this.currentSpeed}x`
     
     // Reset progress line for new track (disable transition for instant reset)
     this.progressBarTarget.style.transition = 'none'
     this.progressBarTarget.style.width = '0%'
     
-    // Reset time display
+    // Reset time display for new podcast
     this.resetTimeDisplay()
+    
+    // Reset audio time to start from beginning
+    this.audioTarget.currentTime = 0
     
     // Re-enable smooth transition
     setTimeout(() => {
@@ -150,11 +173,17 @@ export default class extends Controller {
         // Extract just the authors text (remove "Authors: " prefix)
         const authorsText = authorsElement.textContent.replace(/^Authors:\s*/, '')
         this.authorsTarget.textContent = authorsText
+        // Save the authors info immediately for future page navigation
+        this.savePlayerState()
       } else {
         this.authorsTarget.textContent = ''
       }
     } else {
-      this.authorsTarget.textContent = ''
+      // If no card found on current page, try to keep existing authors text
+      // (This happens when navigating away from home page)
+      if (!this.authorsTarget.textContent.trim()) {
+        this.authorsTarget.textContent = ''
+      }
     }
   }
   
@@ -208,8 +237,8 @@ export default class extends Controller {
     })
     
     // Add padding to body with smooth transition and class for search header
-    // Use responsive height: 80px for desktop/tablet, 70px for mobile
-    const playerHeight = window.innerWidth <= 480 ? '70px' : '80px'
+    // Use consistent height: 110px for all devices
+    const playerHeight = '110px'
     document.body.style.paddingTop = playerHeight
     document.body.classList.add('audio-player-visible')
   }
@@ -242,6 +271,7 @@ export default class extends Controller {
           this.isPlaying = true
           this.updatePlayPauseButton('pause')
           this.updatePlayButtonState(this.currentPlayButton, 'playing')
+          this.savePlayerState() // Save state when starting to play
         })
         .catch(error => {
           console.error('Error playing audio:', error)
@@ -255,6 +285,7 @@ export default class extends Controller {
     this.isPlaying = false
     this.updatePlayPauseButton('play')
     this.updatePlayButtonState(this.currentPlayButton, 'paused')
+    this.savePlayerState() // Save state when pausing
   }
   
   togglePlayPause() {
@@ -273,6 +304,9 @@ export default class extends Controller {
     
     // Close dropdown
     this.speedDropdownTarget.style.display = 'none'
+    
+    // Save state when speed changes
+    this.savePlayerState()
   }
   
   toggleSpeedDropdown() {
@@ -301,6 +335,9 @@ export default class extends Controller {
     // Reset time display
     this.resetTimeDisplay()
     
+    // Clear saved state
+    sessionStorage.removeItem('audioPlayerState')
+    
     // Clear favorite button after animation completes (matches hidePlayer timing)
     setTimeout(() => {
       this.favoriteContainerTarget.innerHTML = ''
@@ -311,6 +348,7 @@ export default class extends Controller {
     this.isPlaying = false
     this.updatePlayPauseButton('play')
     this.updatePlayButtonState(this.currentPlayButton, 'ended')
+    this.savePlayerState() // Save state when audio ends
   }
   
   updatePlayPauseButton(state) {
@@ -353,6 +391,24 @@ export default class extends Controller {
         icon.className = 'fa-solid fa-play'
       }
     })
+  }
+  
+  updatePagePlayButtons() {
+    if (!this.currentPodcast) return
+    
+    // Reset all buttons first
+    this.resetAllPlayButtons()
+    
+    // Find the button for the current podcast and update its state
+    const currentButton = document.querySelector(`[data-audio-player-id-value="${this.currentPodcast.id}"]`)
+    if (currentButton) {
+      this.currentPlayButton = currentButton
+      if (this.isPlaying) {
+        this.updatePlayButtonState(currentButton, 'playing')
+      } else {
+        this.updatePlayButtonState(currentButton, 'paused')
+      }
+    }
   }
   
   initTitleMarquee() {
@@ -473,4 +529,114 @@ export default class extends Controller {
       }, 50) // Smaller delay to be more responsive
     }
   }
+  
+  savePlayerState() {
+    if (this.currentPodcast && this.audioTarget.src) {
+      const state = {
+        podcast: this.currentPodcast,
+        authors: this.authorsTarget.textContent, // Save current authors text
+        currentTime: this.audioTarget.currentTime,
+        duration: this.audioTarget.duration,
+        isPlaying: this.isPlaying,
+        speed: this.currentSpeed,
+        volume: this.audioTarget.volume,
+        isPlayerVisible: this.element.classList.contains('showing')
+      }
+      sessionStorage.setItem('audioPlayerState', JSON.stringify(state))
+    }
+  }
+  
+  restorePlayerState() {
+    const savedState = sessionStorage.getItem('audioPlayerState')
+    if (savedState) {
+      try {
+        const state = JSON.parse(savedState)
+        
+        // Only restore if we have valid podcast data and player was visible
+        if (state.podcast && state.podcast.url && state.isPlayerVisible) {
+          // Restore the podcast with saved position
+          this.loadPodcastFromState(state)
+        }
+      } catch (error) {
+        console.log('Could not restore player state:', error)
+        sessionStorage.removeItem('audioPlayerState')
+      }
+    }
+  }
+  
+  loadPodcastFromState(state) {
+    // Set up the basic podcast info
+    this.currentPodcast = state.podcast
+    this.currentSpeed = state.speed || 1
+    
+    // Update UI elements
+    this.titleTarget.textContent = state.podcast.title
+    
+    // Only update audio source if it's different (to avoid interrupting playback)
+    if (this.audioTarget.src !== state.podcast.url) {
+      this.audioTarget.src = state.podcast.url
+    }
+    
+    this.audioTarget.playbackRate = this.currentSpeed
+    this.speedTextTarget.textContent = `${this.currentSpeed}x`
+    
+    // Restore time and duration
+    if (state.duration) {
+      this.audioTarget.addEventListener('loadedmetadata', () => {
+        // Only set currentTime if it's different (to avoid restarting audio)
+        if (Math.abs(this.audioTarget.currentTime - (state.currentTime || 0)) > 1) {
+          this.audioTarget.currentTime = state.currentTime || 0
+        }
+        this.updateTotalTime()
+        this.updateCurrentTime()
+        
+        // Update progress bar
+        if (this.audioTarget.duration) {
+          const progress = (this.audioTarget.currentTime / this.audioTarget.duration) * 100
+          this.progressBarTarget.style.width = `${progress}%`
+        }
+      }, { once: true })
+    }
+    
+    // Restore authors from saved state or load from page
+    if (state.authors) {
+      this.authorsTarget.textContent = state.authors
+    } else {
+      this.loadAuthorsInfo(state.podcast.id)
+    }
+    
+    // Load favorite button
+    this.loadFavoriteButton(state.podcast.id)
+    
+    // Initialize marquees
+    this.initTitleMarquee()
+    this.initAuthorsMarquee()
+    
+    // Show player if it was visible
+    if (state.isPlayerVisible) {
+      this.showPlayer()
+      
+      // Update play buttons on the page to reflect current podcast
+      this.updatePagePlayButtons()
+      
+      // Restore playing state and continue playback
+      if (state.isPlaying) {
+        this.isPlaying = true
+        this.updatePlayPauseButton('pause')
+        // Resume playback automatically
+        this.audioTarget.play().catch(error => {
+          console.log('Could not resume playback:', error)
+          this.isPlaying = false
+          this.updatePlayPauseButton('play')
+        })
+             }
+     }
+   }
+   
+   goToPodcast() {
+     if (this.currentPodcast && this.currentPodcast.id) {
+       // Navigate to the podcast show page using Turbo
+       Turbo.visit(`/podcasts/${this.currentPodcast.id}`)
+     }
+   }
 } 
