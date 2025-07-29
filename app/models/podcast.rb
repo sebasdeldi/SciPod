@@ -10,6 +10,7 @@
 # @attr [String] doi - The DOI of the source material (optional, unique)
 # @attr [Text] summary - A short summary of the podcast content (optional)
 # @attr [Text] script - The full text script used for audio generation (optional)
+# @attr [String] audio_url - S3 URL for the generated audio file (optional)
 # @attr [Integer] user_id - Foreign key to the creating user
 # @attr [String] status - Processing status: 'processing', 'ready', 'error', 'cancelled' (PostgreSQL enum)
 # @attr [String] status_details - Processing detail string: "", "processing_source_file", "generating_script", "generating_audio_file"
@@ -33,7 +34,7 @@ class Podcast < ApplicationRecord
 
   # File attachments using Active Storage
   has_one_attached :source_file  # Original PDF document
-  has_one_attached :audio        # Generated audio file (MP3, M4A, etc.)
+  # Audio is now stored as URL (audio_url column) in S3, not as attachment
 
   # Enums for status management using PostgreSQL enum
   enum :status, {
@@ -50,10 +51,11 @@ class Podcast < ApplicationRecord
     in: ["", "processing_source_file", "generating_script", "generating_audio_file"], 
     allow_blank: true 
   }
+  validates :audio_url, format: { with: URI::DEFAULT_PARSER.make_regexp, allow_blank: true }
 
   # File validations will be handled in the controller and with custom methods
   validate :validate_source_file, if: -> { source_file.attached? }
-  validate :validate_audio_file, if: -> { audio.attached? }
+  # Audio file validation removed
 
   # Search configuration using pg_search
   pg_search_scope :search_by_content,
@@ -99,7 +101,7 @@ class Podcast < ApplicationRecord
   def audio_duration
     # This would be implemented with audio metadata extraction
     # For now, return a placeholder
-    audio.attached? ? "Unknown duration" : "No audio"
+    audio_url.present? ? "Unknown duration" : "No audio"
   end
 
   ##
@@ -108,7 +110,7 @@ class Podcast < ApplicationRecord
   # @return [Boolean] true if both source and audio files are attached
   #
   def complete?
-    source_file.attached? && audio.attached?
+    source_file.attached? && audio_url.present?
   end
 
   private
@@ -127,24 +129,6 @@ class Podcast < ApplicationRecord
     # Check file size (50MB limit)
     if source_file.byte_size > 50.megabytes
       errors.add(:source_file, 'must be less than 50MB')
-    end
-  end
-
-  ##
-  # Validate audio file type and size
-  #
-  def validate_audio_file
-    return unless audio.attached?
-
-    # Check file type
-    allowed_audio_types = [ 'audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/x-m4a', 'audio/mp3' ]
-    unless allowed_audio_types.include?(audio.content_type)
-      errors.add(:audio, 'must be an audio file (MP3, MP4, WAV, M4A)')
-    end
-
-    # Check file size (100MB limit)
-    if audio.byte_size > 100.megabytes
-      errors.add(:audio, 'must be less than 100MB')
     end
   end
 

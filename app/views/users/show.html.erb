@@ -78,7 +78,7 @@
                   <span class="status-badge cancelled">❌ Cancelled</span>
                 <% elsif podcast.error? %>
                   <span class="status-badge error">⚠️ Error</span>
-                <% elsif podcast.audio.attached? %>
+                <% elsif podcast.audio_url.present? %>
                   <span class="status-badge complete">🤖 AI Generated</span>
                 <% else %>
                   <span class="status-badge processing">⏳ AI Processing</span>

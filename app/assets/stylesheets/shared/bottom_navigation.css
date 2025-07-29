@@ -56,7 +56,7 @@
 
 /* Styling for the FontAwesome icons */
 .floating-nav-bar a i {
-  font-size: 18px; /* Smaller icon size */
+  font-size: 1rem; /* Match audio player icon size */
   margin-bottom: 2px; /* Reduced space between icon and text */
 }
 
@@ -107,13 +107,15 @@
   }
 
   .floating-nav-bar a i {
-    font-size: 16px; /* Smaller icons on mobile */
+    font-size: 1rem; /* Consistent size across all devices */
   }
 
   .floating-nav-bar a span {
     font-size: 9px; /* Smaller text on mobile */
   }
 }
+
+/* Consistent sizing across all devices */
 
 /* Add bottom padding to the main content to prevent overlap with floating nav */
 .main-content {

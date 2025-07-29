@@ -10,10 +10,11 @@ Rails.application.routes.draw do
   root "podcasts#home"
 
   # Podcast routes
-  resources :podcasts, except: [ :destroy, :edit, :update ] do
+  resources :podcasts, only: [:show, :new, :create] do
     member do
       post :favorite
       delete :unfavorite
+      get :favorite_button
     end
 
     collection do
