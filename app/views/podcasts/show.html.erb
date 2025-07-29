@@ -51,19 +51,15 @@
         <h2>Processing Error</h2>
         <p>There was an error processing this podcast. Please try uploading again.</p>
       </div>
-    <% elsif @podcast.audio.attached? %>
+    <% elsif @podcast.audio_url.present? %>
       <div class="audio-player">
         <h2>Listen to Podcast</h2>
         <audio controls preload="metadata" class="podcast-audio">
-          <%= audio_tag rails_blob_path(@podcast.audio, disposition: "inline"),
-                        controls: true,
-                        preload: "metadata" %>
+          <source src="<%= @podcast.audio_url %>" type="audio/mpeg">
+          Your browser does not support the audio element.
         </audio>
         <div class="audio-info">
           <span class="duration"><%= @podcast.audio_duration %></span>
-          <span class="file-size">
-            (<%= number_to_human_size(@podcast.audio.byte_size) %>)
-          </span>
         </div>
       </div>
     <% elsif @podcast.source_file.attached? %>

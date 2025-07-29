@@ -9,7 +9,7 @@
 #
 class PodcastsController < ApplicationController
   before_action :authenticate_user!, except: [ :home, :discover, :show ]
-  before_action :set_podcast, only: [ :show, :favorite, :unfavorite ]
+  before_action :set_podcast, only: [ :show, :favorite, :unfavorite, :favorite_button ]
 
   ##
   # GET /
@@ -142,6 +142,19 @@ class PodcastsController < ApplicationController
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to @podcast }
+    end
+  end
+
+  ##
+  # GET /podcasts/1/favorite_button
+  # Return just the favorite button HTML for AJAX requests
+  #
+  def favorite_button
+    respond_to do |format|
+      format.html do
+        render partial: 'shared/favorite_button', 
+               locals: { podcast: @podcast, current_user: current_user }
+      end
     end
   end
 

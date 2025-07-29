@@ -23,7 +23,8 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body>
+  <body data-user-signed-in="<%= user_signed_in? %>">
+    <%= render 'shared/global_audio_player' %>
     <%= render 'shared/flash_messages' %>
 
     <!-- Main Content -->

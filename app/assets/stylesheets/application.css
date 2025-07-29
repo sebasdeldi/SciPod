@@ -13,6 +13,7 @@
  *= require shared/flash_messages
  *= require shared/buttons
  *= require shared/status_badges
+ *= require shared/global_audio_player
  *= require podcasts/home
  *= require podcasts/show
  *= require podcasts/new
@@ -36,6 +37,17 @@ body {
   margin: 0;
   padding: 0;
   background-color: white;
+}
+
+/* Global Icon Standardization - Consistent Size Across All Devices */
+i[class*="fa-"],
+.fa-solid,
+.fa-regular,
+.fa-light,
+.fa-thin,
+.fa-duotone,
+.fa-brands {
+  font-size: 1rem; /* Consistent size across all devices */
 }
 
 /* Global Responsive Design */

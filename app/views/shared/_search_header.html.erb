@@ -25,13 +25,19 @@
             <% end %>
           </div>
           <div class="searchable-dropdown">
-            <button type="button" 
-                    class="dropdown-trigger" 
-                    data-searchable-dropdown-target="trigger"
-                    data-action="click->searchable-dropdown#toggle">
-              <span data-searchable-dropdown-target="placeholderText">All Categories</span>
-              <i class="fa-solid fa-chevron-down dropdown-arrow" data-searchable-dropdown-target="arrow"></i>
-            </button>
+            <div class="dropdown-trigger-container">
+              <button type="button" 
+                      class="dropdown-trigger" 
+                      data-searchable-dropdown-target="trigger"
+                      data-action="click->searchable-dropdown#toggle">
+                <span data-searchable-dropdown-target="placeholderText">All Categories</span>
+              </button>
+              <button type="button" 
+                      class="dropdown-icon-btn"
+                      data-action="click->searchable-dropdown#toggle">
+                <i class="fa-solid fa-chevron-down dropdown-arrow" data-searchable-dropdown-target="arrow"></i>
+              </button>
+            </div>
             <div class="dropdown-content" data-searchable-dropdown-target="content">
               <div class="dropdown-search">
                 <input type="text" 

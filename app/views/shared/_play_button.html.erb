@@ -1,10 +1,15 @@
-<%= button_to podcast_path(podcast), 
-              method: :get,
-              local: false,
-              class: "play-button",
-              title: "Play podcast",
-              data: { 
-                turbo_frame: "_top" 
-              } do %>
-  <i class="fa-solid fa-play"></i>
+<% if podcast.audio_url.present? %>
+  <button class="play-button" 
+          data-controller="audio-player"
+          data-action="click->audio-player#playPodcast"
+          data-audio-player-url-value="<%= podcast.audio_url %>"
+          data-audio-player-title-value="<%= podcast.title %>"
+          data-audio-player-id-value="<%= podcast.id %>"
+          title="Play podcast">
+    <i class="fa-solid fa-play"></i>
+  </button>
+<% else %>
+  <button class="play-button disabled" title="Audio not available" disabled>
+    <i class="fa-solid fa-clock"></i>
+  </button>
 <% end %> 

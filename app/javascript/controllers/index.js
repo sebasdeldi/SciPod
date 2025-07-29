@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import AudioPlayerController from "./audio_player_controller"
+application.register("audio-player", AudioPlayerController)
+
 import BottomNavigationController from "./bottom_navigation_controller"
 application.register("bottom-navigation", BottomNavigationController)
 
@@ -12,6 +15,9 @@ application.register("clickable-card", ClickableCardController)
 
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
+
+import GlobalAudioPlayerController from "./global_audio_player_controller"
+application.register("global-audio-player", GlobalAudioPlayerController)
 
 import PageTransitionController from "./page_transition_controller"
 application.register("page-transition", PageTransitionController)

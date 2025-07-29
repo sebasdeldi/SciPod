@@ -64,7 +64,7 @@
                   <span class="status-icon">⚠️</span>
                   Error
                 </span>
-              <% elsif podcast.audio.attached? %>
+              <% elsif podcast.audio_url.present? %>
                 <span class="status-badge complete">
                   <span class="status-icon">🤖</span>
                   AI Generated

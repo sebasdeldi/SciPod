@@ -91,7 +91,7 @@
 /* Result-based card styles (current implementation) */
 .result-item {
   margin-bottom: 3.5rem;
-  padding: 1.5rem;
+  padding: 1.5rem 0rem;
   border-bottom: 1px solid #eee;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -282,6 +282,18 @@
   
   .result-favorite .favorite-button {
     padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+    font-size: 1rem;
+  }
+  
+  /* Buttons keep original desktop size */
+}
+
+/* Extra small mobile screens */
+@media (max-width: 480px) {
+  /* Buttons keep original desktop size */
+  
+  .result-favorite .favorite-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 1rem;
   }
 } 
