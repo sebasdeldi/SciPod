@@ -2,13 +2,16 @@
      data-controller="clickable-card"
      data-clickable-card-url-value="<%= podcast_path(podcast) %>"
      data-action="click->clickable-card#click">
-  <% if podcast.categories.any? %>
+  <%# Use preloaded categories to avoid N+1 - limit in controller, not view %>
+  <% if podcast.categories.loaded? && podcast.categories.any? %>
     <div class="result-badges">
-      <% podcast.categories.limit(3).each do |category| %>
+      <% categories_to_show = podcast.categories.first(3) %>
+      <% categories_to_show.each do |category| %>
         <span class="result-category-badge"><%= category.name %></span>
       <% end %>
-      <% if podcast.categories.count > 3 %>
-        <span class="result-category-badge more">+<%= podcast.categories.count - 3 %></span>
+      <% remaining_count = podcast.categories.size - categories_to_show.size %>
+      <% if remaining_count > 0 %>
+        <span class="result-category-badge more">+<%= remaining_count %></span>
       <% end %>
     </div>
   <% end %>
@@ -37,12 +40,13 @@
   <% if podcast.summary.present? %>
     <p class="result-summary"><%= truncate(podcast.summary, length: 200) %></p>
   <% end %>
-  <% if podcast.authors.any? || podcast.publishers.any? %>
+  <%# Use preloaded associations to avoid N+1 %>
+  <% if (podcast.authors.loaded? && podcast.authors.any?) || (podcast.publishers.loaded? && podcast.publishers.any?) %>
     <div class="result-details">
-      <% if podcast.authors.any? %>
+      <% if podcast.authors.loaded? && podcast.authors.any? %>
         <span class="result-authors">Authors: <%= podcast.authors.map(&:name).join(', ') %></span>
       <% end %>
-      <% if podcast.publishers.any? %>
+      <% if podcast.publishers.loaded? && podcast.publishers.any? %>
         <span class="result-publishers">Publishers: <%= podcast.publishers.map(&:name).join(', ') %></span>
       <% end %>
     </div>

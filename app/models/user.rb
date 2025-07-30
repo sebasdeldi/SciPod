@@ -15,10 +15,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  # A user can create many podcasts
+  # User can create many podcasts and favorite many podcasts
   has_many :podcasts, dependent: :destroy
-
-  # A user can favorite many podcasts through the favorites join table
   has_many :favorites, dependent: :destroy
   has_many :favorited_podcasts, through: :favorites, source: :podcast
 

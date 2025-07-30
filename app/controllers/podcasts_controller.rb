@@ -8,7 +8,7 @@
 # - File upload handling for PDFs and audio files
 #
 class PodcastsController < ApplicationController
-  before_action :authenticate_user!, except: [ :home, :discover, :show ]
+  before_action :authenticate_user!, except: [ :home, :show ]
   before_action :set_podcast, only: [ :show, :favorite, :unfavorite, :favorite_button ]
 
   ##
@@ -33,13 +33,14 @@ class PodcastsController < ApplicationController
         Podcast.where(id: category_podcast_ids).search_by_content(@query)
       )
       Podcast.where(id: search_podcast_ids)
-             .includes(:user, :authors, :publishers, :categories, :favorites)
+             .includes(:user, :authors, :publishers, :categories)
+             .with_favorites_for_user(current_user)
              .distinct
     elsif @category_ids.any?
       # Only category filters: show all podcasts in ANY of the selected categories (OR operation)
       Podcast.joins(:categories)
              .where(categories: { id: @category_ids })
-             .includes(:user, :authors, :publishers, :categories, :favorites)
+             .with_favorites_for_user(current_user)
              .distinct
     elsif @query.present?
       # Only search: get unique IDs efficiently - pg_search creates duplicates via joins
@@ -47,11 +48,11 @@ class PodcastsController < ApplicationController
         Podcast.search_by_content(@query)
       )
       Podcast.where(id: search_podcast_ids)
-             .includes(:user, :authors, :publishers, :categories, :favorites)
+             .with_favorites_for_user(current_user)
              .distinct
     else
       # Neither: show recent podcasts (discovery mode)
-      Podcast.includes(:user, :authors, :publishers, :categories, :favorites)
+      Podcast.with_favorites_for_user(current_user)
     end
 
     # Apply cursor pagination to the relation using ID for unique ordering
@@ -63,24 +64,24 @@ class PodcastsController < ApplicationController
       direction: :desc
     )
 
+    # Preload associations for the paginated results to avoid N+1 queries
+    # We do this separately because includes() conflicts with GROUP BY in with_favorites_for_user
+    ActiveRecord::Associations::Preloader.new(
+      records: @podcasts,
+      associations: [:user, :authors, :publishers, :categories]
+    ).call
+
     respond_to do |format|
       format.turbo_stream
       format.html
     end
   end
 
-  ##
-  # GET /podcasts/discover - DEPRECATED: Redirects to home
-  # Maintained for backward compatibility
-  #
-  def discover
-    redirect_to root_path(params.permit(:query)), status: :moved_permanently
-  end
+
 
   ##
   # GET /podcasts/1
   # Show individual podcast with audio player and details
-  #
   def show
     @favorite = current_user&.favorites&.find_by(podcast: @podcast)
 

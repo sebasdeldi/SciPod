@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_24_190656) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_30_140934) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,11 +50,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_24_190656) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index "to_tsvector('english'::regconfig, (name)::text)", name: "idx_authors_search_name", using: :gin
+    t.index ["name"], name: "idx_authors_name"
   end
 
   create_table "authors_podcasts", id: false, force: :cascade do |t|
     t.bigint "podcast_id", null: false
     t.bigint "author_id", null: false
+    t.index ["author_id"], name: "idx_authors_podcasts_author_id"
+    t.index ["podcast_id", "author_id"], name: "idx_authors_podcasts_composite", unique: true
+    t.index ["podcast_id"], name: "idx_authors_podcasts_podcast_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -68,6 +73,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_24_190656) do
     t.bigint "podcast_id", null: false
     t.bigint "category_id", null: false
     t.index ["category_id", "podcast_id"], name: "index_categories_podcasts_on_category_id_and_podcast_id"
+    t.index ["category_id"], name: "idx_categories_podcasts_category_id"
     t.index ["podcast_id", "category_id"], name: "index_categories_podcasts_on_podcast_id_and_category_id"
   end
 
@@ -76,7 +82,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_24_190656) do
     t.bigint "podcast_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["podcast_id", "created_at"], name: "idx_favorites_podcast_created_at"
     t.index ["podcast_id"], name: "index_favorites_on_podcast_id"
+    t.index ["user_id", "created_at"], name: "idx_favorites_user_created_at"
     t.index ["user_id", "podcast_id"], name: "index_favorites_on_user_id_and_podcast_id", unique: true
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
@@ -92,15 +100,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_24_190656) do
     t.datetime "updated_at", null: false
     t.string "status_details"
     t.enum "status", default: "processing", null: false, enum_type: "podcast_status"
+    t.string "audio_url"
+    t.index "to_tsvector('english'::regconfig, (COALESCE(doi, ''::character varying))::text)", name: "idx_podcasts_search_doi", using: :gin
+    t.index "to_tsvector('english'::regconfig, (COALESCE(issn, ''::character varying))::text)", name: "idx_podcasts_search_issn", using: :gin
+    t.index "to_tsvector('english'::regconfig, (title)::text)", name: "idx_podcasts_search_title", using: :gin
+    t.index ["created_at"], name: "idx_podcasts_created_at"
     t.index ["doi"], name: "index_podcasts_on_doi", unique: true
+    t.index ["status", "created_at"], name: "idx_podcasts_status_created_at"
+    t.index ["status", "id"], name: "idx_podcasts_status_id_desc", order: { id: :desc }
     t.index ["status"], name: "index_podcasts_on_status"
     t.index ["title"], name: "index_podcasts_on_title", unique: true
+    t.index ["user_id", "id"], name: "idx_podcasts_user_id_desc", order: { id: :desc }
+    t.index ["user_id", "status"], name: "idx_podcasts_user_status"
     t.index ["user_id"], name: "index_podcasts_on_user_id"
   end
 
   create_table "podcasts_publishers", id: false, force: :cascade do |t|
     t.bigint "podcast_id", null: false
     t.bigint "publisher_id", null: false
+    t.index ["podcast_id", "publisher_id"], name: "idx_podcasts_publishers_composite", unique: true
+    t.index ["podcast_id"], name: "idx_podcasts_publishers_podcast_id"
+    t.index ["publisher_id"], name: "idx_podcasts_publishers_publisher_id"
   end
 
   create_table "publishers", force: :cascade do |t|
@@ -123,7 +143,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_24_190656) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "authors_podcasts", "authors", on_delete: :cascade
+  add_foreign_key "authors_podcasts", "podcasts", on_delete: :cascade
   add_foreign_key "favorites", "podcasts"
   add_foreign_key "favorites", "users"
   add_foreign_key "podcasts", "users"
+  add_foreign_key "podcasts_publishers", "podcasts", on_delete: :cascade
+  add_foreign_key "podcasts_publishers", "publishers", on_delete: :cascade
 end

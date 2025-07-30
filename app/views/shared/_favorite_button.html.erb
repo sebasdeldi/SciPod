@@ -3,7 +3,8 @@
   context = params[:action] == 'home' ? 'search' : 'card'
 %>
 
-<% if current_user&.favorited?(podcast) %>
+<%# Use optimized method to avoid N+1 queries %>
+<% if podcast.favorited_by_user?(current_user) %>
   <%= form_with url: unfavorite_podcast_path(podcast),
                 method: :delete,
                 local: false,

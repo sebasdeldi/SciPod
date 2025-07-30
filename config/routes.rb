@@ -16,10 +16,6 @@ Rails.application.routes.draw do
       delete :unfavorite
       get :favorite_button
     end
-
-    collection do
-      get :discover
-    end
   end
 
   # User dashboard and favorites

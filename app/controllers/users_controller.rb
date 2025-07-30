@@ -28,9 +28,10 @@ class UsersController < ApplicationController
   def favorites
     @before_cursor = params[:before]
     
-    # Build the base relation for user's favorites
+    # Build the base relation for user's favorites with optimized preloading
     base_relation = current_user.favorited_podcasts
-                               .includes(:user, :authors, :publishers, :categories, :favorites)
+                               .includes(:user, :authors, :publishers, :categories)
+                               .with_favorites_for_user(current_user)
                                .distinct
 
     # Apply cursor pagination
@@ -55,9 +56,10 @@ class UsersController < ApplicationController
   def my_podcasts
     @before_cursor = params[:before]
     
-    # Build the base relation for user's created podcasts
+    # Build the base relation for user's created podcasts with optimized preloading
     base_relation = current_user.podcasts
-                               .includes(:authors, :publishers, :favorites, :categories)
+                               .includes(:authors, :publishers, :categories)
+                               .with_favorites_for_user(current_user)
 
     # Apply cursor pagination
     @podcasts, @cursor = paginate_with_cursor(

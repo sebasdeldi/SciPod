@@ -1,9 +1,8 @@
 /* User dashboard and profile styles */
 
 .user-dashboard {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
 .dashboard-header {
@@ -205,11 +204,6 @@
 /* Dashboard Content and Navigation */
 .dashboard-content {
   margin-top: 2rem;
-}
-
-.dashboard-navigation {
-  margin-top: 2rem;
-  text-align: center;
 }
 
 /* Responsive Design */

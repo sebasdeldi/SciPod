@@ -21,7 +21,7 @@ class Podcast < ApplicationRecord
   include PgSearch::Model
 
   # Relationships
-  belongs_to :user, class_name: 'User'
+  belongs_to :user
 
   # Many-to-many relationships
   has_and_belongs_to_many :authors
@@ -59,39 +59,70 @@ class Podcast < ApplicationRecord
 
   # Search configuration using pg_search
   pg_search_scope :search_by_content,
-    against: [ :title, :issn, :doi, :summary ],
+    against: [ :title, :issn, :doi ],
     associated_against: {
-      authors: [ :name ],
-      publishers: [ :name ],
-      categories: [ :name ]
+      authors: [ :name ]
     },
     using: {
       tsearch: {
         prefix: true,
-        highlight: {
-          start_sel: '<mark>',
-          stop_sel: '</mark>'
-        }
+        negation: true,
+        dictionary: :english
       }
     }
 
-  ##
-  # Check if a podcast is favorited by a specific user
-  #
-  # @param [User] user - The user to check
-  # @return [Boolean] true if favorited by user, false otherwise
-  #
-  def favorited_by?(user)
-    return false unless user
-    favorited_by_users.include?(user)
+  # Scopes for common queries
+  scope :recent, -> { order(created_at: :desc) }
+  scope :by_status, ->(status) { where(status: status) }
+  scope :published, -> { where(status: [ :ready ]) }
+  
+  # N+1 Query Optimizations
+  scope :with_favorites_for_user, ->(user) {
+    if user
+      left_joins(:favorites)
+        .select("podcasts.*, COUNT(favorites.id) as favorites_count")
+        .select("BOOL_OR(favorites.user_id = #{user.id}) as user_favorited")
+        .group("podcasts.id")
+    else
+      left_joins(:favorites)
+        .select("podcasts.*, COUNT(favorites.id) as favorites_count") 
+        .select("false as user_favorited")
+        .group("podcasts.id")
+    end
+  }
+
+  # File validation helper
+  def validate_source_file
+    return unless source_file.attached?
+
+    unless source_file.content_type == 'application/pdf'
+      errors.add(:source_file, 'must be a PDF file')
+    end
+
+    # Check file size (limit to 50MB)
+    if source_file.byte_size > 50.megabytes
+      errors.add(:source_file, 'must be less than 50MB')
+    end
   end
 
   ##
-  # Get the count of users who have favorited this podcast
+  # Check if a specific user has favorited this podcast
+  # Uses preloaded value to avoid N+1 queries
   #
-  # @return [Integer] number of favorites
+  # @param [User] user - The user to check
+  # @return [Boolean] true if favorited, false otherwise
   #
-  delegate :count, to: :favorites, prefix: true
+  def favorited_by_user?(user)
+    return false unless user
+    
+    # Use preloaded value if available (from with_favorites_for_user scope)
+    if has_attribute?(:user_favorited)
+      read_attribute(:user_favorited)
+    else
+      # Fallback to association query
+      favorites.exists?(user: user)
+    end
+  end
 
   ##
   # Get a display-friendly duration for the audio file
@@ -101,7 +132,7 @@ class Podcast < ApplicationRecord
   def audio_duration
     # This would be implemented with audio metadata extraction
     # For now, return a placeholder
-    audio_url.present? ? "Unknown duration" : "No audio"
+    "Unknown"
   end
 
   ##
@@ -113,24 +144,24 @@ class Podcast < ApplicationRecord
     source_file.attached? && audio_url.present?
   end
 
-  private
-
   ##
-  # Validate source file type and size
+  # Get the count of favorites for this podcast
+  # Uses preloaded count from with_favorites_for_user scope if available,
+  # otherwise performs a COUNT query
   #
-  def validate_source_file
-    return unless source_file.attached?
-
-    # Check file type
-    unless source_file.content_type == 'application/pdf'
-      errors.add(:source_file, 'must be a PDF file')
-    end
-
-    # Check file size (50MB limit)
-    if source_file.byte_size > 50.megabytes
-      errors.add(:source_file, 'must be less than 50MB')
+  # @return [Integer] number of times this podcast has been favorited
+  #
+  def favorites_count
+    # If favorites_count was preloaded by with_favorites_for_user scope, use it
+    if has_attribute?(:favorites_count) && read_attribute(:favorites_count)
+      read_attribute(:favorites_count)
+    else
+      # Fallback to COUNT query if not preloaded
+      favorites.count
     end
   end
+
+  private
 
   ##
   # Scope for finding podcasts by a specific user
@@ -151,13 +182,6 @@ class Podcast < ApplicationRecord
   }
 
   ##
-  # Scope for ordering by most recently created
-  #
-  # @return [ActiveRecord::Relation] podcasts ordered by creation date (newest first)
-  #
-  scope :recent, -> { order(created_at: :desc) }
-
-  ##
   # Scope for ordering by most favorited
   #
   # @return [ActiveRecord::Relation] podcasts ordered by favorite count (most favorited first)
@@ -167,14 +191,6 @@ class Podcast < ApplicationRecord
       .group(:id)
       .order('COUNT(favorites.id) DESC')
   }
-
-  ##
-  # Scope for finding podcasts by a specific status
-  #
-  # @param [Integer] status - The status to filter by (0, 1, or 2)
-  # @return [ActiveRecord::Relation] podcasts with the specified status
-  #
-  scope :by_status, ->(status) { where(status: status) }
 
   ##
   # Scope for finding podcasts by a specific status detail
