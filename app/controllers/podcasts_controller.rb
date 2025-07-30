@@ -13,43 +13,55 @@ class PodcastsController < ApplicationController
 
   ##
   # GET /
-  # Unified search and discovery homepage
+  # Unified search and discovery homepage with infinite scrolling
   #
   def home
     @query = params[:query]
     @category_ids = Array(params[:category_ids]).compact_blank
+    @before_cursor = params[:before]
 
-    # Handle different combinations of search and category filtering
-    if @category_ids.any? && @query.present?
+    # Build the base relation based on search and category filtering
+    base_relation = if @category_ids.any? && @query.present?
       # Both categories and search: use subquery to avoid table alias conflicts
       # OR operation: podcasts in ANY of the selected categories
       category_podcast_ids = Podcast.joins(:categories)
                                     .where(categories: { id: @category_ids })
                                     .distinct
                                     .pluck(:id)
-      @podcasts = Podcast.where(id: category_podcast_ids)
-                         .search_by_content(@query)
-                         .includes(:user, :authors, :publishers, :categories, :favorites)
-                         .limit(20)
+      # Get unique podcast IDs efficiently - pg_search creates duplicates via joins
+      search_podcast_ids = unique_podcast_ids_from_search(
+        Podcast.where(id: category_podcast_ids).search_by_content(@query)
+      )
+      Podcast.where(id: search_podcast_ids)
+             .includes(:user, :authors, :publishers, :categories, :favorites)
+             .distinct
     elsif @category_ids.any?
       # Only category filters: show all podcasts in ANY of the selected categories (OR operation)
-      @podcasts = Podcast.joins(:categories)
-                         .where(categories: { id: @category_ids })
-                         .includes(:user, :authors, :publishers, :categories, :favorites)
-                         .distinct
-                         .recent
-                         .limit(20)
+      Podcast.joins(:categories)
+             .where(categories: { id: @category_ids })
+             .includes(:user, :authors, :publishers, :categories, :favorites)
+             .distinct
     elsif @query.present?
-      # Only search: use full search scope
-      @podcasts = Podcast.search_by_content(@query)
-                         .includes(:user, :authors, :publishers, :categories, :favorites)
-                         .limit(20)
+      # Only search: get unique IDs efficiently - pg_search creates duplicates via joins
+      search_podcast_ids = unique_podcast_ids_from_search(
+        Podcast.search_by_content(@query)
+      )
+      Podcast.where(id: search_podcast_ids)
+             .includes(:user, :authors, :publishers, :categories, :favorites)
+             .distinct
     else
       # Neither: show recent podcasts (discovery mode)
-      @podcasts = Podcast.includes(:user, :authors, :publishers, :categories, :favorites)
-                         .recent
-                         .limit(20)
+      Podcast.includes(:user, :authors, :publishers, :categories, :favorites)
     end
+
+    # Apply cursor pagination to the relation using ID for unique ordering
+    @podcasts, @cursor = paginate_with_cursor(
+      base_relation,
+      items: 20,
+      before: @before_cursor,
+      by: :id,
+      direction: :desc
+    )
 
     respond_to do |format|
       format.turbo_stream
@@ -159,6 +171,23 @@ class PodcastsController < ApplicationController
   end
 
   private
+
+  ##
+  # Extract unique podcast IDs from a search relation that may contain duplicates
+  # 
+  # pg_search creates complex joins that can result in duplicate records.
+  # This method efficiently extracts unique IDs by limiting the query size
+  # before loading into memory for deduplication.
+  #
+  # @param [ActiveRecord::Relation] search_relation - The pg_search relation
+  # @return [Array<Integer>] Unique podcast IDs
+  #
+  def unique_podcast_ids_from_search(search_relation)
+    # Limit to reasonable size before loading into memory
+    # Most search results will be under 100 records anyway
+    limited_results = search_relation.limit(500).to_a.uniq
+    limited_results.map(&:id)
+  end
 
   ##
   # Find the podcast by ID

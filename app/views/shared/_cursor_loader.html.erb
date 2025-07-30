@@ -1,0 +1,12 @@
+<% if cursor %>
+  <%= turbo_frame_tag "cursor", src: path, loading: :lazy do %>
+    <div class="infinite-scroll-loader">
+      <div class="loading-spinner">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Loading more podcasts...</span>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <%= turbo_frame_tag "cursor" %>
+<% end %>

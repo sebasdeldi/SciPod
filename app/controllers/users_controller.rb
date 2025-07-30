@@ -23,12 +23,24 @@ class UsersController < ApplicationController
 
   ##
   # GET /users/1/favorites
-  # Show current user's favorited podcasts
+  # Show current user's favorited podcasts with infinite scrolling
   #
   def favorites
-    @podcasts = current_user.favorited_podcasts
-                           .includes(:user, :authors, :publishers)
-                           .recent
+    @before_cursor = params[:before]
+    
+    # Build the base relation for user's favorites
+    base_relation = current_user.favorited_podcasts
+                               .includes(:user, :authors, :publishers, :categories, :favorites)
+                               .distinct
+
+    # Apply cursor pagination
+    @podcasts, @cursor = paginate_with_cursor(
+      base_relation,
+      items: 20,
+      before: @before_cursor,
+      by: :id,
+      direction: :desc
+    )
 
     respond_to do |format|
       format.html
@@ -38,12 +50,23 @@ class UsersController < ApplicationController
 
   ##
   # GET /users/1/my_podcasts
-  # Show current user's created podcasts
+  # Show current user's created podcasts with infinite scrolling
   #
   def my_podcasts
-    @podcasts = current_user.podcasts
-                           .includes(:authors, :publishers, :favorites)
-                           .recent
+    @before_cursor = params[:before]
+    
+    # Build the base relation for user's created podcasts
+    base_relation = current_user.podcasts
+                               .includes(:authors, :publishers, :favorites, :categories)
+
+    # Apply cursor pagination
+    @podcasts, @cursor = paginate_with_cursor(
+      base_relation,
+      items: 20,
+      before: @before_cursor,
+      by: :id,
+      direction: :desc
+    )
 
     respond_to do |format|
       format.html

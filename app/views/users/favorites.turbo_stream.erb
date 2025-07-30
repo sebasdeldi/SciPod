@@ -1,0 +1,40 @@
+<% if @before_cursor.present? %>
+  <!-- Infinite scroll: append new favorites to existing list -->
+  <% if @podcasts.any? %>
+    <%= turbo_stream.append "favorites" do %>
+      <% @podcasts.each do |podcast| %>
+        <%= render 'podcasts/components/podcast_card', podcast: podcast %>
+      <% end %>
+    <% end %>
+  <% end %>
+  
+  <!-- Replace cursor loader with new one -->
+  <%= turbo_stream.replace "cursor" do %>
+    <%= render partial: "shared/cursor_loader", locals: { 
+      cursor: @cursor, 
+      path: favorites_user_path(current_user, before: @cursor, format: :turbo_stream) 
+    } %>
+  <% end %>
+<% else %>
+  <!-- New page load: replace entire favorites results -->
+  <%= turbo_stream.replace "favorites_results" do %>
+    <% if @podcasts.any? %>
+      <div id="favorites" class="results-list">
+        <% @podcasts.each do |podcast| %>
+          <%= render 'podcasts/components/podcast_card', podcast: podcast %>
+        <% end %>
+      </div>
+      <!-- Infinite scroll cursor loader -->
+      <%= render partial: "shared/cursor_loader", locals: { 
+        cursor: @cursor, 
+        path: favorites_user_path(current_user, before: @cursor, format: :turbo_stream) 
+      } %>
+    <% else %>
+      <div class="empty-state">
+        <h3>No favorites yet</h3>
+        <p>Start exploring podcasts and save your favorites here.</p>
+        <%= link_to "Search Podcasts", root_path, class: "btn-primary" %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

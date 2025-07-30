@@ -1,19 +1,54 @@
-<%= turbo_stream.replace "search_results" do %>
-  <div class="results-list">
-    <% if @podcasts.any? %>
+<% if @before_cursor.present? %>
+  <!-- Infinite scroll: append new podcasts to existing list -->
+  <% if @podcasts.any? %>
+    <%= turbo_stream.append "podcasts" do %>
       <% @podcasts.each do |podcast| %>
         <%= render 'podcasts/components/podcast_card', podcast: podcast %>
       <% end %>
-    <% else %>
-      <div class="empty-results">
-        <% if @query.present? || @category_ids.any? %>
-          <h3>No podcasts found</h3>
-          <p>Try searching with different keywords or browse all podcasts.</p>
-        <% else %>
-          <h3>No podcasts yet</h3>
-          <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
-        <% end %>
-      </div>
     <% end %>
-  </div>
+  <% end %>
+  
+  <!-- Replace cursor loader with new one -->
+  <%= turbo_stream.replace "cursor" do %>
+    <%= render partial: "shared/cursor_loader", locals: { 
+      cursor: @cursor, 
+      path: root_path(
+        query: @query, 
+        category_ids: @category_ids, 
+        before: @cursor, 
+        format: :turbo_stream
+      ) 
+    } %>
+  <% end %>
+<% else %>
+  <!-- New search/filter: replace entire search results -->
+  <%= turbo_stream.replace "search_results" do %>
+    <div id="podcasts" class="results-list">
+      <% if @podcasts.any? %>
+        <% @podcasts.each do |podcast| %>
+          <%= render 'podcasts/components/podcast_card', podcast: podcast %>
+        <% end %>
+      <% else %>
+        <div class="empty-results">
+          <% if @query.present? || @category_ids.any? %>
+            <h3>No podcasts found</h3>
+            <p>Try searching with different keywords or browse all podcasts.</p>
+          <% else %>
+            <h3>No podcasts yet</h3>
+            <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <!-- Infinite scroll cursor loader -->
+    <%= render partial: "shared/cursor_loader", locals: { 
+      cursor: @cursor, 
+      path: root_path(
+        query: @query, 
+        category_ids: @category_ids, 
+        before: @cursor, 
+        format: :turbo_stream
+      ) 
+    } %>
+  <% end %>
 <% end %> 

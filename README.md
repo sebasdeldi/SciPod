@@ -36,6 +36,7 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 ### 🔍 **Discovery & Search**
 - **Google-Style Homepage**: Clean, centered search interface inspired by Google
 - **Modal Search Results**: Instant search without page redirects - results appear in elegant overlay
+- **Infinite Scrolling**: Seamless cursor-based pagination across all podcast listings
 - **Full-text search** across podcasts, authors, publishers, and categories
 - **Category Filtering**: Filter by 30+ scientific and academic categories
 - **Multi-Filter Search**: Combine text search with category filters for precise results
@@ -111,6 +112,16 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 - **Conditional Turbo Streams**: Dynamic template rendering based on user context
 - **Frame-Aware Links**: Smart navigation that respects Turbo Frame boundaries
 - **CSP Compliance**: Content Security Policy compliant JavaScript implementation
+
+### ∞ **Infinite Scrolling & Performance**
+- **Cursor-Based Pagination**: Efficient ID-based pagination avoiding `OFFSET/LIMIT` performance issues
+- **Comprehensive Coverage**: Infinite scrolling on home page, favorites, and user-created podcasts
+- **Search & Filter Compatible**: Works seamlessly with text search and category filtering
+- **Duplicate Prevention**: Smart deduplication handling for complex `pg_search` queries
+- **Turbo-Powered Loading**: Smooth, no-JavaScript-required infinite scroll using Turbo Frames
+- **Mobile-Optimized**: Touch-friendly infinite scroll with loading indicators
+- **Memory Efficient**: Loads 20 items per page with optimized database queries
+- **Reusable Pagination Module**: `CursorPaginatable` concern for easy implementation across controllers
 
 ### 📊 **Processing Pipeline Management**
 - **Status Tracking**: Comprehensive podcast processing status management
@@ -330,9 +341,10 @@ Podcast.where(status_details: "generating_script")
 
 ### **Managing Your Library**
 
-- **My Podcasts** - View and edit your created content
-- **Favorites** - Access your bookmarked podcasts
+- **My Podcasts** - View your created content with infinite scrolling through large collections
+- **Favorites** - Access your bookmarked podcasts with seamless pagination
 - **Dashboard** - See your stats and recent activity
+- **Infinite Collections** - Scroll through unlimited content without page breaks or load times
 
 ### **Mobile & PWA Experience**
 
@@ -356,10 +368,12 @@ Podcast.where(status_details: "generating_script")
 ```
 app/
 ├── controllers/          # Request handling and business logic
-│   ├── podcasts_controller.rb    # Core podcast CRUD operations with search/filtering
+│   ├── podcasts_controller.rb    # Core podcast CRUD operations with search/filtering and infinite scroll
+│   ├── users_controller.rb       # User dashboard and profiles with infinite scroll
 │   ├── favorites_controller.rb   # AJAX favoriting system
-│   ├── users_controller.rb       # User dashboard and profiles
-│   └── application_controller.rb # Base controller with modern browser support
+│   ├── application_controller.rb # Base controller with modern browser support
+│   └── concerns/
+│       └── cursor_paginatable.rb # Reusable infinite scrolling logic
 ├── models/              # Data models and business logic
 │   ├── user.rb         # User authentication and relationships
 │   ├── podcast.rb      # Core podcast model with search and categories
@@ -754,12 +768,16 @@ bundle exec rspec spec/path/to/failing_spec.rb:line_number
 - Implement fragment caching for expensive view rendering
 - Use Sidekiq for background processing of large files
 - Consider CDN for audio file delivery in production
+- **Cursor-based pagination**: Infinite scrolling with ID-based cursors eliminates `OFFSET` performance issues
+- **Smart duplicate handling**: Ruby-level deduplication for complex search queries with joins
+- **Efficient includes**: Optimized `includes()` for reduced N+1 queries across all paginated views
 
 ## 📚 API Documentation
 
 ### **RESTful Endpoints**
 
 ```
+GET    /                      # Home page with infinite scroll (search + browse + categories)
 GET    /podcasts              # List all podcasts
 POST   /podcasts              # Create new podcast
 GET    /podcasts/:id          # Show podcast details
@@ -769,8 +787,8 @@ POST   /podcasts/:id/favorite # Favorite a podcast
 DELETE /podcasts/:id/unfavorite # Unfavorite a podcast
 
 GET    /users/:id             # User profile
-GET    /users/:id/favorites   # User's favorite podcasts
-GET    /users/:id/my_podcasts # User's created podcasts
+GET    /users/:id/favorites   # User's favorite podcasts (with infinite scroll)
+GET    /users/:id/my_podcasts # User's created podcasts (with infinite scroll)
 
 GET    /authors               # List authors
 GET    /authors/:id           # Author details
@@ -779,6 +797,23 @@ POST   /authors               # Create author
 GET    /publishers            # List publishers  
 GET    /publishers/:id        # Publisher details
 POST   /publishers            # Create publisher
+```
+
+### **Infinite Scroll Parameters**
+
+All paginated endpoints support cursor-based infinite scrolling:
+
+```bash
+# Home page with pagination
+GET /?before=123                    # Load podcasts with ID < 123
+GET /?query=AI&before=456           # Search with pagination
+GET /?category_ids[]=1&before=789   # Category filter with pagination
+
+# User favorites with pagination  
+GET /users/1/favorites?before=123   # Load favorites with ID < 123
+
+# User podcasts with pagination
+GET /users/1/my_podcasts?before=456 # Load user podcasts with ID < 456
 ```
 
 ### **Search API**

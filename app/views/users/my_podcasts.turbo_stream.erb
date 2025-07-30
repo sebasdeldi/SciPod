@@ -1,0 +1,164 @@
+<% if @before_cursor.present? %>
+  <!-- Infinite scroll: append new podcasts to existing grid -->
+  <% if @podcasts.any? %>
+    <%= turbo_stream.append "my_podcasts" do %>
+      <% @podcasts.each do |podcast| %>
+        <div class="podcast-card owner-card">
+          <div class="podcast-card-header">
+            <h3 class="podcast-title">
+              <%= link_to podcast.title, podcast_path(podcast), data: { turbo_frame: "_top" } %>
+            </h3>
+          </div>
+
+          <div class="podcast-meta">
+            <% if podcast.authors.any? %>
+              <div class="podcast-authors">
+                <strong>Authors:</strong>
+                <%= podcast.authors.map(&:name).join(', ') %>
+              </div>
+            <% end %>
+
+            <% if podcast.publishers.any? %>
+              <div class="podcast-publishers">
+                <strong>Publishers:</strong>
+                <%= podcast.publishers.map(&:name).join(', ') %>
+              </div>
+            <% end %>
+          </div>
+
+          <% if podcast.summary.present? %>
+            <div class="podcast-summary">
+              <%= truncate(podcast.summary, length: 150) %>
+            </div>
+          <% end %>
+
+          <div class="podcast-status">
+            <% if podcast.cancelled? %>
+              <span class="status-badge cancelled">
+                <span class="status-icon">❌</span>
+                Cancelled
+              </span>
+            <% elsif podcast.error? %>
+              <span class="status-badge error">
+                <span class="status-icon">⚠️</span>
+                Error
+              </span>
+            <% elsif podcast.audio_url.present? %>
+              <span class="status-badge complete">
+                <span class="status-icon">🤖</span>
+                AI Generated
+              </span>
+            <% else %>
+              <span class="status-badge processing">
+                <span class="status-icon">⏳</span>
+                AI Processing
+              </span>
+            <% end %>
+
+            <div class="podcast-stats">
+              <span id="my_podcasts_favorites_count_<%= podcast.id %>" class="favorites-count">
+                <i class="fa-solid fa-star"></i> <%= formatted_favorites_count(podcast.favorites_count) %>
+              </span>
+            </div>
+          </div>
+
+          <div class="podcast-actions">
+            <%= link_to "View", podcast_path(podcast), class: "btn-primary btn-small", data: { turbo_frame: "_top" } %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+  
+  <!-- Replace cursor loader with new one -->
+  <%= turbo_stream.replace "cursor" do %>
+    <%= render partial: "shared/cursor_loader", locals: { 
+      cursor: @cursor, 
+      path: my_podcasts_user_path(current_user, before: @cursor, format: :turbo_stream) 
+    } %>
+  <% end %>
+<% else %>
+  <!-- New page load: replace entire my_podcasts results -->
+  <%= turbo_stream.replace "my_podcasts_results" do %>
+    <% if @podcasts.any? %>
+      <div id="my_podcasts" class="podcasts-grid">
+        <% @podcasts.each do |podcast| %>
+          <div class="podcast-card owner-card">
+            <div class="podcast-card-header">
+              <h3 class="podcast-title">
+                <%= link_to podcast.title, podcast_path(podcast), data: { turbo_frame: "_top" } %>
+              </h3>
+            </div>
+
+            <div class="podcast-meta">
+              <% if podcast.authors.any? %>
+                <div class="podcast-authors">
+                  <strong>Authors:</strong>
+                  <%= podcast.authors.map(&:name).join(', ') %>
+                </div>
+              <% end %>
+
+              <% if podcast.publishers.any? %>
+                <div class="podcast-publishers">
+                  <strong>Publishers:</strong>
+                  <%= podcast.publishers.map(&:name).join(', ') %>
+                </div>
+              <% end %>
+            </div>
+
+            <% if podcast.summary.present? %>
+              <div class="podcast-summary">
+                <%= truncate(podcast.summary, length: 150) %>
+              </div>
+            <% end %>
+
+            <div class="podcast-status">
+              <% if podcast.cancelled? %>
+                <span class="status-badge cancelled">
+                  <span class="status-icon">❌</span>
+                  Cancelled
+                </span>
+              <% elsif podcast.error? %>
+                <span class="status-badge error">
+                  <span class="status-icon">⚠️</span>
+                  Error
+                </span>
+              <% elsif podcast.audio_url.present? %>
+                <span class="status-badge complete">
+                  <span class="status-icon">🤖</span>
+                  AI Generated
+                </span>
+              <% else %>
+                <span class="status-badge processing">
+                  <span class="status-icon">⏳</span>
+                  AI Processing
+                </span>
+              <% end %>
+
+              <div class="podcast-stats">
+                <span id="my_podcasts_favorites_count_<%= podcast.id %>" class="favorites-count">
+                  <i class="fa-solid fa-star"></i> <%= formatted_favorites_count(podcast.favorites_count) %>
+                </span>
+              </div>
+            </div>
+
+            <div class="podcast-actions">
+              <%= link_to "View", podcast_path(podcast), class: "btn-primary btn-small", data: { turbo_frame: "_top" } %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <!-- Infinite scroll cursor loader -->
+      <%= render partial: "shared/cursor_loader", locals: { 
+        cursor: @cursor, 
+        path: my_podcasts_user_path(current_user, before: @cursor, format: :turbo_stream) 
+      } %>
+    <% else %>
+      <div class="empty-state">
+        <h3>No podcasts yet</h3>
+        <p>Create your first podcast by uploading a PDF document.</p>
+        <%= link_to "Create Your First Podcast", new_podcast_path, class: "btn-primary" %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
