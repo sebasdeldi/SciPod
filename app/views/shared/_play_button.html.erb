@@ -1,5 +1,5 @@
 <% if podcast.audio_url.present? %>
-  <button class="play-button" 
+  <button class="play-button"
           data-controller="audio-player"
           data-action="click->audio-player#playPodcast"
           data-audio-player-url-value="<%= podcast.audio_url %>"
@@ -12,4 +12,4 @@
   <button class="play-button disabled" title="Audio not available" disabled>
     <i class="fa-solid fa-clock"></i>
   </button>
-<% end %> 
+<% end %>

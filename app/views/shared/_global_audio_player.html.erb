@@ -1,18 +1,18 @@
-<div id="global-audio-player" 
-     class="global-audio-player" 
+<div id="global-audio-player"
+     class="global-audio-player"
      data-controller="global-audio-player"
      data-turbo-permanent>
-  
+
   <!-- Close Button -->
-  <button class="player-close-btn" 
+  <button class="player-close-btn"
           data-action="click->global-audio-player#close"
           title="Close player">
     <i class="fa-solid fa-times"></i>
   </button>
-  
+
   <div class="player-content">
     <!-- Left section: Title with marquee -->
-    <div class="player-title-section" 
+    <div class="player-title-section"
          data-action="click->global-audio-player#goToPodcast"
          title="Go to podcast page">
       <div class="player-title-container">
@@ -29,58 +29,58 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Center section: Play/Pause button -->
     <div class="player-controls-section">
-      <button class="player-play-pause-btn" 
+      <button class="player-play-pause-btn"
               data-action="click->global-audio-player#togglePlayPause"
               data-global-audio-player-target="playPauseBtn">
         <i class="fa-solid fa-play" data-global-audio-player-target="playPauseIcon"></i>
       </button>
-      
+
       <!-- Favorite Button -->
-      <div id="global-player-favorite" 
+      <div id="global-player-favorite"
            data-global-audio-player-target="favoriteContainer">
         <!-- Will be populated by JavaScript when podcast loads -->
       </div>
     </div>
-    
+
     <!-- Right section: Speed controls -->
     <div class="player-options-section">
       <div class="player-speed-control">
-        <button class="speed-btn" 
+        <button class="speed-btn"
                 data-action="click->global-audio-player#toggleSpeedDropdown"
                 data-global-audio-player-target="speedBtn">
           <span data-global-audio-player-target="speedText">1x</span>
           <i class="fa-solid fa-chevron-down"></i>
         </button>
         <div class="speed-dropdown" data-global-audio-player-target="speedDropdown">
-          <button class="speed-option" 
+          <button class="speed-option"
                   data-action="click->global-audio-player#setSpeed"
                   data-speed="0.75">0.75x</button>
-          <button class="speed-option" 
+          <button class="speed-option"
                   data-action="click->global-audio-player#setSpeed"
                   data-speed="1">1x</button>
-          <button class="speed-option" 
+          <button class="speed-option"
                   data-action="click->global-audio-player#setSpeed"
                   data-speed="1.5">1.5x</button>
-          <button class="speed-option" 
+          <button class="speed-option"
                   data-action="click->global-audio-player#setSpeed"
                   data-speed="2">2x</button>
         </div>
       </div>
     </div>
   </div>
-  
+
   <!-- Bottom Border Progress Line -->
-  <div class="player-progress-border" 
+  <div class="player-progress-border"
        data-action="click->global-audio-player#seekTo"
        data-global-audio-player-target="progressContainer">
     <div class="progress-line" data-global-audio-player-target="progressBar"></div>
   </div>
-  
+
   <!-- Hidden audio element -->
-  <audio data-global-audio-player-target="audio" 
+  <audio data-global-audio-player-target="audio"
          data-action="ended->global-audio-player#onAudioEnded loadedmetadata->global-audio-player#onAudioLoaded timeupdate->global-audio-player#onTimeUpdate">
   </audio>
-</div> 
+</div>

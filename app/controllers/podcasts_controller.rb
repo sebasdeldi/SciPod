@@ -17,7 +17,7 @@ class PodcastsController < ApplicationController
   #
   def home
     @query = params[:query]
-    @category_ids = Array(params[:category_ids]).reject(&:blank?)
+    @category_ids = Array(params[:category_ids]).compact_blank
 
     # Handle different combinations of search and category filtering
     if @category_ids.any? && @query.present?
@@ -152,7 +152,7 @@ class PodcastsController < ApplicationController
   def favorite_button
     respond_to do |format|
       format.html do
-        render partial: 'shared/favorite_button', 
+        render partial: 'shared/favorite_button',
                locals: { podcast: @podcast, current_user: current_user }
       end
     end

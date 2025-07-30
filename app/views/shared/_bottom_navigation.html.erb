@@ -7,7 +7,7 @@
         <i class="fas fa-home"></i>
       <% end %>
     </li>
-    
+
     <% if user_signed_in? %>
       <!-- Navigation Item: My Podcasts -->
       <li class="<%= 'active' if current_page?(my_podcasts_user_path(current_user)) %>">
@@ -15,14 +15,14 @@
           <i class="fas fa-microphone"></i>
         <% end %>
       </li>
-      
+
       <!-- Navigation Item: Favorites -->
       <li class="<%= 'active' if current_page?(favorites_user_path(current_user)) %>">
         <%= link_to favorites_user_path(current_user), data: { action: "click->bottom-navigation#preventActiveNavigation" } do %>
           <i class="fas fa-bookmark"></i>
         <% end %>
       </li>
-      
+
       <!-- Navigation Item: Profile -->
       <li class="<%= 'active' if current_page?(user_path(current_user)) %>">
         <%= link_to user_path(current_user), data: { action: "click->bottom-navigation#preventActiveNavigation" } do %>
@@ -36,7 +36,7 @@
           <i class="fas fa-sign-in-alt"></i>
         <% end %>
       </li>
-      
+
       <!-- Navigation Item: Sign Up -->
       <li class="<%= 'active' if current_page?(new_user_registration_path) %>">
         <%= link_to new_user_registration_path, data: { action: "click->bottom-navigation#preventActiveNavigation" } do %>
@@ -45,4 +45,4 @@
       </li>
     <% end %>
   </ul>
-</nav> 
+</nav>

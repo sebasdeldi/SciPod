@@ -1,4 +1,4 @@
-<% 
+<%
   # Determine context - all contexts now use the same structure
   context = params[:action] == 'home' ? 'search' : 'card'
 %>
@@ -8,8 +8,8 @@
                 method: :delete,
                 local: false,
                 class: "favorite-form",
-                data: { 
-                  turbo_stream: true 
+                data: {
+                  turbo_stream: true
                 } do |form| %>
     <%= form.hidden_field :query, value: params[:query] if params[:query].present? %>
     <%= form.hidden_field "from_#{context}", value: true %>
@@ -22,8 +22,8 @@
                 method: :post,
                 local: false,
                 class: "favorite-form",
-                data: { 
-                  turbo_stream: true 
+                data: {
+                  turbo_stream: true
                 } do |form| %>
     <%= form.hidden_field :query, value: params[:query] if params[:query].present? %>
     <%= form.hidden_field "from_#{context}", value: true %>

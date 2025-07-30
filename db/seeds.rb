@@ -1,13 +1,13 @@
 # Clear existing data in development environment
 if Rails.env.development?
-  puts "🧹 Clearing existing data..."
+  Rails.logger.debug "🧹 Clearing existing data..."
   Favorite.destroy_all
   Podcast.destroy_all
   Author.destroy_all
   Publisher.destroy_all
   Category.destroy_all
   User.destroy_all
-  puts "✅ Data cleared!"
+  Rails.logger.debug "✅ Data cleared!"
 end
 
 # Helper methods for generating realistic data
@@ -47,9 +47,9 @@ def random_academic_title_part
     "Emerging", "Experimental", "Global", "Innovative", "Integrated", "International",
     "Modern", "Novel", "Practical", "Quantitative", "Recent", "Sustainable", "Theoretical"
   ]
-  
+
   subjects = [
-    "Artificial Intelligence", "Machine Learning", "Data Science", "Biotechnology", 
+    "Artificial Intelligence", "Machine Learning", "Data Science", "Biotechnology",
     "Nanotechnology", "Quantum Computing", "Renewable Energy", "Climate Science",
     "Neuroscience", "Genomics", "Robotics", "Cybersecurity", "Blockchain Technology",
     "Materials Science", "Environmental Engineering", "Biomedical Engineering",
@@ -64,7 +64,7 @@ def random_academic_title_part
     "Linguistics", "Philosophy", "Ethics", "Law", "Economics", "Finance",
     "Marketing", "Management", "Leadership", "Innovation", "Entrepreneurship"
   ]
-  
+
   contexts = [
     "Applications", "Approaches", "Analysis", "Assessment", "Challenges", "Developments",
     "Discoveries", "Findings", "Frameworks", "Implications", "Innovations", "Insights",
@@ -73,7 +73,7 @@ def random_academic_title_part
     "Trends", "Understanding", "Advances", "Breakthroughs", "Case Studies",
     "Best Practices", "Future Directions", "Implementation", "Integration"
   ]
-  
+
   "#{prefixes.sample} #{subjects.sample}: #{contexts.sample}"
 end
 
@@ -84,7 +84,7 @@ def random_academic_summary
     "critical examination of", "systematic investigation into", "empirical study of",
     "theoretical framework for", "practical application of", "interdisciplinary approach to"
   ]
-  
+
   fields = [
     "healthcare delivery", "environmental sustainability", "educational outcomes",
     "technological innovation", "scientific understanding", "policy development",
@@ -92,7 +92,7 @@ def random_academic_summary
     "problem-solving", "decision-making", "resource management", "quality improvement",
     "risk assessment", "performance evaluation", "strategic planning", "knowledge discovery"
   ]
-  
+
   outcomes = [
     "improving patient outcomes", "reducing environmental impact", "enhancing efficiency",
     "advancing scientific knowledge", "supporting evidence-based practice",
@@ -101,7 +101,7 @@ def random_academic_summary
     "fostering innovation", "supporting professional development", "enhancing public health",
     "promoting social equity", "advancing technological capabilities"
   ]
-  
+
   "This research presents #{impacts.sample} #{fields.sample}, with #{outcomes.sample}. " \
   "The findings contribute to our understanding of complex systems and provide valuable " \
   "insights for practitioners, researchers, and policymakers working in related fields."
@@ -116,19 +116,19 @@ def random_script_excerpt
     "This study investigates",
     "We present findings on"
   ]
-  
+
   methods = [
     "systematic review", "meta-analysis", "longitudinal study", "cross-sectional analysis",
     "experimental design", "qualitative research", "quantitative methods", "mixed-methods approach",
     "case study analysis", "comparative study", "pilot study", "randomized controlled trial"
   ]
-  
+
   findings = [
     "significant correlations", "notable improvements", "positive outcomes", "measurable benefits",
     "important insights", "valuable discoveries", "key findings", "critical observations",
     "promising results", "substantial evidence", "clear patterns", "meaningful relationships"
   ]
-  
+
   "#{openings.sample} cutting-edge research in this field. Using #{methods.sample}, " \
   "our team identified #{findings.sample} that could reshape how we approach these challenges. " \
   "The implications of this work extend beyond academic research, offering practical applications " \
@@ -147,7 +147,7 @@ def random_doi
 end
 
 def random_publisher_name
-  types = ["University", "Institute", "Foundation", "Society", "Association", "Academy", "Center"]
+  types = [ "University", "Institute", "Foundation", "Society", "Association", "Academy", "Center" ]
   subjects = [
     "Science", "Technology", "Medicine", "Engineering", "Research", "Innovation",
     "Health", "Education", "Environment", "Sustainability", "Digital", "Advanced",
@@ -157,7 +157,7 @@ def random_publisher_name
     "Press", "Publishing", "Publications", "Journal", "Review", "Quarterly",
     "Annual", "Scientific", "Academic", "Professional", "Research", "Studies"
   ]
-  
+
   "#{subjects.sample} #{types.sample} #{descriptors.sample}"
 end
 
@@ -168,16 +168,16 @@ end
 # Audio URL to use for all podcasts
 SAMPLE_AUDIO_URL = "https://samplelib.com/lib/preview/mp3/sample-15s.mp3"
 
-puts "🌱 Starting seed process..."
+Rails.logger.debug "🌱 Starting seed process..."
 
 # Create users
-puts "👥 Creating users..."
+Rails.logger.debug "👥 Creating users..."
 users = []
 50.times do |i|
   first_name = random_first_name
   last_name = random_last_name
   email = "#{first_name.downcase}.#{last_name.downcase}#{i}@#{random_email_provider}"
-  
+
   user = User.create!(
     email: email,
     password: "password123",
@@ -185,55 +185,55 @@ users = []
   )
   users << user
 end
-puts "✅ Created #{users.count} users"
+Rails.logger.debug { "✅ Created #{users.count} users" }
 
 # Create authors
-puts "✍️ Creating authors..."
+Rails.logger.debug "✍️ Creating authors..."
 authors = []
 200.times do |i|
   # Ensure unique names by adding index when needed
   base_name = random_author_name
   name = base_name
-  
+
   # If this name already exists, add a suffix
   counter = 1
   while Author.exists?(name: name)
     name = "#{base_name} #{counter}"
     counter += 1
   end
-  
+
   author = Author.create!(name: name)
   authors << author
 end
-puts "✅ Created #{authors.count} authors"
+Rails.logger.debug { "✅ Created #{authors.count} authors" }
 
 # Create publishers
-puts "🏢 Creating publishers..."
+Rails.logger.debug "🏢 Creating publishers..."
 publishers = []
 50.times do |i|
   # Ensure unique names by adding index when needed
   base_name = random_publisher_name
   name = base_name
-  
+
   # If this name already exists, add a suffix
   counter = 1
   while Publisher.exists?(name: name)
     name = "#{base_name} #{counter}"
     counter += 1
   end
-  
+
   publisher = Publisher.create!(name: name)
   publishers << publisher
 end
-puts "✅ Created #{publishers.count} publishers"
+Rails.logger.debug { "✅ Created #{publishers.count} publishers" }
 
 # Create categories
-puts "🏷️ Creating categories..."
+Rails.logger.debug "🏷️ Creating categories..."
 category_names = [
   "Technology",
   "Science",
   "Medicine",
-  "Engineering", 
+  "Engineering",
   "Biology",
   "Physics",
   "Chemistry",
@@ -267,31 +267,31 @@ category_names.each do |name|
   category = Category.create!(name: name)
   categories << category
 end
-puts "✅ Created #{categories.count} categories"
+Rails.logger.debug { "✅ Created #{categories.count} categories" }
 
 # Create podcasts
-puts "🎙️ Creating podcasts..."
+Rails.logger.debug "🎙️ Creating podcasts..."
 podcasts = []
-statuses = [:processing, :ready, :error, :cancelled]
-status_weights = [0.1, 0.75, 0.1, 0.05] # Mostly ready, some processing/error, few cancelled
+statuses = [ :processing, :ready, :error, :cancelled ]
+status_weights = [ 0.1, 0.75, 0.1, 0.05 ] # Mostly ready, some processing/error, few cancelled
 
 500.times do |i|
   # Select random status based on weights
-  status = statuses[status_weights.each_with_index.map { |weight, idx| [weight, idx] }
+  status = statuses[status_weights.each_with_index.map { |weight, idx| [ weight, idx ] }
                    .sort_by { |weight, _| rand }
-                   .reverse.first[1]]
-  
+                   .last[1]]
+
   # Ensure unique titles
   base_title = random_academic_title_part
   title = base_title
-  
+
   # If this title already exists, add a suffix
   counter = 1
   while Podcast.exists?(title: title)
     title = "#{base_title} #{counter}"
     counter += 1
   end
-  
+
   podcast = Podcast.create!(
     title: title,
     summary: random_academic_summary,
@@ -300,9 +300,9 @@ status_weights = [0.1, 0.75, 0.1, 0.05] # Mostly ready, some processing/error, f
     doi: "#{random_doi}.#{i}", # Ensure uniqueness
     user: users.sample,
     status: status,
-    status_details: status == :processing ? ["processing_source_file", "generating_script", "generating_audio_file"].sample : ""
+    status_details: status == :processing ? [ "processing_source_file", "generating_script", "generating_audio_file" ].sample : ""
   )
-  
+
   # Attach audio file from URL for ready podcasts
   if status == :ready
     begin
@@ -313,60 +313,64 @@ status_weights = [0.1, 0.75, 0.1, 0.05] # Mostly ready, some processing/error, f
         content_type: "audio/mpeg"
       )
     rescue => e
-      puts "⚠️ Could not attach audio for podcast #{podcast.id}: #{e.message}"
+      Rails.logger.debug { "⚠️ Could not attach audio for podcast #{podcast.id}: #{e.message}" }
     end
   end
-  
+
   podcasts << podcast
-  
-  print "." if i % 50 == 0
+
+  Rails.logger.debug "." if i % 50 == 0
 end
-puts "\n✅ Created #{podcasts.count} podcasts"
+Rails.logger.debug { "\n✅ Created #{podcasts.count} podcasts" }
 
 # Associate podcasts with authors (1-4 authors per podcast)
-puts "🔗 Creating podcast-author associations..."
+Rails.logger.debug "🔗 Creating podcast-author associations..."
+author_count_weights = [ 1, 1, 1, 2, 2, 3, 4 ] # Weighted toward 1-2 authors
 podcasts.each do |podcast|
-  author_count = [1, 1, 1, 2, 2, 3, 4].sample # Weighted toward 1-2 authors
+  author_count = author_count_weights.sample
   selected_authors = authors.sample(author_count)
   podcast.authors = selected_authors
 end
-puts "✅ Created podcast-author associations"
+Rails.logger.debug "✅ Created podcast-author associations"
 
 # Associate podcasts with publishers (0-2 publishers per podcast)
-puts "🔗 Creating podcast-publisher associations..."
+Rails.logger.debug "🔗 Creating podcast-publisher associations..."
+publisher_count_weights = [ 0, 1, 1, 1, 2 ] # Weighted toward 0-1 publishers
 podcasts.each do |podcast|
-  publisher_count = [0, 1, 1, 1, 2].sample # Weighted toward 0-1 publishers
+  publisher_count = publisher_count_weights.sample
   if publisher_count > 0
     selected_publishers = publishers.sample(publisher_count)
     podcast.publishers = selected_publishers
   end
 end
-puts "✅ Created podcast-publisher associations"
+Rails.logger.debug "✅ Created podcast-publisher associations"
 
 # Associate podcasts with categories (1-3 categories per podcast)
-puts "🔗 Creating podcast-category associations..."
+Rails.logger.debug "🔗 Creating podcast-category associations..."
+category_count_weights = [ 1, 1, 1, 2, 2, 3 ] # Weighted toward 1-2 categories
 podcasts.each do |podcast|
-  category_count = [1, 1, 1, 2, 2, 3].sample # Weighted toward 1-2 categories
+  category_count = category_count_weights.sample
   selected_categories = categories.sample(category_count)
   podcast.categories = selected_categories
 end
-puts "✅ Created podcast-category associations"
+Rails.logger.debug "✅ Created podcast-category associations"
 
 # Create favorites (realistic distribution)
-puts "❤️ Creating favorites..."
+Rails.logger.debug "❤️ Creating favorites..."
 favorites_count = 0
+favorite_count_weights = [ 0, 0, 1, 1, 2, 2, 3, 3, 4, 5, 6, 7, 8, 10, 12, 15, 20 ] # Weighted toward fewer
 
 users.each do |user|
   # Each user favorites 0-20 podcasts (weighted toward fewer)
-  favorite_count = [0, 0, 1, 1, 2, 2, 3, 3, 4, 5, 6, 7, 8, 10, 12, 15, 20].sample
-  
+  favorite_count = favorite_count_weights.sample
+
   if favorite_count > 0
     # Bias toward favoriting "ready" podcasts
     available_podcasts = podcasts.select { |p| p.status == "ready" }
-    available_podcasts += podcasts.sample([podcasts.count / 4, 50].min) # Add some variety
-    
-    selected_podcasts = available_podcasts.uniq.sample([favorite_count, available_podcasts.count].min)
-    
+    available_podcasts += podcasts.sample([ podcasts.count / 4, 50 ].min) # Add some variety
+
+    selected_podcasts = available_podcasts.uniq.sample([ favorite_count, available_podcasts.count ].min)
+
     selected_podcasts.each do |podcast|
       begin
         Favorite.create!(user: user, podcast: podcast)
@@ -377,41 +381,41 @@ users.each do |user|
     end
   end
 end
-puts "✅ Created #{favorites_count} favorites"
+Rails.logger.debug { "✅ Created #{favorites_count} favorites" }
 
 # Final statistics
-puts "\n📊 Seed Data Summary:"
-puts "👥 Users: #{User.count}"
-puts "✍️ Authors: #{Author.count}"
-puts "🏢 Publishers: #{Publisher.count}"
-puts "🏷️ Categories: #{Category.count}"
-puts "🎙️ Podcasts: #{Podcast.count}"
-puts "   📊 By Status:"
-puts "   ⏳ Processing: #{Podcast.where(status: :processing).count}"
-puts "   ✅ Ready: #{Podcast.where(status: :ready).count}"
-puts "   ❌ Error: #{Podcast.where(status: :error).count}"
-puts "   🚫 Cancelled: #{Podcast.where(status: :cancelled).count}"
-puts "❤️ Favorites: #{Favorite.count}"
-puts "🔗 Podcast-Author associations: #{Podcast.joins(:authors).count}"
-puts "🔗 Podcast-Publisher associations: #{Podcast.joins(:publishers).count}"
-puts "🔗 Podcast-Category associations: #{Podcast.joins(:categories).count}"
+Rails.logger.debug "\n📊 Seed Data Summary:"
+Rails.logger.debug { "👥 Users: #{User.count}" }
+Rails.logger.debug { "✍️ Authors: #{Author.count}" }
+Rails.logger.debug { "🏢 Publishers: #{Publisher.count}" }
+Rails.logger.debug { "🏷️ Categories: #{Category.count}" }
+Rails.logger.debug { "🎙️ Podcasts: #{Podcast.count}" }
+Rails.logger.debug "   📊 By Status:"
+Rails.logger.debug { "   ⏳ Processing: #{Podcast.where(status: :processing).count}" }
+Rails.logger.debug { "   ✅ Ready: #{Podcast.where(status: :ready).count}" }
+Rails.logger.debug { "   ❌ Error: #{Podcast.where(status: :error).count}" }
+Rails.logger.debug { "   🚫 Cancelled: #{Podcast.where(status: :cancelled).count}" }
+Rails.logger.debug { "❤️ Favorites: #{Favorite.count}" }
+Rails.logger.debug { "🔗 Podcast-Author associations: #{Podcast.joins(:authors).count}" }
+Rails.logger.debug { "🔗 Podcast-Publisher associations: #{Podcast.joins(:publishers).count}" }
+Rails.logger.debug { "🔗 Podcast-Category associations: #{Podcast.joins(:categories).count}" }
 
 # Show some example data
-puts "\n🎯 Sample Data:"
+Rails.logger.debug "\n🎯 Sample Data:"
 sample_podcast = Podcast.includes(:authors, :publishers, :categories, :favorites).ready.first
 if sample_podcast
-  puts "📚 Sample Podcast: '#{sample_podcast.title}'"
-  puts "   👤 Creator: #{sample_podcast.user.email}"
-  puts "   ✍️ Authors: #{sample_podcast.authors.pluck(:name).join(', ')}"
-  puts "   🏢 Publishers: #{sample_podcast.publishers.pluck(:name).join(', ')}" if sample_podcast.publishers.any?
-  puts "   🏷️ Categories: #{sample_podcast.categories.pluck(:name).join(', ')}"
-  puts "   ❤️ Favorites: #{sample_podcast.favorites.count}"
-  puts "   📝 Summary: #{sample_podcast.summary[0..100]}..."
+  Rails.logger.debug { "📚 Sample Podcast: '#{sample_podcast.title}'" }
+  Rails.logger.debug { "   👤 Creator: #{sample_podcast.user.email}" }
+  Rails.logger.debug { "   ✍️ Authors: #{sample_podcast.authors.pluck(:name).join(', ')}" }
+  Rails.logger.debug { "   🏢 Publishers: #{sample_podcast.publishers.pluck(:name).join(', ')}" } if sample_podcast.publishers.any?
+  Rails.logger.debug { "   🏷️ Categories: #{sample_podcast.categories.pluck(:name).join(', ')}" }
+  Rails.logger.debug { "   ❤️ Favorites: #{sample_podcast.favorites.count}" }
+  Rails.logger.debug { "   📝 Summary: #{sample_podcast.summary[0..100]}..." }
 end
 
 most_favorited = Podcast.left_joins(:favorites).group(:id).order('COUNT(favorites.id) DESC').first
 if most_favorited
-  puts "\n🏆 Most Favorited Podcast: '#{most_favorited.title}' (#{most_favorited.favorites.count} favorites)"
+  Rails.logger.debug { "\n🏆 Most Favorited Podcast: '#{most_favorited.title}' (#{most_favorited.favorites.count} favorites)" }
 end
 
-puts "\n🎉 Seeding completed successfully!"
+Rails.logger.debug "\n🎉 Seeding completed successfully!"

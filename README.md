@@ -26,15 +26,19 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 
 ### 📊 **Processing Pipeline & Status Tracking**
 - Real-time processing status tracking with detailed pipeline stages
-- Status management: `processing`, `ready`, `error`
+- Status management: `processing`, `ready`, `error`, `cancelled`
 - Granular status details: `processing_source_file`, `generating_script`, `generating_audio_file`
+- PostgreSQL enum-based status system for data integrity
 - Background job integration ready for AI processing workflows
 - Processing progress visibility for users
+- Flexible cancellation system for user-initiated stops
 
 ### 🔍 **Discovery & Search**
 - **Google-Style Homepage**: Clean, centered search interface inspired by Google
 - **Modal Search Results**: Instant search without page redirects - results appear in elegant overlay
-- **Full-text search** across podcasts, authors, and publishers
+- **Full-text search** across podcasts, authors, publishers, and categories
+- **Category Filtering**: Filter by 30+ scientific and academic categories
+- **Multi-Filter Search**: Combine text search with category filters for precise results
 - **Browser History Support**: Back button restores modal with same search results
 - **Bookmarkable Searches**: Share and bookmark search URLs (e.g., `/?search=AI`)
 - **Smart Button States**: Search button auto-enables/disables based on input
@@ -44,11 +48,17 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 - Filter by popularity and recency
 - Browse by authors and publishers
 
-### 🎧 **Listening Experience**
-- HTML5 audio player with standard controls
-- Track listening progress
-- Stream audio directly in browser
-- View podcast metadata and content
+### 🎧 **Enhanced Audio Experience**
+- **Global Audio Player**: Persistent player that continues across page navigation
+- **Speed Controls**: Variable playback speeds (0.75x, 1x, 1.5x, 2x)
+- **Progress Tracking**: Visual progress bar with seek functionality
+- **Cross-Page Continuity**: Audio continues playing during navigation
+- **Player State Persistence**: Remembers position and settings across sessions
+- **Integrated Favorites**: Favorite/unfavorite directly from the player
+- **Click-to-Navigate**: Click player title to go to podcast page
+- **Time Display**: Current time and total duration indicators
+- **Smart Play Buttons**: Individual play buttons on podcast cards
+- **Audio URL Storage**: Direct streaming from cloud storage (S3)
 
 ### ❤️ **Social Features**
 - Favorite/unfavorite podcasts with instant Turbo Stream updates
@@ -58,7 +68,7 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 - See most popular podcasts
 - User-generated content discovery
 
-### 📱 **Modern UX**
+### 📱 **Modern UX & Mobile Experience**
 - **Google-Style Interface**: Beautiful, centered homepage design with clean branding
 - **Modal Search Experience**: Search results in overlay without navigation disruption
 - **Smart Navigation**: Same-tab browsing with browser history support
@@ -69,6 +79,10 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 - **Context-aware interactions** (search state preservation)
 - **Responsive design** for all devices
 - **Progressive enhancement** with graceful fallbacks
+- **Progressive Web App (PWA)**: Install as mobile app with offline capabilities
+- **Bottom Navigation Bar**: Mobile-friendly navigation for key actions
+- **Clickable Cards**: Intuitive card-based interface with smart interaction detection
+- **Touch-Optimized**: Designed for mobile-first user experience
 
 ## ✨ **Recent Improvements**
 
@@ -103,35 +117,60 @@ Podcast AI is a modern web application built with Ruby on Rails that allows user
 - **Pipeline Stages**: Granular tracking through `processing_source_file`, `generating_script`, `generating_audio_file`
 - **Error Handling**: Robust error state management with detailed status information
 - **Background Job Ready**: Status system designed for asynchronous AI processing workflows
+- **PostgreSQL Enums**: Type-safe status management with database-level constraints
+- **Cancellation Support**: Users can cancel processing jobs with proper state management
+
+### 🏷️ **Category System & Organization**
+- **30+ Scientific Categories**: Comprehensive categorization for academic content
+- **Multi-Category Support**: Podcasts can belong to multiple categories simultaneously
+- **Smart Category Filtering**: Filter search results by one or multiple categories
+- **Auto-Normalization**: Category names automatically formatted and deduplicated
+- **Search Integration**: Categories included in full-text search capabilities
+- **Academic Focus**: Categories tailored for research papers and scientific content
+
+### 🎵 **Enhanced Audio Architecture**
+- **Cloud-First Storage**: Audio files stored as URLs (S3/CDN) instead of local attachments
+- **Global Player System**: Persistent audio player that survives page navigation
+- **Advanced Controls**: Variable speed playback, seeking, progress tracking
+- **State Persistence**: Player remembers position and settings across sessions
+- **Mobile-Optimized**: Touch-friendly controls designed for mobile devices
 
 ## 🛠️ Technology Stack
 
 ### **Backend**
 - **Ruby 3.4** - Modern Ruby with latest features
 - **Rails 8.0.2** - Latest Rails with new defaults
-- **PostgreSQL 16** - Robust relational database
+- **PostgreSQL 16** - Robust relational database with enum support
 - **Sidekiq** - Background job processing
-- **Redis** - Caching and job queue
+- **Solid Cache/Cable** - Database-backed caching and Action Cable
 
 ### **Frontend**
 - **Hotwire** - Turbo + Stimulus for SPA experience
-- **ESBuild** - Fast JavaScript bundling
+- **jsbundling-rails** - Modern JavaScript bundling
 - **Propshaft** - Modern asset pipeline
-- **CSS3** - Custom responsive styling
+- **CSS3** - Custom responsive styling with mobile-first design
+- **PWA Support** - Service worker and manifest for app-like experience
 
 ### **Key Gems**
 - **Devise** - Authentication system
-- **Active Storage** - File upload handling
-- **pg_search** - Full-text search capabilities
-- **image_processing** - File processing utilities
+- **Active Storage** - File upload handling for PDFs
+- **pg_search** - Full-text search across models and associations
+- **dotenv-rails** - Environment variable management
+
+### **Deployment & Infrastructure**
+- **Kamal** - Modern deployment tool for containerized apps
+- **Docker** - Containerization with multi-stage builds
+- **Thruster** - HTTP acceleration and compression for Puma
 
 ### **Development & Quality**
 - **RSpec** - Comprehensive testing framework
 - **FactoryBot** - Test data generation
-- **Capybara** - Integration testing
-- **RuboCop** - Ruby code quality and style enforcement
+- **Capybara + Selenium** - Browser automation testing
+- **RuboCop Omakase** - Ruby style guide enforcement
+- **RuboCop Performance/RSpec/FactoryBot** - Specialized linting
 - **ERB Lint** - ERB template linting and formatting
-- **dotenv** - Environment variable management
+- **Brakeman** - Security vulnerability analysis
+- **Shoulda Matchers** - RSpec testing helpers
 
 ## 📋 Prerequisites
 
@@ -237,6 +276,7 @@ Every uploaded podcast goes through a structured processing pipeline with real-t
 - **`processing`** - Podcast is being converted (default for new uploads)
 - **`ready`** - Podcast is complete and available for listening
 - **`error`** - Processing failed with error details
+- **`cancelled`** - Processing was cancelled by user or system
 
 #### **Processing Stages** 
 1. **`processing_source_file`** - Initial upload and PDF parsing
@@ -250,15 +290,18 @@ Every uploaded podcast goes through a structured processing pipeline with real-t
 podcast.processing?  # true during conversion
 podcast.ready?       # true when available
 podcast.error?       # true if failed
+podcast.cancelled?   # true if cancelled
 
 # Update status during background processing
 podcast.update!(status_details: "generating_script")
 podcast.update!(status_details: "generating_audio_file")
 podcast.ready!       # Mark as complete
+podcast.cancelled!   # Mark as cancelled
 
-# Query by status
-Podcast.by_status(:processing)
-Podcast.by_status_details("generating_script")
+# Query by status (using PostgreSQL enums)
+Podcast.where(status: 'processing')
+Podcast.where(status: 'ready')
+Podcast.where(status_details: "generating_script")
 ```
 
 ### **Discovering Content**
@@ -278,7 +321,9 @@ Podcast.by_status_details("generating_script")
 
 #### **Search Features**
 - **Instant modal search** from homepage
-- **Bookmarkable URLs** - Share search results (e.g., `/?search=AI`)
+- **Category Filtering** - Filter by scientific disciplines like AI, Biology, Physics
+- **Multi-Filter Search** - Combine text search with category selection
+- **Bookmarkable URLs** - Share search results (e.g., `/?search=AI&category_ids[]=1`)
 - **Browser history support** - Back button restores search state
 - **Smart button states** - Visual feedback for form interactions
 - **Favorite counts** - See popularity without complex interactions
@@ -289,6 +334,21 @@ Podcast.by_status_details("generating_script")
 - **Favorites** - Access your bookmarked podcasts
 - **Dashboard** - See your stats and recent activity
 
+### **Mobile & PWA Experience**
+
+#### **Progressive Web App Installation**
+1. **Visit on Mobile** - Open the app in your mobile browser
+2. **Install Prompt** - Tap "Add to Home Screen" when prompted
+3. **App Experience** - Launches like a native mobile app
+4. **Offline Support** - Basic functionality available offline
+
+#### **Mobile Features**
+- **Bottom Navigation** - Quick access to Home, My Podcasts, Favorites, Profile
+- **Touch-Optimized** - All controls designed for finger-friendly interaction
+- **Global Audio Player** - Persistent player with touch controls
+- **Responsive Design** - Adapts perfectly to any screen size
+- **Smart Cards** - Tap anywhere on podcast cards except buttons to navigate
+
 ## 🏗️ Architecture Overview
 
 ### **MVC Structure**
@@ -296,24 +356,30 @@ Podcast.by_status_details("generating_script")
 ```
 app/
 ├── controllers/          # Request handling and business logic
-│   ├── podcasts_controller.rb    # Core podcast CRUD operations
-│   ├── favorites_controller.rb   # Favoriting system
+│   ├── podcasts_controller.rb    # Core podcast CRUD operations with search/filtering
+│   ├── favorites_controller.rb   # AJAX favoriting system
 │   ├── users_controller.rb       # User dashboard and profiles
-│   ├── authors_controller.rb     # Author management
-│   └── publishers_controller.rb  # Publisher management
+│   └── application_controller.rb # Base controller with modern browser support
 ├── models/              # Data models and business logic
 │   ├── user.rb         # User authentication and relationships
-│   ├── podcast.rb      # Core podcast model with search
-│   ├── author.rb       # Author model
-│   ├── publisher.rb    # Publisher model
+│   ├── podcast.rb      # Core podcast model with search and categories
+│   ├── author.rb       # Author model with search capabilities
+│   ├── publisher.rb    # Publisher model with search capabilities
+│   ├── category.rb     # Category model with normalization
 │   └── favorite.rb     # User-podcast favoriting join model
 ├── views/              # Templates and UI components
 │   ├── layouts/        # Application layout and navigation
-│   ├── podcasts/       # Podcast-related views
+│   ├── podcasts/       # Podcast-related views with modal search
 │   ├── users/          # User dashboard and profile views
-│   └── shared/         # Reusable partials and components
+│   ├── shared/         # Reusable partials (audio player, navigation, buttons)
+│   └── pwa/           # Progressive Web App manifest and service worker
 └── javascript/         # Stimulus controllers for interactions
-    └── controllers/    # Client-side behavior
+    └── controllers/    # Rich client-side behavior
+        ├── global_audio_player_controller.js  # Global persistent audio player
+        ├── clickable_card_controller.js       # Smart card interactions
+        ├── bottom_navigation_controller.js    # Mobile navigation
+        ├── searchable_dropdown_controller.js  # Category filtering
+        └── audio_player_controller.js         # Individual play buttons
 ```
 
 ### **Database Schema**
@@ -332,11 +398,11 @@ podcasts
 ├── doi (optional, unique)
 ├── summary (text)
 ├── script (text)
-├── status (integer: processing=0, ready=1, error=2, default=0)
+├── status (enum: processing, ready, error, cancelled, default=processing)
 ├── status_details (string: "", "processing_source_file", "generating_script", "generating_audio_file")
+├── audio_url (string: direct URL to audio file in cloud storage)
 ├── user_id (foreign key)
 ├── source_file (Active Storage)
-├── audio (Active Storage)
 └── timestamps
 
 authors
@@ -349,6 +415,11 @@ publishers
 ├── name (required, unique)
 └── timestamps
 
+categories
+├── id (primary key)
+├── name (required, unique, case-insensitive)
+└── timestamps
+
 favorites (join table)
 ├── user_id (foreign key)
 ├── podcast_id (foreign key)
@@ -357,6 +428,7 @@ favorites (join table)
 # Many-to-many join tables
 authors_podcasts
 publishers_podcasts
+categories_podcasts
 ```
 
 ### **Key Design Patterns**
@@ -536,10 +608,37 @@ RAILS_ENV=production bundle exec rails db:seed
 
 ### **Docker Deployment**
 
-```dockerfile
-# Dockerfile is included for containerized deployment
-docker build -t podcast-ai .
-docker run -p 3000:3000 --env-file .env.production podcast-ai
+```bash
+# Build the Docker image
+docker build -t scipod .
+
+# Run the containerized application
+docker run -d -p 80:80 \
+  -e RAILS_MASTER_KEY=<value from config/master.key> \
+  -e DATABASE_URL=postgresql://user:pass@host:port/scipod_production \
+  --name scipod scipod
+
+# Or using docker-compose (create docker-compose.yml first)
+docker-compose up -d
+```
+
+### **Kamal Deployment (Recommended)**
+
+```bash
+# Configure deployment servers in config/deploy.yml
+# Set up secrets in .kamal/secrets
+
+# Deploy to production servers
+bin/kamal deploy
+
+# View application logs
+bin/kamal app logs -f
+
+# Access console on production
+bin/kamal app exec --interactive --reuse "bin/rails console"
+
+# Database console
+bin/kamal app exec --interactive --reuse "bin/rails dbconsole"
 ```
 
 ### **Heroku Deployment**
