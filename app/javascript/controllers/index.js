@@ -19,6 +19,9 @@ application.register("flash", FlashController)
 import GlobalAudioPlayerController from "./global_audio_player_controller"
 application.register("global-audio-player", GlobalAudioPlayerController)
 
+import NavigationTabsController from "./navigation_tabs_controller"
+application.register("navigation-tabs", NavigationTabsController)
+
 import PageTransitionController from "./page_transition_controller"
 application.register("page-transition", PageTransitionController)
 

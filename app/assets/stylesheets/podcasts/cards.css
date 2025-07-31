@@ -97,6 +97,10 @@
   cursor: pointer;
 }
 
+/* .result-item:first-child {
+  padding: 0rem 0rem;
+} */
+
 .result-item:last-child {
   border-bottom: none;
   margin-bottom: 0;

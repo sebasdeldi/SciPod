@@ -19,40 +19,29 @@ class PodcastsController < ApplicationController
     @query = params[:query]
     @category_ids = Array(params[:category_ids]).compact_blank
     @before_cursor = params[:before]
+    @tab = params[:tab] || 'discover'
 
-    # Build the base relation based on search and category filtering
-    base_relation = if @category_ids.any? && @query.present?
-      # Both categories and search: use subquery to avoid table alias conflicts
-      # OR operation: podcasts in ANY of the selected categories
-      category_podcast_ids = Podcast.joins(:categories)
-                                    .where(categories: { id: @category_ids })
-                                    .distinct
-                                    .pluck(:id)
-      # Get unique podcast IDs efficiently - pg_search creates duplicates via joins
-      search_podcast_ids = unique_podcast_ids_from_search(
-        Podcast.where(id: category_podcast_ids).search_by_content(@query)
-      )
-      Podcast.where(id: search_podcast_ids)
-             .includes(:user, :authors, :publishers, :categories)
-             .with_favorites_for_user(current_user)
-             .distinct
-    elsif @category_ids.any?
-      # Only category filters: show all podcasts in ANY of the selected categories (OR operation)
-      Podcast.joins(:categories)
-             .where(categories: { id: @category_ids })
-             .with_favorites_for_user(current_user)
-             .distinct
-    elsif @query.present?
-      # Only search: get unique IDs efficiently - pg_search creates duplicates via joins
-      search_podcast_ids = unique_podcast_ids_from_search(
-        Podcast.search_by_content(@query)
-      )
-      Podcast.where(id: search_podcast_ids)
-             .with_favorites_for_user(current_user)
-             .distinct
-    else
-      # Neither: show recent podcasts (discovery mode)
-      Podcast.with_favorites_for_user(current_user)
+    # Build the base relation based on tab selection and search/category filtering
+    base_relation = case @tab
+    when 'bookmarks'
+      # User's favorited podcasts
+      if user_signed_in?
+        user_favorites_relation(@query, @category_ids)
+      else
+        # Redirect to login or show empty results
+        Podcast.none
+      end
+    when 'by_me'
+      # User's created podcasts
+      if user_signed_in?
+        user_podcasts_relation(@query, @category_ids)
+      else
+        # Redirect to login or show empty results
+        Podcast.none
+      end
+    else # 'discover'
+      # All podcasts (current default behavior)
+      discover_podcasts_relation(@query, @category_ids)
     end
 
     # Apply cursor pagination to the relation using ID for unique ordering
@@ -204,5 +193,113 @@ class PodcastsController < ApplicationController
     params.expect(
       podcast: [ :source_file ]
     )
+  end
+
+  ##
+  # Get discover/all podcasts relation with search and category filtering
+  #
+  def discover_podcasts_relation(query, category_ids)
+    if category_ids.any? && query.present?
+      # OR operation: podcasts in ANY of the selected categories
+      category_podcast_ids = Podcast.joins(:categories)
+                                    .where(categories: { id: category_ids })
+                                    .distinct
+                                    .pluck(:id)
+      # Get unique podcast IDs efficiently - pg_search creates duplicates via joins
+      search_podcast_ids = unique_podcast_ids_from_search(
+        Podcast.where(id: category_podcast_ids).search_by_content(query)
+      )
+      Podcast.where(id: search_podcast_ids)
+             .includes(:user, :authors, :publishers, :categories)
+             .with_favorites_for_user(current_user)
+             .distinct
+    elsif category_ids.any?
+      # Only category filters: show all podcasts in ANY of the selected categories (OR operation)
+      Podcast.joins(:categories)
+             .where(categories: { id: category_ids })
+             .with_favorites_for_user(current_user)
+             .distinct
+    elsif query.present?
+      # Only search: get unique IDs efficiently - pg_search creates duplicates via joins
+      search_podcast_ids = unique_podcast_ids_from_search(
+        Podcast.search_by_content(query)
+      )
+      Podcast.where(id: search_podcast_ids)
+             .with_favorites_for_user(current_user)
+             .distinct
+    else
+      # Neither: show recent podcasts (discovery mode)
+      Podcast.with_favorites_for_user(current_user)
+    end
+  end
+
+  ##
+  # Get user's favorited podcasts relation with search and category filtering
+  #
+  def user_favorites_relation(query, category_ids)
+    base_relation = current_user.favorited_podcasts
+                               .includes(:user, :authors, :publishers, :categories)
+                               .with_favorites_for_user(current_user)
+
+    if category_ids.any? && query.present?
+      # Filter favorites by categories and search
+      category_podcast_ids = base_relation.joins(:categories)
+                                         .where(categories: { id: category_ids })
+                                         .distinct
+                                         .pluck(:id)
+      search_podcast_ids = unique_podcast_ids_from_search(
+        Podcast.where(id: category_podcast_ids).search_by_content(query)
+      )
+      base_relation.where(id: search_podcast_ids).distinct
+    elsif category_ids.any?
+      # Filter favorites by categories only
+      base_relation.joins(:categories)
+                   .where(categories: { id: category_ids })
+                   .distinct
+    elsif query.present?
+      # Filter favorites by search only
+      search_podcast_ids = unique_podcast_ids_from_search(
+        base_relation.search_by_content(query)
+      )
+      base_relation.where(id: search_podcast_ids).distinct
+    else
+      # Show all favorites
+      base_relation.distinct
+    end
+  end
+
+  ##
+  # Get user's created podcasts relation with search and category filtering
+  #
+  def user_podcasts_relation(query, category_ids)
+    base_relation = current_user.podcasts
+                               .includes(:authors, :publishers, :categories)
+                               .with_favorites_for_user(current_user)
+
+    if category_ids.any? && query.present?
+      # Filter user's podcasts by categories and search
+      category_podcast_ids = base_relation.joins(:categories)
+                                         .where(categories: { id: category_ids })
+                                         .distinct
+                                         .pluck(:id)
+      search_podcast_ids = unique_podcast_ids_from_search(
+        Podcast.where(id: category_podcast_ids).search_by_content(query)
+      )
+      base_relation.where(id: search_podcast_ids).distinct
+    elsif category_ids.any?
+      # Filter user's podcasts by categories only
+      base_relation.joins(:categories)
+                   .where(categories: { id: category_ids })
+                   .distinct
+    elsif query.present?
+      # Filter user's podcasts by search only
+      search_podcast_ids = unique_podcast_ids_from_search(
+        base_relation.search_by_content(query)
+      )
+      base_relation.where(id: search_podcast_ids).distinct
+    else
+      # Show all user's podcasts
+      base_relation
+    end
   end
 end

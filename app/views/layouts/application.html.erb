@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Scipod" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : "Scipod - AI-Powered Podcast Creation" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -18,12 +18,23 @@
     <link rel="apple-touch-icon" href="/icon.png">
     <script src="https://kit.fontawesome.com/3726576b54.js" crossorigin="anonymous"></script>
 
+    <!-- Custom Turbo Frame styles for animations -->
+    <style>
+      turbo-frame {
+        display: block;
+      }
+      
+      turbo-frame[busy] {
+        opacity: 0.5;
+      }
+    </style>
+
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body data-user-signed-in="<%= user_signed_in? %>">
+  <body<%= " data-user-signed-in" if user_signed_in? %>>
     <%= render 'shared/global_audio_player' %>
     <%= render 'shared/flash_messages' %>
 

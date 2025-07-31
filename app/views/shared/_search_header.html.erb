@@ -4,6 +4,7 @@
     <%= form_with url: root_path, method: :get,
                   data: { turbo_frame: "search_results" },
                   class: "main-search-form" do |form| %>
+      <%= form.hidden_field :tab, value: params[:tab] || 'discover' %>
       <div class="search-filters-container" data-controller="searchable-dropdown">
         <div class="main-search-input-container">
           <%= form.text_field :query,

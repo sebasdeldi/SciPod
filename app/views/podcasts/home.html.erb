@@ -2,6 +2,45 @@
 
 <%= render 'shared/search_header' %>
 
+<!-- Navigation Buttons -->
+<div class="navigation-tabs-section" data-controller="navigation-tabs">
+  <div class="navigation-tabs-container">
+    <% current_tab = params[:tab] || 'discover' %>
+    <%= form_with url: root_path, method: :get, data: { turbo_frame: "search_results", navigation_tabs_target: "form" }, class: "tab-form" do |form| %>
+      <%= form.hidden_field :query, value: @query %>
+      <% if @category_ids.present? %>
+        <% @category_ids.each do |category_id| %>
+          <%= form.hidden_field :category_ids, value: category_id, multiple: true %>
+        <% end %>
+      <% end %>
+      <%= form.hidden_field :tab, value: current_tab, data: { navigation_tabs_target: "tabInput" } %>
+    <% end %>
+    
+    <div class="navigation-tabs">
+      <button type="button" 
+              class="nav-tab <%= 'active' if current_tab == 'discover' %>" 
+              data-action="click->navigation-tabs#switchTab"
+              data-tab="discover">
+        Discover
+      </button>
+      <% if user_signed_in? %>
+        <button type="button" 
+                class="nav-tab <%= 'active' if current_tab == 'bookmarks' %>" 
+                data-action="click->navigation-tabs#switchTab"
+                data-tab="bookmarks">
+          Bookmarks
+        </button>
+        <button type="button" 
+                class="nav-tab <%= 'active' if current_tab == 'by_me' %>" 
+                data-action="click->navigation-tabs#switchTab"
+                data-tab="by_me">
+          By me
+        </button>
+      <% end %>
+    </div>
+  </div>
+</div>
+
 <div class="search-layout">
   <!-- Main Content Layout -->
   <div class="search-content-layout">
@@ -20,8 +59,17 @@
                 <h3>No podcasts found</h3>
                 <p>Try searching with different keywords or browse all podcasts.</p>
               <% else %>
-                <h3>No podcasts yet</h3>
-                <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
+                <% case @tab %>
+                <% when 'bookmarks' %>
+                  <h3>No favorites yet</h3>
+                  <p>Start exploring podcasts and save your favorites here.</p>
+                <% when 'by_me' %>
+                  <h3>No podcasts yet</h3>
+                  <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
+                <% else %>
+                  <h3>No podcasts yet</h3>
+                  <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
+                <% end %>
               <% end %>
             </div>
           <% end %>
@@ -31,7 +79,8 @@
           cursor: @cursor, 
           path: root_path(
             query: @query, 
-            category_ids: @category_ids, 
+            category_ids: @category_ids,
+            tab: @tab,
             before: @cursor, 
             format: :turbo_stream
           ) 

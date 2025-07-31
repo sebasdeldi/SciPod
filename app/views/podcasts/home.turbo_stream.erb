@@ -14,7 +14,8 @@
       cursor: @cursor, 
       path: root_path(
         query: @query, 
-        category_ids: @category_ids, 
+        category_ids: @category_ids,
+        tab: @tab,
         before: @cursor, 
         format: :turbo_stream
       ) 
@@ -34,8 +35,17 @@
             <h3>No podcasts found</h3>
             <p>Try searching with different keywords or browse all podcasts.</p>
           <% else %>
-            <h3>No podcasts yet</h3>
-            <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
+            <% case @tab %>
+            <% when 'bookmarks' %>
+              <h3>No favorites yet</h3>
+              <p>Start exploring podcasts and save your favorites here.</p>
+            <% when 'by_me' %>
+              <h3>No podcasts yet</h3>
+              <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
+            <% else %>
+              <h3>No podcasts yet</h3>
+              <p>Be the first to <%= link_to "create a podcast", new_podcast_path %> from your documents!</p>
+            <% end %>
           <% end %>
         </div>
       <% end %>
@@ -45,7 +55,8 @@
       cursor: @cursor, 
       path: root_path(
         query: @query, 
-        category_ids: @category_ids, 
+        category_ids: @category_ids,
+        tab: @tab,
         before: @cursor, 
         format: :turbo_stream
       ) 
