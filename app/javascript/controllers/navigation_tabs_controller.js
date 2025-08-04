@@ -27,13 +27,6 @@ export default class extends Controller {
       return
     }
 
-    // Check if user is authenticated for protected tabs
-    if ((newTab === 'bookmarks' || newTab === 'by_me') && !this.isUserSignedIn()) {
-      // Redirect to sign in page
-      window.location.href = '/users/sign_in'
-      return
-    }
-
     // Update active states immediately for visual feedback
     this.updateActiveStates(newTab)
     
@@ -94,10 +87,5 @@ export default class extends Controller {
     document.querySelector(`[data-tab="${activeTab}"]`).classList.add('active')
   }
 
-  isUserSignedIn() {
-    // Check if user is signed in by looking for sign-out link or user-specific elements
-    return document.querySelector('a[data-turbo-method="delete"]') !== null ||
-           document.querySelector('[data-user-signed-in]') !== null ||
-           document.body.classList.contains('user-signed-in')
-  }
+
 } 

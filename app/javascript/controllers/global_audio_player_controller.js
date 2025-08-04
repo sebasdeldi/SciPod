@@ -400,14 +400,20 @@ export default class extends Controller {
     this.resetAllPlayButtons()
     
     // Find the button for the current podcast and update its state
-    const currentButton = document.querySelector(`[data-audio-player-id-value="${this.currentPodcast.id}"]`)
-    if (currentButton) {
-      this.currentPlayButton = currentButton
-      if (this.isPlaying) {
-        this.updatePlayButtonState(currentButton, 'playing')
-      } else {
-        this.updatePlayButtonState(currentButton, 'paused')
-      }
+    // Use querySelectorAll to find all matching buttons (could be multiple with tabs)
+    const currentButtons = document.querySelectorAll(`[data-audio-player-id-value="${this.currentPodcast.id}"]`)
+    if (currentButtons.length > 0) {
+      // Update all matching buttons to show the correct state
+      currentButtons.forEach(button => {
+        if (this.isPlaying) {
+          this.updatePlayButtonState(button, 'playing')
+        } else {
+          this.updatePlayButtonState(button, 'paused')
+        }
+      })
+      
+      // Use the first one as the current button
+      this.currentPlayButton = currentButtons[0]
     }
   }
   

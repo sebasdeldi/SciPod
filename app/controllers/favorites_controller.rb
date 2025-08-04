@@ -5,7 +5,6 @@
 # using Turbo Stream for instant UI updates without page reloads.
 #
 class FavoritesController < ApplicationController
-  before_action :authenticate_user!
   before_action :set_podcast
 
   ##
