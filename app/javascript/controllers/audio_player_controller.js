@@ -4,7 +4,9 @@ export default class extends Controller {
   static values = { url: String, title: String, id: Number }
 
   playPodcast(event) {
+    // Ensure the event doesn't propagate to parent elements
     event.preventDefault()
+    event.stopPropagation()
     
     // Find the global audio player
     const globalPlayer = document.querySelector('[data-controller="global-audio-player"]')

@@ -23,20 +23,18 @@
               data-tab="discover">
         Discover
       </button>
-      <% if user_signed_in? %>
-        <button type="button" 
-                class="nav-tab <%= 'active' if current_tab == 'bookmarks' %>" 
-                data-action="click->navigation-tabs#switchTab"
-                data-tab="bookmarks">
-          Bookmarks
-        </button>
-        <button type="button" 
-                class="nav-tab <%= 'active' if current_tab == 'by_me' %>" 
-                data-action="click->navigation-tabs#switchTab"
-                data-tab="by_me">
-          By me
-        </button>
-      <% end %>
+      <button type="button" 
+              class="nav-tab <%= 'active' if current_tab == 'bookmarks' %>" 
+              data-action="click->navigation-tabs#switchTab"
+              data-tab="bookmarks">
+        Bookmarks
+      </button>
+      <button type="button" 
+              class="nav-tab <%= 'active' if current_tab == 'by_me' %>" 
+              data-action="click->navigation-tabs#switchTab"
+              data-tab="by_me">
+        By me
+      </button>
     </div>
   </div>
 </div>
@@ -89,17 +87,5 @@
     </main>
   </div>
 
-  <!-- Call to Action for Logged Out Users -->
-  <% unless user_signed_in? %>
-    <div class="cta-section">
-      <div class="cta-content">
-        <h2>Ready to Create Your Own Podcast?</h2>
-        <p>Upload your PDF documents and let AI transform them into engaging audio content.</p>
-        <div class="cta-buttons">
-          <%= link_to "Get Started", new_user_registration_path, class: "btn-primary btn-large" %>
-          <%= link_to "Learn More", "#", class: "btn-secondary btn-large" %>
-        </div>
-      </div>
-    </div>
-  <% end %>
+
 </div>

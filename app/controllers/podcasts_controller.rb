@@ -8,7 +8,6 @@
 # - File upload handling for PDFs and audio files
 #
 class PodcastsController < ApplicationController
-  before_action :authenticate_user!, except: [ :home, :show ]
   before_action :set_podcast, only: [ :show, :favorite, :unfavorite, :favorite_button ]
 
   ##
@@ -25,20 +24,10 @@ class PodcastsController < ApplicationController
     base_relation = case @tab
     when 'bookmarks'
       # User's favorited podcasts
-      if user_signed_in?
-        user_favorites_relation(@query, @category_ids)
-      else
-        # Redirect to login or show empty results
-        Podcast.none
-      end
+      user_favorites_relation(@query, @category_ids)
     when 'by_me'
       # User's created podcasts
-      if user_signed_in?
-        user_podcasts_relation(@query, @category_ids)
-      else
-        # Redirect to login or show empty results
-        Podcast.none
-      end
+      user_podcasts_relation(@query, @category_ids)
     else # 'discover'
       # All podcasts (current default behavior)
       discover_podcasts_relation(@query, @category_ids)
@@ -72,7 +61,7 @@ class PodcastsController < ApplicationController
   # GET /podcasts/1
   # Show individual podcast with audio player and details
   def show
-    @favorite = current_user&.favorites&.find_by(podcast: @podcast)
+    @favorite = current_user.favorites.find_by(podcast: @podcast)
 
     respond_to do |format|
       format.html

@@ -18,13 +18,8 @@ Rails.application.routes.draw do
     end
   end
 
-  # User dashboard and favorites
-  resources :users, only: [ :show ] do
-    member do
-      get :favorites
-      get :my_podcasts
-    end
-  end
+  # User dashboard (removed favorites and my_podcasts routes)
+  resources :users, only: [ :show ]
 
   # Favorites routes (for AJAX operations)
   resources :favorites, only: [ :create, :destroy ]

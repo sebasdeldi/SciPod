@@ -24,9 +24,7 @@
     <div class="result-header-right">
       <%= render 'shared/play_button', podcast: podcast %>
       <div id="favorite_button_<%= podcast.id %>" class="result-favorite">
-        <% if user_signed_in? %>
-          <%= render 'shared/favorite_button', podcast: podcast, current_user: current_user %>
-        <% end %>
+        <%= render 'shared/favorite_button', podcast: podcast, current_user: current_user %>
         <span id="search_favorites_count_<%= podcast.id %>" class="result-favorites-count">
           <%= formatted_favorites_count(podcast.favorites_count) %>
         </span>

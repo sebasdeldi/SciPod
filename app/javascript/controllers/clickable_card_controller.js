@@ -26,7 +26,8 @@ export default class extends Controller {
       '.favorite-button',
       '.play-button',
       '.favorite-form',
-      '[type="submit"]'
+      '[type="submit"]',
+      '[data-controller="audio-player"]' // Add this to ensure play buttons are recognized
     ]
 
     let currentElement = element

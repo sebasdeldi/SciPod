@@ -34,7 +34,7 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body<%= " data-user-signed-in" if user_signed_in? %>>
+  <body data-user-signed-in>
     <%= render 'shared/global_audio_player' %>
     <%= render 'shared/flash_messages' %>
 
