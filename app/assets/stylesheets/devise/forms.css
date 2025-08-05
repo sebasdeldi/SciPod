@@ -1,110 +1,369 @@
-/* Devise authentication form styles */
+/* Modern Devise Authentication Forms */
 
-/* Basic Form Fields */
+/* Container & Layout */
+.devise-page {
+  height: 100vh;
+  background: #f0f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Remove main-content padding for Devise pages */
+.main-content:has(.devise-page) {
+  padding-bottom: 0;
+}
+
+
+
+.devise-form-container {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Header Section */
+.devise-header {
+  background: #2c2c2c;
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+
+
+.devise-header h2 {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.devise-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.devise-icon i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+/* Form Content */
+.devise-form-content {
+  padding: 2rem;
+}
+
+/* Form Fields */
 .field {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
 }
 
 .field label {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+  position: relative;
 }
 
 .field input[type="email"],
 .field input[type="password"],
 .field input[type="text"] {
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 1px solid #ddd;
+  border-radius: 50px;
   font-size: 1rem;
-  transition: border-color 0.2s;
+  background: white;
+  transition: all 0.2s ease;
 }
 
 .field input[type="email"]:focus,
 .field input[type="password"]:focus,
 .field input[type="text"]:focus {
   outline: none;
-  border-color: #007bff;
-}
-
-.field input[type="checkbox"] {
-  margin-right: 0.5rem;
-}
-
-/* Form Actions */
-.actions {
-  margin-top: 1rem;
-}
-
-.actions input[type="submit"] {
-  background: #007bff;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.actions input[type="submit"]:hover {
-  background: #0056b3;
-}
-
-/* Error Messages */
-#error_explanation {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  border: 1px solid #f5c6cb;
-}
-
-#error_explanation h2 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-}
-
-#error_explanation ul {
-  margin-bottom: 0;
-  padding-left: 1.5rem;
-}
-
-/* Form Layout Improvements */
-.devise-form-container {
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 2rem;
+  border-color: #333;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 0 0 2px rgba(51, 51, 51, 0.1);
 }
 
-.devise-form-container h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
+/* Input Icons */
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+  z-index: 1;
+}
+
+.field input:focus + .input-icon {
   color: #333;
 }
 
-/* Form Links */
-.devise-form-container a {
-  color: #007bff;
+/* Checkbox Styling */
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.checkbox-field input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 0.75rem;
+  accent-color: #2c2c2c;
+}
+
+.checkbox-field label {
+  margin: 0;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+/* Submit Button */
+.actions {
+  margin-top: 2rem;
+}
+
+.actions input[type="submit"],
+.auth-submit-btn {
+  width: 100%;
+  background: #2c2c2c;
+  color: white;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.actions input[type="submit"]:hover,
+.auth-submit-btn:hover {
+  background: #1a1a1a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.actions input[type="submit"]:active,
+.auth-submit-btn:active {
+  transform: translateY(0);
+}
+
+.actions input[type="submit"]:active,
+.auth-submit-btn:active {
+  transform: translateY(0);
+}
+
+
+
+/* Links Section */
+.devise-links {
+  text-align: center;
+  padding: 1.5rem 2rem 2rem;
+  background: #f8f9fa;
+  border-top: 1px solid #e2e8f0;
+}
+
+.devise-links a {
+  color: #2c2c2c;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-block;
+  margin: 0.25rem 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  transition: all 0.2s ease-in-out;
+}
+
+.devise-links a:hover {
+  background: #2c2c2c;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Special Elements */
+.divider {
+  text-align: center;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.divider span {
+  background: white;
+  padding: 0 1rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Password Strength Indicator */
+.password-requirements {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.password-requirements i {
+  color: #2c2c2c;
+}
+
+/* Cancel Account Section */
+.account-actions {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.account-actions h3 {
+  color: #dc2626;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 50px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  color: white;
   text-decoration: none;
 }
 
-.devise-form-container a:hover {
-  text-decoration: underline;
+/* Back Link */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 1rem;
+  transition: color 0.3s ease;
+}
+
+.back-link:hover {
+  color: #2c2c2c;
+  text-decoration: none;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .devise-page {
+    padding: 0.5rem;
+  }
+  
   .devise-form-container {
-    margin: 1rem;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .devise-header {
+    padding: 2rem 1.5rem 1.5rem;
+  }
+
+  .devise-form-content {
     padding: 1.5rem;
   }
+
+  .devise-links {
+    padding: 1.5rem;
+  }
+
+  .field input[type="email"],
+  .field input[type="password"],
+  .field input[type="text"] {
+    padding: 0.875rem 0.875rem 0.875rem 2.75rem;
+  }
+
+  .input-icon {
+    left: 0.875rem;
+  }
+}
+
+/* Loading State */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  z-index: 10;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 } 

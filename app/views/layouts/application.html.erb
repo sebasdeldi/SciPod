@@ -44,6 +44,8 @@
     </main>
 
     <!-- Bottom Navigation -->
-    <%= render 'shared/bottom_navigation' %>
+    <% if user_signed_in? %>
+      <%= render 'shared/bottom_navigation' %>
+    <% end %>
   </body>
 </html>

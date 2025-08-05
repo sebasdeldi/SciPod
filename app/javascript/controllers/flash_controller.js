@@ -4,21 +4,23 @@ import { Controller } from "@hotwired/stimulus"
  * Flash Controller
  * 
  * Handles flash message behavior including auto-dismiss and
- * click-to-dismiss functionality.
+ * click-to-dismiss functionality with smooth animations.
  */
 export default class extends Controller {
   static values = { 
-    delay: { type: Number, default: 5000 }
+    duration: { type: Number, default: 5000 }
   }
 
   connect() {
-    // Auto-dismiss after delay
+    // Show the flash message with animation
+    requestAnimationFrame(() => {
+      this.element.classList.add('flash-visible')
+    })
+
+    // Auto-dismiss after duration
     this.timeout = setTimeout(() => {
       this.dismiss()
-    }, this.delayValue)
-
-    // Add fade-in animation
-    this.element.classList.add('flash-visible')
+    }, this.durationValue)
   }
 
   disconnect() {
@@ -36,14 +38,15 @@ export default class extends Controller {
       clearTimeout(this.timeout)
     }
 
-    // Add fade-out animation
+    // Add dismiss animation
+    this.element.classList.remove('flash-visible')
     this.element.classList.add('flash-dismissing')
     
-    // Remove element after animation
+    // Remove element after animation completes
     setTimeout(() => {
       if (this.element.parentNode) {
         this.element.remove()
       }
-    }, 300)
+    }, 400) // Match the CSS transition duration
   }
 } 
