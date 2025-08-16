@@ -13,8 +13,8 @@ export default class extends Controller {
       return
     }
 
-    // Navigate to the podcast show page
-    window.location.href = this.urlValue
+    // Navigate to the podcast show page using Turbo for better performance
+    Turbo.visit(this.urlValue)
   }
 
   isInteractiveElement(element) {

@@ -1,29 +1,57 @@
-<h2>Sign up</h2>
+<div class="devise-page">
+  <div class="devise-form-container">
+    <!-- Header Section -->
+    <div class="devise-header">
+      <div class="devise-icon">
+        <i class="fas fa-user-plus"></i>
+      </div>
+      <h2>Create Account</h2>
+    </div>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+    <!-- Form Content -->
+    <div class="devise-form-content">
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="field">
-    <%= f.label :email %><br >
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+        <div class="field">
+          <%= f.label :email, "Email Address" %>
+          <div class="input-wrapper">
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Enter your email" %>
+            <i class="fas fa-envelope input-icon"></i>
+          </div>
+        </div>
+
+        <div class="field">
+          <%= f.label :password, "Password" %>
+          <div class="input-wrapper">
+            <%= f.password_field :password, autocomplete: "new-password", placeholder: "Create a secure password" %>
+            <i class="fas fa-lock input-icon"></i>
+          </div>
+          <% if @minimum_password_length %>
+            <div class="password-requirements">
+              <i class="fas fa-info-circle"></i>
+              <span><%= @minimum_password_length %> characters minimum</span>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="field">
+          <%= f.label :password_confirmation, "Confirm Password" %>
+          <div class="input-wrapper">
+            <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "Confirm your password" %>
+            <i class="fas fa-lock input-icon"></i>
+          </div>
+        </div>
+
+        <div class="actions">
+          <%= f.submit "Create Account", class: "auth-submit-btn", data: { disable_with: "Creating..." } %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Links Section -->
+    <div class="devise-links">
+      <%= render "devise/shared/links" %>
+    </div>
   </div>
-
-  <div class="field">
-    <%= f.label :password %>
-    <% if @minimum_password_length %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br >
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation %><br >
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

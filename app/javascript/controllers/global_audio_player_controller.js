@@ -188,12 +188,6 @@ export default class extends Controller {
   }
   
   loadFavoriteButton(podcastId) {
-    // Only load if user is signed in (check for body data attribute)
-    if (!document.body.dataset.userSignedIn || document.body.dataset.userSignedIn !== 'true') {
-      this.favoriteContainerTarget.innerHTML = ''
-      return
-    }
-    
     // Fetch the favorite button HTML for this specific podcast
     fetch(`/podcasts/${podcastId}/favorite_button`, {
       method: 'GET',
@@ -210,7 +204,6 @@ export default class extends Controller {
       // The fade-in will be handled by CSS when player gets "showing" class
     })
     .catch(error => {
-      console.log('Could not load favorite button:', error)
       this.favoriteContainerTarget.innerHTML = ''
     })
   }
@@ -274,7 +267,6 @@ export default class extends Controller {
           this.savePlayerState() // Save state when starting to play
         })
         .catch(error => {
-          console.error('Error playing audio:', error)
           this.updatePlayButtonState(this.currentPlayButton, 'error')
         })
     }
@@ -564,7 +556,6 @@ export default class extends Controller {
           this.loadPodcastFromState(state)
         }
       } catch (error) {
-        console.log('Could not restore player state:', error)
         sessionStorage.removeItem('audioPlayerState')
       }
     }
@@ -631,7 +622,6 @@ export default class extends Controller {
         this.updatePlayPauseButton('pause')
         // Resume playback automatically
         this.audioTarget.play().catch(error => {
-          console.log('Could not resume playback:', error)
           this.isPlaying = false
           this.updatePlayPauseButton('play')
         })

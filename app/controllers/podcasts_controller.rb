@@ -50,7 +50,12 @@ class PodcastsController < ApplicationController
     ).call
 
     respond_to do |format|
-      format.turbo_stream
+      # Only respond to turbo_stream if this is actually a search/filter request
+      # (has parameters like before_cursor, query, category_ids, or tab)
+      # This prevents redirects from authentication from getting turbo_stream responses
+      if @before_cursor.present? || @query.present? || @category_ids.any? || params[:tab].present?
+        format.turbo_stream
+      end
       format.html
     end
   end

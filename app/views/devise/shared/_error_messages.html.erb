@@ -1,14 +1,47 @@
 <% if resource.errors.any? %>
-  <div id="error_explanation" data-turbo-cache="false">
-    <h2>
-      <%= I18n.t("errors.messages.not_saved",
-                 count: resource.errors.count,
-                 resource: resource.class.model_name.human.downcase) %>
-    </h2>
-    <ul>
-      <% resource.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
-  </div>
+  <script>
+    // Execute immediately since we're in a Turbo response
+    (function() {
+      // Find the global flash messages container
+      const flashContainer = document.querySelector('.flash-messages-container');
+      if (flashContainer) {
+        // Remove any existing error messages first
+        const existingErrors = flashContainer.querySelectorAll('.flash.alert');
+        existingErrors.forEach(error => error.remove());
+        
+        // Create the error flash message
+        const errorFlash = document.createElement('div');
+        errorFlash.className = 'flash alert';
+        errorFlash.setAttribute('data-controller', 'flash');
+        errorFlash.setAttribute('data-flash-duration-value', '8000');
+        
+        const errorContent = `
+          <i class="fas fa-exclamation-triangle flash-icon"></i>
+          <div class="flash-content">
+            <% if resource.errors.count == 1 %>
+              <%= j resource.errors.full_messages.first %>
+            <% else %>
+              <ul style="margin: 0; padding-left: 1.25rem;">
+                <% resource.errors.full_messages.each do |message| %>
+                  <li style="margin-bottom: 0.25rem;"><%= j message %></li>
+                <% end %>
+              </ul>
+            <% end %>
+          </div>
+          <button class="flash-close" data-action="click->flash#dismiss">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="flash-progress"></div>
+        `;
+        
+        errorFlash.innerHTML = errorContent;
+        flashContainer.appendChild(errorFlash);
+        
+        // Trigger the show animation using requestAnimationFrame
+        requestAnimationFrame(() => {
+          errorFlash.classList.add('flash-visible');
+        });
+      }
+    })();
+  </script>
 <% end %>

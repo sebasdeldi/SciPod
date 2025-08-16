@@ -3,8 +3,14 @@ require 'sidekiq/web'
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Devise routes for user authentication
-  devise_for :users
+  # Devise routes for user authentication with custom controllers for Turbo support
+  devise_for :users, controllers: {
+    registrations: 'users/registrations',
+    sessions: 'users/sessions',
+    passwords: 'users/passwords',
+    confirmations: 'users/confirmations',
+    unlocks: 'users/unlocks'
+  }
 
   # Root route - unified search/discovery page
   root "podcasts#home"
