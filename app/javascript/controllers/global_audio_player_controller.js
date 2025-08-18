@@ -2,16 +2,19 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["audio", "title", "authors", "playPauseBtn", "playPauseIcon", "speedBtn", "speedText", "speedDropdown", "favoriteContainer", "progressBar", "progressContainer", "timeDisplay", "currentTime", "totalTime"]
-  
+
   connect() {
     // Listen for play-podcast events from individual play buttons
     this.element.addEventListener('play-podcast', this.handlePlayPodcast.bind(this))
-    
+
     // Listen for specific Turbo Stream events that update favorites
     document.addEventListener('turbo:before-stream-render', this.handleFavoriteUpdate.bind(this))
     
     // Listen for page navigation to update play buttons
     document.addEventListener('turbo:render', this.updatePagePlayButtons.bind(this))
+    
+    // Listen for clicks outside the speed dropdown to close it
+    document.addEventListener('click', this.handleClickOutside.bind(this))
     
     // Store current podcast info
     this.currentPodcast = null
@@ -32,6 +35,7 @@ export default class extends Controller {
     this.element.removeEventListener('play-podcast', this.handlePlayPodcast.bind(this))
     document.removeEventListener('turbo:before-stream-render', this.handleFavoriteUpdate.bind(this))
     document.removeEventListener('turbo:render', this.updatePagePlayButtons.bind(this))
+    document.removeEventListener('click', this.handleClickOutside.bind(this))
   }
   
   onTimeUpdate() {
@@ -102,9 +106,12 @@ export default class extends Controller {
   
   handlePlayPodcast(event) {
     const { url, title, id, playButton } = event.detail
-    
+        
     // If same podcast is already loaded, just toggle play/pause
-    if (this.currentPodcast && this.currentPodcast.id === id) {
+    // Ensure both IDs are compared as numbers to avoid type coercion issues
+    if (this.currentPodcast && Number(this.currentPodcast.id) === Number(id)) {
+      // Update the current play button reference to the clicked button
+      this.currentPlayButton = playButton
       this.togglePlayPause()
       return
     }
@@ -166,7 +173,7 @@ export default class extends Controller {
   
   loadAuthorsInfo(podcastId) {
     // Fetch authors from the card that triggered this player
-    const podcastCard = document.querySelector(`[data-clickable-card-url-value*="podcasts/${podcastId}"]`)
+    const podcastCard = document.querySelector(`[data-clickable-card-url-value*="podcasts/${String(podcastId)}"]`)
     if (podcastCard) {
       const authorsElement = podcastCard.querySelector('.result-authors')
       if (authorsElement) {
@@ -295,19 +302,41 @@ export default class extends Controller {
     this.speedTextTarget.textContent = `${speed}x`
     
     // Close dropdown
-    this.speedDropdownTarget.style.display = 'none'
+    this.closeSpeedDropdown()
     
     // Save state when speed changes
     this.savePlayerState()
   }
   
+  handleClickOutside(event) {
+    // Check if the speed dropdown is open
+    const dropdown = this.speedDropdownTarget
+    if (dropdown.style.display === 'block') {
+      // Check if the click was outside the speed button and dropdown
+      const speedBtn = this.speedBtnTarget
+      if (!speedBtn.contains(event.target) && !dropdown.contains(event.target)) {
+        this.closeSpeedDropdown()
+      }
+    }
+  }
+
   toggleSpeedDropdown() {
     const dropdown = this.speedDropdownTarget
     if (dropdown.style.display === 'block') {
-      dropdown.style.display = 'none'
+      this.closeSpeedDropdown()
     } else {
-      dropdown.style.display = 'block'
+      this.openSpeedDropdown()
     }
+  }
+
+  openSpeedDropdown() {
+    this.speedDropdownTarget.style.display = 'block'
+    this.speedBtnTarget.classList.add('open')
+  }
+
+  closeSpeedDropdown() {
+    this.speedDropdownTarget.style.display = 'none'
+    this.speedBtnTarget.classList.remove('open')
   }
   
   close() {
@@ -393,7 +422,7 @@ export default class extends Controller {
     
     // Find the button for the current podcast and update its state
     // Use querySelectorAll to find all matching buttons (could be multiple with tabs)
-    const currentButtons = document.querySelectorAll(`[data-audio-player-id-value="${this.currentPodcast.id}"]`)
+    const currentButtons = document.querySelectorAll(`[data-audio-player-id-value="${String(this.currentPodcast.id)}"]`)
     if (currentButtons.length > 0) {
       // Update all matching buttons to show the correct state
       currentButtons.forEach(button => {
@@ -521,7 +550,7 @@ export default class extends Controller {
       // Small delay to let the card update complete first
       setTimeout(() => {
         // Only reload if we still have the same podcast
-        if (this.currentPodcast && this.currentPodcast.id === podcastId) {
+        if (this.currentPodcast && Number(this.currentPodcast.id) === Number(podcastId)) {
           this.loadFavoriteButton(podcastId)
         }
       }, 50) // Smaller delay to be more responsive

@@ -35,15 +35,9 @@
   overflow: hidden;
 }
 
-
-
 .devise-header h2 {
   color: white;
-  font-size: 1.75rem;
-  font-weight: 600;
   margin: 0;
-  position: relative;
-  z-index: 1;
 }
 
 .devise-icon {

@@ -203,14 +203,14 @@ body {
 }
 
 .player-favorite-btn.favorited {
-  background: rgba(255, 215, 0, 0.3) !important;
-  border-color: rgba(255, 215, 0, 0.5) !important;
-  color: #FFD700 !important;
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: white !important;
 }
 
 .player-favorite-btn.favorited:hover {
-  background: rgba(255, 215, 0, 0.4) !important;
-  border-color: rgba(255, 215, 0, 0.7) !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
 }
 
 /* Options Section */
@@ -265,17 +265,23 @@ body {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
+.speed-btn .fa-chevron-down {
+  transition: transform 0.2s ease;
+}
+
+.speed-btn.open .fa-chevron-down {
+  transform: rotate(180deg);
+}
+
 .speed-dropdown {
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 5px;
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   min-width: 80px;
   display: none;
   z-index: 1001;
